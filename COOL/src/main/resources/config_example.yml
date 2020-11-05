@@ -1,0 +1,14 @@
+webapp: sales_fact_1997
+cubes:
+  - dataMart: foodmart
+    synonyms:
+      - SALES
+    factTable: sales_fact_1997
+    dbms: mysql
+    metadata: meta-foodmart
+    ip: 127.0.0.1
+    port: 3306
+    create: false
+    importmembers: true
+    user: root
+    pwd: ""

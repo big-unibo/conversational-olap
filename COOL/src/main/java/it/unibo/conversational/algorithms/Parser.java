@@ -1,13 +1,18 @@
 package it.unibo.conversational.algorithms;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
+import com.google.common.base.Optional;
+import com.google.common.collect.*;
+import it.unibo.antlr.gen.COOLLexer;
+import it.unibo.antlr.gen.COOLParser;
+import it.unibo.conversational.Utils.DataType;
+import it.unibo.conversational.antlr.CustomConversationalVisitor;
+import it.unibo.conversational.database.Cube;
+import it.unibo.conversational.database.QueryGenerator;
+import it.unibo.conversational.datatypes.DependencyGraph;
+import it.unibo.conversational.datatypes.Entity;
+import it.unibo.conversational.datatypes.Mapping;
+import it.unibo.conversational.datatypes.Ngram;
+import it.unibo.conversational.datatypes.Ngram.AnnotationType;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -24,23 +29,9 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-
-import it.unibo.antlr.gen.COOLLexer;
-import it.unibo.antlr.gen.COOLParser;
-import it.unibo.conversational.Utils.DataType;
-import it.unibo.conversational.antlr.CustomConversationalVisitor;
-import it.unibo.conversational.database.QueryGeneratorChecker;
-import it.unibo.conversational.datatypes.DependencyGraph;
-import it.unibo.conversational.datatypes.Entity;
-import it.unibo.conversational.datatypes.Mapping;
-import it.unibo.conversational.datatypes.Ngram;
-import it.unibo.conversational.datatypes.Ngram.AnnotationType;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 /**
  * Handling grammar and paring.
@@ -99,97 +90,6 @@ public final class Parser {
     FOO;
   }
 
-  /**
-   * Type of rules used for the parsing.
-   */
-  public enum Rule {
-    /** MC ::= OP MEA. */
-    M1(Type.MC, Type.AGG, Type.MEA), // M1 is more generic than M3
-    /** MC ::= MEA OP. */
-    M2(Type.MC, Type.MEA, Type.AGG), // M2 is more generic than M3
-    /** MC ::= Count fact. */
-    M5(Type.MC, Type.COUNT, Type.FACT),
-    /** MC ::= MC MC. */
-    M4(Type.MC, Type.MC, Type.MC),
-    /** MEA ::= OP MEA. */
-    M3(Type.MC, Type.MEA),
-    // M5(Type.MC, false, Type.COUNT, Type.FACT),//
-
-    /** GBC ::= BY LEV. */
-    G1(Type.GC, Type.BY, Type.ATTR), //
-    /** GBC ::= GBC LEV. */
-    G2(Type.GC, Type.GC, Type.ATTR), //
-    // /** GBC ::= LEV. */
-    // G3(Type.GC, false, Type.ATTR), // do not apply G3 before S*, otherwise it won't recognize levels for SC
-
-    /** SC ::= LEV COP VAL. */
-    S1(Type.SC, Type.ATTR, Type.COP, Type.VAL),
-    /** SC ::= VAL COP LEV. */
-    S2(Type.SC, Type.VAL, Type.COP, Type.ATTR),
-    /** SC ::= LEV VAL. */
-    S3(Type.SC, Type.ATTR, Type.VAL),
-    /** SC ::= VAL LEV. */
-    S4(Type.SC, Type.VAL, Type.ATTR),
-    /** SC ::= SC AND SC. */
-    S5(Type.SC, Type.SC, Type.AND, Type.SC),
-    /** SC ::= SC OR SC. */
-    S6(Type.SC, Type.SC, Type.OR, Type.SC),
-    /** SC ::= VAL. */
-    S8(Type.WHERE, Type.SC),
-    /** SC ::= VAL. */
-    S7(Type.SC, Type.VAL),
-
-    /** Q ::= GBC SC MC. */
-    Q1(Type.GPSJ, Type.GC, Type.SC, Type.MC),
-    /** Q ::= GBC SC MC. */
-    Q2(Type.GPSJ, Type.GC, Type.MC, Type.SC),
-    /** Q ::= GBC SC MC. */
-    Q3(Type.GPSJ, Type.SC, Type.GC, Type.MC),
-    /** Q ::= GBC SC MC. */
-    Q4(Type.GPSJ, Type.SC, Type.MC, Type.GC),
-    /** Q ::= GBC SC MC. */
-    Q5(Type.GPSJ, Type.MC, Type.GC, Type.SC),
-    /** Q ::= GBC SC MC. */
-    Q6(Type.GPSJ, Type.MC, Type.SC, Type.GC),
-    /** Q ::= GBC MC. */
-    Q7(Type.GPSJ, Type.MC, Type.GC),
-    /** Q ::= GBC MC. */
-    Q8(Type.GPSJ, Type.GC, Type.MC),
-    /** Q ::= SC MC. */
-    Q9(Type.GPSJ, Type.MC, Type.SC),
-    /** Q ::= SC MC. */
-    Q10(Type.GPSJ, Type.SC, Type.MC),
-    /** Q ::= MC. */
-    Q11(Type.GPSJ, Type.MC);
-
-    private final Type[] elements;
-    private final Type ret;
-
-    /**
-     * Create a rule.
-     * @param ret return type
-     * @param acceptPermutation whether the rule accept permutation
-     * @param elements list of elements
-     */
-    Rule(final Type ret, final Type... elements) {
-      this.ret = ret;
-      this.elements = elements;
-    }
-
-    /**
-     * Check whether a list of ngrams match this rule.
-     * @param ngrams list of ngrams
-     * @return true if the list of ngrams match this rule
-     */
-    public boolean match(final List<Ngram> ngrams) {
-      boolean found = ngrams.size() == elements.length;
-      for (int i = 0; i < ngrams.size() && found; i++) {
-        found = found && ngrams.get(i).type.equals(elements[i]);
-      }
-      return found;
-    }
-  }
-
   // This IDS are used only for tests, to assign human friendly ids to ambiguities
   public static boolean TEST = true;
   public static void resetIds() {
@@ -219,30 +119,12 @@ public final class Parser {
     return id;
   }
 
-//  /**
-//   * Parse a mapping.
-//   * @param mapping mapping to be translated
-//   * @return parsing interpretations sorted by number of matched entities
-//   */
-//  public static Optional<Mapping> parse(final Mapping mapping) {
-//    final Set<Mapping> res = parse(Lists.newArrayList(//
-//        new Rule[] { Rule.M1, Rule.M2, Rule.M5, Rule.M3, Rule.M4 }, //
-//        new Rule[] { Rule.G1, Rule.G2 }, //
-//        new Rule[] { Rule.S1, Rule.S2, Rule.S3, Rule.S4, Rule.S5, Rule.S6, Rule.S7 }, //
-//        new Rule[] { Rule.Q1, Rule.Q2, Rule.Q3, Rule.Q4, Rule.Q5, Rule.Q6, Rule.Q7, Rule.Q8, Rule.Q9, Rule.Q10, Rule.Q11 }//
-//    ), mapping);
-//    return res.isEmpty() ? Optional.absent()
-//        : res.stream() //
-//            .filter(s -> s.ngrams.stream().anyMatch(n -> n.type.equals(Type.GPSJ))) //
-//            .max(Mapping::compareMappings);
-//  }
-
-  public static void typeCheck(final Mapping m) {
+  public static void typeCheck(final Cube cube, final Mapping m) {
     for (Ngram n : m.ngrams.stream().filter(n -> !n.children.isEmpty()).collect(Collectors.toList())) {
-      typeCheck(n,
-          QueryGeneratorChecker.operatorOfMeasure,
-          QueryGeneratorChecker.membersofLevels,
-          QueryGeneratorChecker.levelsOfMembers);
+      typeCheck(cube, n,
+          QueryGenerator.operatorOfMeasure,
+          QueryGenerator.membersofLevels,
+          QueryGenerator.levelsOfMembers);
     }
   }
 
@@ -251,7 +133,7 @@ public final class Parser {
    * @param input mapping to be translated
    * @return parsing interpretations sorted by number of matched entities
    */
-  public static Optional<Mapping> parse(final Mapping input) {
+  public static Optional<Mapping> parse(final Cube cube, final Mapping input) {
     final COOLLexer lexer = new COOLLexer(new ANTLRInputStream(input.getMappedNgrams())); // new ANTLRInputStream(System.in);
     final CommonTokenStream tokens = new CommonTokenStream(lexer); // create a buffer of tokens pulled from the lexer
     try {
@@ -261,7 +143,7 @@ public final class Parser {
        parser.removeErrorListener(ConsoleErrorListener.INSTANCE);
       final ParseTree tree = parser.init(); // begin parsing at init rule
       final Ngram answer = new CustomConversationalVisitor(input).visit(tree);
-      return answer == null? Optional.absent() : Optional.of(new Mapping(Lists.newArrayList(answer.getChildren())));
+      return answer == null? Optional.absent() : Optional.of(new Mapping(cube, Lists.newArrayList(answer.getChildren())));
     } catch (final ParseCancellationException e) {
       return Optional.absent();
     }
@@ -277,7 +159,9 @@ public final class Parser {
    * @param val2attr value/attribute constraints
    * @return the annotated parse tree
    */
-  public static Ngram typeCheck(final Ngram ngram,
+  public static Ngram typeCheck(
+      final Cube cube,
+      final Ngram ngram,
       final Map<String, Set<Entity>> mea2op,
       final Map<String, Set<Entity>> attr2val,
       final Map<String, Set<Entity>> val2attr) {
@@ -290,7 +174,7 @@ public final class Parser {
         final List<Ngram> children = c.children.stream().filter(cc -> cc.type.equals(Type.ATTR)).collect(Collectors.toList());
         final Ngram from = children.get(0);
         final Ngram to = children.get(1);
-        final String lca = DependencyGraph.lca(from.mde().nameInTable(), to.mde().nameInTable()).orNull();
+        final String lca = DependencyGraph.lca(cube, from.mde().nameInTable(), to.mde().nameInTable()).orNull();
         if (lca == null) {
           c.annotate(incTypeCheckId(), AnnotationType.A2, Sets.newHashSet(from.mde(), to.mde()));
         } else {
@@ -333,7 +217,7 @@ public final class Parser {
               c.annotate(incTypeCheckId(), AnnotationType.AVM, attr2val.getOrDefault(lev.mde().nameInTable(), Sets.newLinkedHashSet()));
             }
           } else if (!lev.typeInDB().equals(val.typeInDB()) // if the types differ or the member is not in the domain of the level
-              || !lev.typeInDB().equals(DataType.NUMERIC) && val.mde().refToOtherTable() != lev.mde().pkInTable()) {
+              || !lev.typeInDB().equals(DataType.NUMERIC) && !val.mde().refToOtherTable().equals(lev.mde().pkInTable())) {
             c.annotate(incTypeCheckId(), AnnotationType.AVM, attr2val.getOrDefault(lev.mde().nameInTable(), Sets.newLinkedHashSet()));
           }
         }
@@ -348,11 +232,11 @@ public final class Parser {
   /**
    * Infer missing information and add it to the parse forest.
    * @param mapping current forest
-   * @param previous context (i.e., parse tree)
+   * @param prevTree context (i.e., parse tree)
    */
-  public static void infer(final Mapping mapping, final Mapping prevTree) {
+  public static void infer(final Cube cube, final Mapping mapping, final Mapping prevTree) {
     for (Ngram n : mapping.ngrams) {
-      infer(n, prevTree, QueryGeneratorChecker.operatorOfMeasure, QueryGeneratorChecker.membersofLevels, QueryGeneratorChecker.levelsOfMembers, QueryGeneratorChecker.string2level, QueryGeneratorChecker.yearLevels);
+      infer(cube, n, prevTree, QueryGenerator.operatorOfMeasure, QueryGenerator.membersofLevels, QueryGenerator.levelsOfMembers, QueryGenerator.string2level, QueryGenerator.yearLevels);
       if (!n.equals(mapping.bestNgram)) {
         if (n.type.equals(Type.GPSJ)) {
           n.children.stream().filter(nn -> nn.type.equals(Type.MC)).findAny().get().annotate(incUnparsedId(), AnnotationType.UP, Sets.newHashSet());
@@ -367,8 +251,8 @@ public final class Parser {
    * Infer missing information and add it to the parse forest.
    * @param mapping current forest
    */
-  public static void infer(final Mapping mapping) {
-    infer(mapping, null);
+  public static void infer(final Cube cube, final Mapping mapping) {
+    infer(cube, mapping, null);
   }
 
   /**
@@ -380,26 +264,29 @@ public final class Parser {
    * @param dateAttributes list of date attributes
    * @return a partially filled parse forest
    */
-  public static Ngram infer(final Ngram ngram,//
+  public static Ngram infer(
+      final Cube cube,
+      final Ngram ngram,//
       final Map<String, Set<Entity>> mea2op,//
       final Map<String, Set<Entity>> attr2val,//
       final Map<String, Set<Entity>> val2attr,//
       final Map<String, Entity> string2attr,//
       final Set<Entity> dateAttributes) {
-    return infer(ngram, null, mea2op, attr2val, val2attr, string2attr, dateAttributes);
+    return infer(cube, ngram, null, mea2op, attr2val, val2attr, string2attr, dateAttributes);
   }
 
   /**
    * Infer missing information and add it to the parsing tree.
    * @param tree parse tree
-   * @param prevTree context to enhance inference
    * @param mea2op operator/measure constraints
    * @param attr2val attribute/values constraints
    * @param val2attr value/attributes constraints
    * @param dateAttributes list of date attributes
    * @return a partially filled parse forest
    */
-  public static Ngram infer(final Ngram tree,//
+  public static Ngram infer(
+      final Cube cube,
+      final Ngram tree,//
       final Mapping forest,//
       final Map<String, Set<Entity>> mea2op,//
       final Map<String, Set<Entity>> attr2val,//
@@ -435,7 +322,7 @@ public final class Parser {
 
             // GC clause exists and contains the attribute, we consider the given attribute as FROM
             if (gc.isPresent() && Ngram.contains(gc.get(), attr, true)) {
-              final Graph<String, DefaultEdge> graph = DependencyGraph.getDependencies();
+              final Graph<String, DefaultEdge> graph = DependencyGraph.getDependencies(cube);
               final Set<DefaultEdge> edges;
               if (c.type.equals(Type.DRILL)) {
                 edges = graph.incomingEdgesOf(attr.mde().nameInTable());
@@ -462,7 +349,7 @@ public final class Parser {
                 (cc, accc) -> {
                   boolean ret = cc.mde.isPresent() && cc.type.equals(Type.ATTR) && !cc.mde().equals(attr.mde());
                   if (ret) {
-                    final Optional<String> lca = DependencyGraph.lca(cc.mde().nameInTable(), attr.mde().nameInTable());
+                    final Optional<String> lca = DependencyGraph.lca(cube, cc.mde().nameInTable(), attr.mde().nameInTable());
                     ret &= lca.isPresent() && lca.get().equals(cc.mde().nameInTable());
                   }
                   return ret;
@@ -471,7 +358,7 @@ public final class Parser {
                 (cc, accc) -> {
                   boolean ret = cc.mde.isPresent() && cc.type.equals(Type.ATTR) && !cc.mde().equals(attr.mde());
                   if (ret) {
-                    final Optional<String> lca = DependencyGraph.lca(cc.mde().nameInTable(), attr.mde().nameInTable());
+                    final Optional<String> lca = DependencyGraph.lca(cube, cc.mde().nameInTable(), attr.mde().nameInTable());
                     ret &= lca.isPresent() && lca.get().equals(attr.mde().nameInTable());
                   }
                   return ret;
@@ -630,66 +517,15 @@ public final class Parser {
     }
   }
 
-  public static String createQuery(final JSONObject json) throws Exception {
-    JSONArray mc = json.getJSONArray(Type.MC.toString());
-    final JSONArray gc = json.getJSONArray(Type.GC.toString());
-    String select = "SELECT ";
-    final Iterator<Object> mcIterator = mc.iterator();
-    while (mcIterator.hasNext()) {
-      JSONObject mcClause = (JSONObject) mcIterator.next();
-      select += mcClause.getString(Type.AGG.toString()) + "(" + mcClause.getString(Type.MEA.toString()) + ")" + (mcIterator.hasNext() || !gc.isEmpty() ? ", " : "");
-    }
-
-    String groupby = gc.isEmpty() ? "" : " ";
-    final Iterator<Object> gcIterator = gc.iterator();
-    final List<Entity> attributes = Lists.newArrayList();
-    while (gcIterator.hasNext()) {
-      final Entity attr = QueryGeneratorChecker.getLevel(gcIterator.next().toString());
-      attributes.add(attr);
-      groupby += attr.fullQualifier() + (gcIterator.hasNext() ? ", " : "");
-      select += attr.fullQualifier() + (gcIterator.hasNext() ? ", " : "");
-    }
-
-    JSONArray sc = json.getJSONArray(Type.SC.toString());
-    String where = sc.isEmpty() ? "" : " WHERE ";
-    final Iterator<Object> scIterator = sc.iterator();
-    while (scIterator.hasNext()) {
-      JSONObject scClause = (JSONObject) scIterator.next();
-      final Entity attr = QueryGeneratorChecker.getLevel(scClause.getString(Type.ATTR.toString()));
-      attributes.add(attr);
-      // now is always an array, if in is provided need to add brakets
-      final JSONArray values = scClause.getJSONArray(Type.VAL.toString());
-      final String value = !scClause.getString(Type.COP.toString()).toLowerCase().equals("in")//
-          ? values.toList().get(0).toString()//
-          : ("(" + values.toList().stream().reduce((a, b) -> a.toString() + "," + b.toString()).get() + ")"); 
-      where += attr.fullQualifier() + " " + scClause.getString(Type.COP.toString()) + " " + value + (scIterator.hasNext() ? " AND " : "");
-    }
-
-    String from = "";
-    Set<Integer> tabIns = Sets.newHashSet();
-    Pair<Integer, String> ftdet = QueryGeneratorChecker.getFactTable();
-    from = " FROM " + ftdet.getRight() + " FT ";
-    for (Entity mde : attributes) {
-      int idT = mde.refToOtherTable();
-      if (!tabIns.contains(idT)) {
-        Pair<String, String> detTab = QueryGeneratorChecker.getTabDetails(ftdet.getLeft(), idT);
-        from += " INNER JOIN " + detTab.getLeft() + " ON " + detTab.getLeft() + "." + detTab.getRight() + " = FT." + detTab.getRight();
-        tabIns.add(idT);
-      }
-    }
-    // System.out.println(select + from + where + groupby);
-    return select + from + where + (groupby.isEmpty() ? "" : " GROUP BY " + groupby + " order by " + groupby);
-  }
-
   /**
    * Get the SQL version of the query.
    * @param s mapping
    * @return SQL version of the query
    * @throws Exception in case of error
    */
-  public static String getSQLQuery(final Mapping s) throws Exception {
+  public static String getSQLQuery(final Cube cube, final Mapping s) throws Exception {
     if (s.bestNgram.type.equals(Type.GPSJ)) {
-      return createQuery(s.bestNgram.children);
+      return createQuery(cube, s.bestNgram.children);
     }
     throw new IllegalArgumentException("The query is not fully parsed: " + s.toString());
   }
@@ -709,7 +545,7 @@ public final class Parser {
     }).findAny().get();
   }
 
-  private static String createQuery(final List<Ngram> ngrams) throws Exception {
+  private static String createQuery(final Cube cube, final List<Ngram> ngrams) throws Exception {
     Set<Ngram> attributes = Sets.newLinkedHashSet();
     String select = "";
     String from = "";
@@ -718,8 +554,8 @@ public final class Parser {
 
     for (final Ngram ngs : ngrams) {
       if (ngs.type.equals(Type.GC)) {
-        Set<Ngram> ga = Ngram.leaves(ngs).stream().map(n -> (Ngram) n).filter(n -> !n.type.equals(Type.BY)).collect(Collectors.toSet());
-        final String attToString = ga.stream().map(nn -> QueryGeneratorChecker.getLevel(nn.mde().nameInTable()).fullQualifier()).reduce((a, b) -> a + "," + b).orElse("");
+        Set<Ngram> ga = Ngram.leaves(ngs).stream().filter(n -> !n.type.equals(Type.BY)).collect(Collectors.toSet());
+        final String attToString = ga.stream().map(nn -> QueryGenerator.getLevel(cube, nn.mde().nameInTable()).fullQualifier()).reduce((a, b) -> a + "," + b).orElse("");
         select += (select.isEmpty() ? "" : ",") + attToString;
         groupby = attToString;
         attributes.addAll(ga);
@@ -728,13 +564,13 @@ public final class Parser {
         attributes.addAll(scset.stream().flatMap(nn -> Ngram.leaves(nn).stream()).filter(n -> n.type.equals(Type.ATTR)).collect(Collectors.toSet()));
         where = scset.stream()
             .map(sc -> 
-                QueryGeneratorChecker.getLevel(getEntity(sc, Type.ATTR).nameInTable()).fullQualifier() + 
+                QueryGenerator.getLevel(cube, getEntity(sc, Type.ATTR).nameInTable()).fullQualifier() +
                 getEntity(sc, Type.COP).nameInTable() + 
                 (getEntity(sc, Type.VAL).getTypeInDB().equals(DataType.STRING) ? "'" : "") + getEntity(sc, Type.VAL).nameInTable() + (getEntity(sc, Type.VAL).getTypeInDB().equals(DataType.STRING) ? "'" : ""))
             .reduce((a, b) -> a + " AND " + b).orElse("");
       } else if (ngs.type.equals(Type.MC)) {
         select += (select.isEmpty() ? "" : ",") + Ngram.simpleClauses(ngs).stream().map(nn -> {
-          final Pair<Entity, Type> op = getEntityWithType(nn, new Type[]{Type.AGG, Type.COUNT});
+          final Pair<Entity, Type> op = getEntityWithType(nn, Type.AGG, Type.COUNT);
           if (op.getRight().equals(Type.AGG)) {
             return op.getLeft().nameInTable() + "(" + getEntity(nn, Type.MEA).nameInTable() + ")";
           } else {
@@ -748,13 +584,13 @@ public final class Parser {
       select = "count(*)";
     }
 
-    Set<Integer> tabIns = Sets.newLinkedHashSet();
-    Pair<Integer, String> ftdet = QueryGeneratorChecker.getFactTable();
+    Set<String> tabIns = Sets.newLinkedHashSet();
+    Pair<String, String> ftdet = QueryGenerator.getFactTable(cube);
     from = " from " + ftdet.getRight() + " ft ";
     for (Ngram gba : attributes) {
-      int idT = gba.mde().refToOtherTable();
+      final String idT = gba.mde().refToOtherTable();
       if (!tabIns.contains(idT)) {
-        Pair<String, String> detTab = QueryGeneratorChecker.getTabDetails(ftdet.getLeft(), idT);
+        Pair<String, String> detTab = QueryGenerator.getTabDetails(cube, ftdet.getLeft(), idT);
         from += " join " + detTab.getLeft() + " on " + detTab.getLeft() + "." + detTab.getRight() + " = ft." + detTab.getRight();
         tabIns.add(idT);
       }

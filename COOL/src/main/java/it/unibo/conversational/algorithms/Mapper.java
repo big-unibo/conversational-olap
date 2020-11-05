@@ -1,34 +1,29 @@
 package it.unibo.conversational.algorithms;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.sql.JDBCType;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import edu.stanford.nlp.util.StringUtils;
+import it.unibo.conversational.Utils;
+import it.unibo.conversational.algorithms.Parser.Type;
+import it.unibo.conversational.database.Cube;
+import it.unibo.conversational.database.DBmanager;
+import it.unibo.conversational.database.DBsynonyms;
+import it.unibo.conversational.database.QueryGenerator;
+import it.unibo.conversational.datatypes.Entity;
+import it.unibo.conversational.datatypes.Mapping;
+import it.unibo.conversational.datatypes.Ngram;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-
-import edu.stanford.nlp.util.StringUtils;
-import it.unibo.conversational.Utils;
-import it.unibo.conversational.algorithms.Parser.Type;
-import it.unibo.conversational.database.DBmanager;
-import it.unibo.conversational.database.DBsynonyms;
-import it.unibo.conversational.database.QueryGeneratorChecker;
-import it.unibo.conversational.datatypes.Entity;
-import it.unibo.conversational.datatypes.Mapping;
-import it.unibo.conversational.datatypes.Ngram;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.sql.JDBCType;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /** Prepare the mappings for the parsing. */
 public final class Mapper {
@@ -44,7 +39,7 @@ public final class Mapper {
    */
   private static Set<String> readStopWord() throws Exception {
     final Set<String> stopWord = Sets.newLinkedHashSet();
-    final BufferedReader br = new BufferedReader(new InputStreamReader(new Mapper().getClass().getClassLoader().getResourceAsStream("stopwords.txt")));
+    final BufferedReader br = new BufferedReader(new InputStreamReader(Objects.requireNonNull(Mapper.class.getClassLoader().getResourceAsStream("stopwords.txt"))));
     String st;
     while ((st = br.readLine()) != null) {
       stopWord.add(st);
@@ -102,9 +97,9 @@ public final class Mapper {
     return tokens;
   }
 
-  private static Type getNgramType(final Entity m) {
+  private static Type getNgramType(final Cube cube, final Entity m) {
     Type t = null;
-    if (m.metaTable().equals(DBmanager.tabMEMBER) || m.pkInTable() == -1) {
+    if (m.metaTable().equals(DBmanager.tabMEMBER) || m.pkInTable().equals("-1")) {
       t = Type.VAL;
     } else if (m.metaTable().equals(DBmanager.tabMEASURE)) {
       t = Type.MEA;
@@ -117,9 +112,9 @@ public final class Mapper {
     } else if (m.metaTable().equals(DBmanager.tabGROUPBYOPERATOR)) {
       t = Type.AGG;
     } else if (m.metaTable().equals(DBmanager.tabLANGUAGEOPERATOR)) {
-      t = Type.valueOf(QueryGeneratorChecker.getOperator(m.pkInTable()).getLeft().toUpperCase());
+      t = Type.valueOf(QueryGenerator.getOperator(cube, m.pkInTable()).getLeft().toUpperCase());
     } else if (m.metaTable().equals(DBmanager.tabLANGUAGEPREDICATE)) {
-      t = Type.valueOf(QueryGeneratorChecker.getPredicate(m.pkInTable()).getLeft().toUpperCase());
+      t = Type.valueOf(QueryGenerator.getPredicate(cube, m.pkInTable()).getLeft().toUpperCase());
     } else {
       throw new IllegalArgumentException("Unknown type: " + m);
     }
@@ -134,9 +129,9 @@ public final class Mapper {
    * @param maxDist maximum distance between two ngrams
    * @return interpretations
    */
-  public static List<Mapping> createMappings(final List<Ngram> data, final int totalLenght, final double threshold, final int maxDist) {
+  public static List<Mapping> createMappings(final Cube cube, final List<Ngram> data, final int totalLenght, final double threshold, final int maxDist) {
     final List<Mapping> res = Lists.newArrayList();
-    createMappings(Lists.newArrayList(), 0, data, totalLenght, threshold, maxDist, res);
+    createMappings(cube, Lists.newArrayList(), 0, data, totalLenght, threshold, maxDist, res);
     return res;
   }
 
@@ -151,13 +146,13 @@ public final class Mapper {
    * @return interpretations
    * @return
    */
-  public static List<Mapping> createMappings(final List<Ngram> acc, final int coveredTokens, final List<Ngram> data, final int totalLenght, final double threshold, final int maxDist) {
+  public static List<Mapping> createMappings(final Cube cube, final List<Ngram> acc, final int coveredTokens, final List<Ngram> data, final int totalLenght, final double threshold, final int maxDist) {
     final List<Mapping> res = Lists.newArrayList();
-    createMappings(acc, coveredTokens, data, totalLenght, threshold, maxDist, res);
+    createMappings(cube, acc, coveredTokens, data, totalLenght, threshold, maxDist, res);
     return res;
   }
 
-  private static List<Mapping> createMappings(final List<Ngram> acc, final int coveredTokens, final List<Ngram> data, final int totalLenght, final double threshold, final int maxDist, final List<Mapping> res) {
+  private static List<Mapping> createMappings(final Cube cube, final List<Ngram> acc, final int coveredTokens, final List<Ngram> data, final int totalLenght, final double threshold, final int maxDist, final List<Mapping> res) {
     final List<Ngram> newData = new ArrayList<>(data);
     for (final Ngram r : data) {
       final int diff = r.pos().getLeft() - (acc.isEmpty() ? 0 : acc.get(acc.size() - 1).pos().getRight()); // distance between begin and end of the two consecutive ngrams
@@ -168,10 +163,10 @@ public final class Mapper {
         newInt.add(r);
         newData.remove(r);
         if (newCoveredTokens >= threshold) {
-          res.add(new Mapping(newInt));
+          res.add(new Mapping(cube, newInt));
         }
         if (!newData.isEmpty() && newCoveredTokens + totalLenght - r.pos().getRight() >= threshold) {
-          createMappings(newInt, newCoveredTokens, newData, totalLenght, threshold, maxDist, res);
+          createMappings(cube, newInt, newCoveredTokens, newData, totalLenght, threshold, maxDist, res);
         }
       }
     }
@@ -191,7 +186,7 @@ public final class Mapper {
    * @return list of interpreted mappings
    * @throws Exception in case of error
    */
-  public static List<Mapping> createMappings(final Class toParse, final String nlQuery, final double thrSimilarityMember, final double thrSimilarityMetadata, final int synMember, final int synMeta, final double percPhrase, final int maxDist, final int ngramSize, final double nGramSimThr, final Map<String, Object> stats, boolean skipCleaning) throws Exception {
+  public static List<Mapping> createMappings(final Cube cube, final Class toParse, final String nlQuery, final double thrSimilarityMember, final double thrSimilarityMetadata, final int synMember, final int synMeta, final double percPhrase, final int maxDist, final int ngramSize, final double nGramSimThr, final Map<String, Object> stats, boolean skipCleaning) throws Exception {
     Long startTime = System.currentTimeMillis();
 
     // lemmatizzazione e tagging della frase usando coreNLP
@@ -242,9 +237,9 @@ public final class Mapper {
             final Ngram n = new Ngram(StringUtils.join(ngrams), Type.VAL, new Entity(StringUtils.join(ngrams), Utils.getDataType(numericValues.get(StringUtils.join(ngrams)))), Pair.of(i, (i + j - 1)));
             validMatch.add(n);
           } else { // Altrimenti cerco i migliori sinonimi tra i membri e i migliori tra i metadati
-            final List<Triple<Entity, Double, String>> syns = DBsynonyms.getEntities(toParse, ngrams, thrSimilarityMember, thrSimilarityMetadata, synMember, synMeta);
+            final List<Triple<Entity, Double, String>> syns = DBsynonyms.getEntities(cube, toParse, ngrams, thrSimilarityMember, thrSimilarityMetadata, synMember, synMeta);
             for (final Triple<Entity, Double, String> dbm : syns) {
-              final Ngram ngram = new Ngram(StringUtils.join(ngrams), getNgramType(dbm.getLeft()), dbm.getLeft(), dbm.getMiddle(), dbm.getRight(), Pair.of(i, (i + j - 1)));
+              final Ngram ngram = new Ngram(StringUtils.join(ngrams), getNgramType(cube, dbm.getLeft()), dbm.getLeft(), dbm.getMiddle(), dbm.getRight(), Pair.of(i, (i + j - 1)));
               validMatch.add(ngram);
             }
           }
@@ -276,7 +271,7 @@ public final class Mapper {
     // create all possible interpretations from ngrams
     startTime = System.currentTimeMillis();
     final double threshold = tokens.size() * percPhrase;
-    final List<Mapping> interpretationsSentence = createMappings(new ArrayList<>(validMatch), tokens.size(), threshold, maxDist);
+    final List<Mapping> interpretationsSentence = createMappings(cube, new ArrayList<>(validMatch), tokens.size(), threshold, maxDist);
     stats.put("sentence_time", System.currentTimeMillis() - startTime);
     stats.put("sentence_count", interpretationsSentence.size());
     L.debug("--- n sentences: " + interpretationsSentence.size());

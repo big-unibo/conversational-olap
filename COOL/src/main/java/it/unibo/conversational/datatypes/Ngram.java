@@ -1,33 +1,28 @@
 package it.unibo.conversational.datatypes;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Set;
-import java.util.concurrent.atomic.DoubleAdder;
-import java.util.concurrent.atomic.LongAdder;
-import java.util.function.BiFunction;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.lang3.tuple.Triple;
-import org.json.JSONObject;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-
 import it.unibo.conversational.Utils;
 import it.unibo.conversational.Utils.DataType;
 import it.unibo.conversational.algorithms.Parser.Type;
-import it.unibo.conversational.database.QueryGeneratorChecker;
+import it.unibo.conversational.database.Cube;
+import it.unibo.conversational.database.QueryGenerator;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
+import org.json.JSONObject;
 
-/**
+import java.io.Serializable;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.atomic.DoubleAdder;
+import java.util.concurrent.atomic.LongAdder;
+import java.util.function.BiFunction;
+import java.util.stream.Collectors;
+
+ /**
   * An ngram (a list of tokens).
   */
 public class Ngram implements Serializable {
@@ -165,7 +160,6 @@ public class Ngram implements Serializable {
   /**
    * @param tree where to search the node
    * @param n a node
-   * @param usePartialEquals whether to use partial equals (i.e., check only ngram content and not its position in text)
    * @return the parent of the current node
    */
   public static List<Ngram> findContainer(final Ngram tree, final Ngram n) {
@@ -262,7 +256,6 @@ public class Ngram implements Serializable {
 
   /**
    * Replace the current node
-   * @param a node
    */
   public static void removeNode(final Ngram tree, final Ngram n) {
     removeNode(tree, n, false);
@@ -411,7 +404,6 @@ public class Ngram implements Serializable {
 
   /**
    * Return the smallest ngram clauses. I.e., the clauses that contains leaves.
-   * @param stream current elements
    * @return smallest ngram clauses
    */
   private static void simpleClauses(final Ngram n, final Set<Ngram> acc) {
@@ -438,7 +430,7 @@ public class Ngram implements Serializable {
   }
 
   private static <T> void traverseLeaves(final Ngram n, final BiFunction<Ngram, T, T> f) {
-    traverse(n, (c, acc) -> c.getChildren().isEmpty() && (!c.tokens.equals("where") || c.tokens.equals("where") && !c.pos().equals(DUMMY_POSITION)), f);
+    traverse(n, (c, acc) -> c.getChildren().isEmpty() && (!c.tokens.equals("where") || !c.pos().equals(DUMMY_POSITION)), f);
   }
 
   /** Applied annotations. */
@@ -467,7 +459,6 @@ public class Ngram implements Serializable {
   public Type type;
 
   /**
-   * @param n ngram
    * @param mde reference to the database entry
    */
   public Ngram(final Ngram m, final Entity mde) {
@@ -639,7 +630,7 @@ public class Ngram implements Serializable {
     final Optional<Entity> value = Optional.fromJavaUtil(//
         annotation.getValue()//
           .stream()//
-          .max((e1, e2) -> Double.compare(Utils.tokenSimilarity(e1.nameInTable(), approximateVal), Utils.tokenSimilarity(e2.nameInTable(), approximateVal)))
+          .max(Comparator.comparingDouble(e -> Utils.tokenSimilarity(e.nameInTable(), approximateVal)))
       );
     switch (annotation.getKey()) {
     case AVM:
@@ -907,11 +898,11 @@ public class Ngram implements Serializable {
     return mde.isPresent() ? similarity.get() : avgSimilarity(this);
   }
 
-  public JSONObject toJSON() {
+  public JSONObject toJSON(final Cube cube) {
     final JSONObject res = new JSONObject();
     res.put("type", type);
-    exportAnnotation(annotations, res, true);
-    exportAnnotation(hints, res, false);
+    exportAnnotation(cube, annotations, res, true);
+    exportAnnotation(cube, hints, res, false);
 
     if (children.isEmpty()) {
       res.put("tokens", tokens);
@@ -923,40 +914,40 @@ public class Ngram implements Serializable {
         res.put("similarity", Utils.DF.format(similarity()));
       }
     } else {
-      children.stream().forEach(c -> res.append("children", c.toJSON()));
+      children.stream().forEach(c -> res.append("children", c.toJSON(cube)));
     }
     return res;
   }
 
-  private void exportAnnotation(final Map<String, Pair<AnnotationType, Set<Entity>>> map, final JSONObject res, final boolean isAnnotation) {
-    map.entrySet().forEach(e -> {
+  private void exportAnnotation(final Cube cube, final Map<String, Pair<AnnotationType, Set<Entity>>> map, final JSONObject res, final boolean isAnnotation) {
+    map.forEach((key, value) -> {
       final JSONObject ann = new JSONObject();
       final boolean isError;
-      switch (e.getValue().getLeft()) {
-      case EAE:
-      case ENE:
-      case GSA:
-      case A2:
-      case A3:
-        isError = true;
-        break;
-      default:
-        isError = false;
-        break;
+      switch (value.getLeft()) {
+        case EAE:
+        case ENE:
+        case GSA:
+        case A2:
+        case A3:
+          isError = true;
+          break;
+        default:
+          isError = false;
+          break;
       }
-      ann.put("type", isAnnotation ? (isError? "error" : "annotation") : "hint");
-      ann.put("annotationid", e.getKey());
+      ann.put("type", isAnnotation ? (isError ? "error" : "annotation") : "hint");
+      ann.put("annotationid", key);
       final JSONObject amb = new JSONObject();
-      if (e.getValue().getRight().isEmpty()) { // add values even if the list is empty
+      if (value.getRight().isEmpty()) { // add values even if the list is empty
         amb.put("values", Lists.newArrayList());
       } else {
-        e.getValue().getRight().forEach(v -> amb.append("values", v));
+        value.getRight().forEach(v -> amb.append("values", v));
       }
-      if (e.getValue().getLeft().equals(AnnotationType.AVM)) { // in case of AVM also describe the level involved in the ambiguity
-        amb.put("describe", QueryGeneratorChecker.describeLevel2JSON(children.stream().filter(cc -> cc.type.equals(Type.ATTR)).findAny().get().mde.get().nameInTable(), 5));
+      if (value.getLeft().equals(AnnotationType.AVM)) { // in case of AVM also describe the level involved in the ambiguity
+        amb.put("describe", QueryGenerator.describeLevel2JSON(cube, children.stream().filter(cc -> cc.type.equals(Type.ATTR)).findAny().get().mde.get().nameInTable(), 5));
       }
-      ann.put(e.getValue().getLeft().toString(), amb);
-      ann.put("name", e.getValue().getLeft().toString());
+      ann.put(value.getLeft().toString(), amb);
+      ann.put("name", value.getLeft().toString());
       ann.put("val", amb);
       res.append("annotations", ann);
     });

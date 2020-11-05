@@ -1,16 +1,27 @@
 package test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import com.opencsv.CSVWriter;
+import it.unibo.conversational.Validator;
+import it.unibo.conversational.algorithms.Parser;
+import it.unibo.conversational.algorithms.Parser.Type;
+import it.unibo.conversational.database.Config;
+import it.unibo.conversational.database.Cube;
+import it.unibo.conversational.database.QueryGenerator;
+import it.unibo.conversational.datatypes.Entity;
+import it.unibo.conversational.datatypes.Mapping;
+import it.unibo.conversational.datatypes.Ngram;
+import it.unibo.conversational.datatypes.Ngram.AnnotationType;
+import it.unibo.conversational.olap.Operator;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import java.io.BufferedWriter;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -19,45 +30,27 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.lang3.tuple.Triple;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import com.opencsv.CSVWriter;
-
-import it.unibo.conversational.Validator;
-import it.unibo.conversational.algorithms.Parser;
-import it.unibo.conversational.algorithms.Parser.Type;
-import it.unibo.conversational.database.QueryGeneratorChecker;
-import it.unibo.conversational.datatypes.Entity;
-import it.unibo.conversational.datatypes.Mapping;
-import it.unibo.conversational.datatypes.Ngram;
-import it.unibo.conversational.datatypes.Ngram.AnnotationType;
-import it.unibo.conversational.olap.Operator;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TestOLAP {
+  private final Cube cube = Config.getCube("sales_fact_1997");
   private static final double tau = 0.5;
   private List<Triple<AnnotationType, Ngram, Ngram>> log = Lists.newArrayList();
 
-  @After
+  @AfterEach
   public void after() {
     Parser.TEST = false;
     Parser.resetIds();
   }
 
-  @Before
+  @BeforeEach
   public void before() {
     Parser.TEST = true;
     log = Lists.newArrayList();
   }
 
   private void checkSerializedSession(final String sessionid, final Mapping fullquery, final Mapping session, int steps) throws IOException {
-    final Map<String, Object> statistics = QueryGeneratorChecker.getSessionStatistics(sessionid, fullquery, session);
+    final Map<String, Object> statistics = QueryGenerator.getSessionStatistics(cube, sessionid, fullquery, session);
     assertTrue((long) statistics.get("fullquery_time") >= 0);
     assertTrue((long) statistics.get("session_time") >= 0);
     assertEquals(1.0, (double) statistics.get("fullquery_sim"), 0.001);
@@ -68,11 +61,11 @@ public class TestOLAP {
   private Mapping execute(final Mapping prevTree, final Operator op, final String expectedForest) {
     try {
       if (op != null) {
-        assertEquals(op.getAnnotationsInTree().toString(), 0, op.countAnnotationsInTree());
+        assertEquals(0, op.countAnnotationsInTree(), op.getAnnotationsInTree().toString());
         op.apply(prevTree.bestNgram);
       }
-      prevTree.toJSON();
-      final Mapping res = Validator.getBest(expectedForest);
+      prevTree.toJSON(cube);
+      final Mapping res = Validator.getBest(cube, expectedForest);
       try {
         assertEquals(res.toStringTree(), prevTree.toStringTree());
       } catch (final AssertionError ex) {
@@ -90,9 +83,9 @@ public class TestOLAP {
 
   private Mapping execute(final Mapping prevTree, final String operator, final List<AnnotationType> annotations) {
     try {
-      final Operator op = (Operator) Validator.parseAndTranslate(Operator.class, prevTree, tau, log, operator).getNgrams().get(0);
+      final Operator op = (Operator) Validator.parseAndTranslate(cube, Operator.class, prevTree, tau, log, operator).getNgrams().get(0);
       assertEquals(Sets.newLinkedHashSet(annotations), op.getAnnotationsInTree().stream().map(e -> e.getValue().getKey()).collect(Collectors.toSet()));
-      assertEquals(op.getAnnotationsInTree().toString(), annotations.size(), op.countAnnotationsInTree());
+      assertEquals(annotations.size(), op.countAnnotationsInTree(), op.getAnnotationsInTree().toString());
       return prevTree;
     } catch (final Exception e) {
       e.printStackTrace();
@@ -103,8 +96,8 @@ public class TestOLAP {
 
   private Mapping execute(final Mapping prevTree, final String operator, final List<AnnotationType> annotations, final List<Pair<String, String>> disambiguations, final String expectedForest) {
     try {
-      final Operator op = (Operator) Validator.parseAndTranslate(Operator.class, prevTree, tau, log, operator).getNgrams().get(0);
-      assertEquals(op.getAnnotationsInTree().toString(), annotations.size(), op.countAnnotationsInTree());
+      final Operator op = (Operator) Validator.parseAndTranslate(cube, Operator.class, prevTree, tau, log, operator).getNgrams().get(0);
+      assertEquals(annotations.size(), op.countAnnotationsInTree(), op.getAnnotationsInTree().toString());
       assertEquals(Sets.newLinkedHashSet(annotations), op.getAnnotationsInTree().stream().map(e -> e.getValue().getKey()).collect(Collectors.toSet()));
       for (final Pair<String, String> p: disambiguations) {
         op.disambiguate(p.getKey(), p.getValue(), log);
@@ -120,7 +113,7 @@ public class TestOLAP {
   private Mapping execute(final Mapping prevTree, final String operator, final String expectedForest) {
     try {
       if (!operator.isEmpty()) {
-        final Operator op = (Operator) Validator.parseAndTranslate(Operator.class, prevTree, tau, log, operator).getNgrams().get(0);
+        final Operator op = (Operator) Validator.parseAndTranslate(cube, Operator.class, prevTree, tau, log, operator).getNgrams().get(0);
         return execute(prevTree, op, expectedForest);
       } else {
         return execute(prevTree, (Operator) null, expectedForest);
@@ -134,7 +127,7 @@ public class TestOLAP {
 
   private Mapping execute(final String prevForest, final String operator, final List<AnnotationType> annotations) {
     try {
-      final Mapping prevTree = Validator.parseAndTranslate(prevForest);
+      final Mapping prevTree = Validator.parseAndTranslate(cube, prevForest);
       return execute(prevTree, operator, annotations);
     } catch (final Exception e) {
       e.printStackTrace();
@@ -145,7 +138,7 @@ public class TestOLAP {
 
   private Mapping execute(final String prevForest, final String operator, final List<AnnotationType> annotations, final List<Pair<String, String>> disambiguations, final String expectedForest) {
     try {
-      final Mapping prevTree = Validator.parseAndTranslate(prevForest);
+      final Mapping prevTree = Validator.parseAndTranslate(cube, prevForest);
       return execute(prevTree, operator, annotations, disambiguations, expectedForest);
     } catch (final Exception e) {
       e.printStackTrace();
@@ -156,7 +149,7 @@ public class TestOLAP {
 
   private Mapping execute(final String prevForest, final String operator, final String expectedForest) {
     try {
-      final Mapping prevTree = Validator.parseAndTranslate(prevForest);
+      final Mapping prevTree = Validator.parseAndTranslate(cube, prevForest);
       return execute(prevTree, operator, expectedForest);
     } catch (final Exception e) {
       e.printStackTrace();
@@ -173,7 +166,7 @@ public class TestOLAP {
   public void populateLog(final String source) throws Exception {
     int l = log.size();
     for (int i = l; i < l + 2; i++) {
-      Mapping prevTree = Validator.parseAndTranslate(source, tau, log);
+      Mapping prevTree = Validator.parseAndTranslate(cube, source, tau, log);
       Parser.automaticDisambiguate(prevTree, log);
     }
   }
@@ -188,8 +181,8 @@ public class TestOLAP {
   public void populateLog(final String source, final String operator, final String value) throws Exception {
     int l = log.size();
     for (int i = l; i < l + 2; i++) {
-      Mapping prevTree = Validator.parseAndTranslate(source, tau, log);
-      Operator op = (Operator) Validator.parseAndTranslate(Operator.class, prevTree, tau, log, "rollup product id").getNgrams().get(0);
+      Mapping prevTree = Validator.parseAndTranslate(cube, source, tau, log);
+      Operator op = (Operator) Validator.parseAndTranslate(cube, Operator.class, prevTree, tau, log, "rollup product id").getNgrams().get(0);
       op.disambiguate("i" + i, value, log);
     }
   }
@@ -260,12 +253,12 @@ public class TestOLAP {
     //
     //    populateLog("sum store cost by product id", "rollup product id", "product_subcategory");
     //
-    //    Mapping prevTree = Validator.parseAndTranslate("sum store cost by product id", tau, log);
-    //    Operator op0 = (Operator) Validator.parseAndTranslate(Operator.class, prevTree, tau, log, "rollup product id").getNgrams().get(0);
-    //    Operator op1 = (Operator) Validator.parseAndTranslate(Operator.class, prevTree, tau, log, "rollup product id to product subcategory").getNgrams().get(0);
+    //    Mapping prevTree = Validator.parseAndTranslate(cube, "sum store cost by product id", tau, log);
+    //    Operator op0 = (Operator) Validator.parseAndTranslate(cube, Operator.class, prevTree, tau, log, "rollup product id").getNgrams().get(0);
+    //    Operator op1 = (Operator) Validator.parseAndTranslate(cube, Operator.class, prevTree, tau, log, "rollup product id to product subcategory").getNgrams().get(0);
     //    assertEquals(op1.toStringTree(), op0.toStringTree());
     //    op0.disambiguate("i2", "product_name", log);
-    //    op1 = (Operator) Validator.parseAndTranslate(Operator.class, prevTree, tau, log, "rollup product id to product name").getNgrams().get(0);
+    //    op1 = (Operator) Validator.parseAndTranslate(cube, Operator.class, prevTree, tau, log, "rollup product id to product name").getNgrams().get(0);
     //    assertEquals(op1.toStringTree(), op0.toStringTree());
   }
 
@@ -277,24 +270,24 @@ public class TestOLAP {
   public void test05() throws Exception {
     populateLog("store cost");
 
-    Mapping prevTree = Validator.parseAndTranslate("store cost", tau, log);
-    assertEquals(Validator.parseAndTranslate("avg store cost").toStringTree(), prevTree.toStringTree());
+    Mapping prevTree = Validator.parseAndTranslate(cube, "store cost", tau, log);
+    assertEquals(Validator.parseAndTranslate(cube, "avg store cost").toStringTree(), prevTree.toStringTree());
     prevTree.disambiguate("i2", "stdev", log);
-    assertEquals(Validator.parseAndTranslate("stdev store cost").toStringTree(), prevTree.toStringTree());
+    assertEquals(Validator.parseAndTranslate(cube, "stdev store cost").toStringTree(), prevTree.toStringTree());
 
     populateLog("sum store cost for USA");
 
-    prevTree = Validator.parseAndTranslate("sum store cost for USA", tau, log);
-    assertEquals(Validator.parseAndTranslate("sum store cost for country = USA").toStringTree(), prevTree.toStringTree());
+    prevTree = Validator.parseAndTranslate(cube, "sum store cost for USA", tau, log);
+    assertEquals(Validator.parseAndTranslate(cube, "sum store cost for country = USA").toStringTree(), prevTree.toStringTree());
     prevTree.disambiguate("i5", "store_country", log);
-    assertEquals(Validator.parseAndTranslate("sum store cost for store country = USA").toStringTree(), prevTree.toStringTree());
+    assertEquals(Validator.parseAndTranslate(cube, "sum store cost for store country = USA").toStringTree(), prevTree.toStringTree());
 
     populateLog("sum store cost for product subcategory USA");
 
-    prevTree = Validator.parseAndTranslate("sum store cost for product subcategory USA", tau, log);
-    assertEquals(Validator.parseAndTranslate("sum store cost for product subcategory = Acetominifen").toStringTree(), prevTree.toStringTree());
+    prevTree = Validator.parseAndTranslate(cube, "sum store cost for product subcategory USA", tau, log);
+    assertEquals(Validator.parseAndTranslate(cube, "sum store cost for product subcategory = Acetominifen").toStringTree(), prevTree.toStringTree());
     prevTree.disambiguate("t3", "Beer", log);
-    assertEquals(Validator.parseAndTranslate("sum store cost for product subcategory = Beer").toStringTree(), prevTree.toStringTree());
+    assertEquals(Validator.parseAndTranslate(cube, "sum store cost for product subcategory = Beer").toStringTree(), prevTree.toStringTree());
   }
 
   /**
@@ -427,11 +420,11 @@ public class TestOLAP {
   @Test
   public void test13() {
     try {
-      Validator.parseAndTranslate("avg unit sales category = Beer and Wine");
-      Validator.parseAndTranslate("return the sum of store sales for each month where the category is beer and wine");
-      Validator.parseAndTranslate("return the sum of store sales by month where the category is beer and wine");
-      Validator.parseAndTranslate("return the sum of store sales by month for category beer and wine");
-      Validator.parseAndTranslate("return the sum of store sales by month for beer and wine");
+      Validator.parseAndTranslate(cube, "avg unit sales category = Beer and Wine");
+      Validator.parseAndTranslate(cube, "return the sum of store sales for each month where the category is beer and wine");
+      Validator.parseAndTranslate(cube, "return the sum of store sales by month where the category is beer and wine");
+      Validator.parseAndTranslate(cube, "return the sum of store sales by month for category beer and wine");
+      Validator.parseAndTranslate(cube, "return the sum of store sales by month for beer and wine");
     } catch (Exception e) {
       e.printStackTrace();
       fail(e.getMessage());
@@ -442,7 +435,7 @@ public class TestOLAP {
   @Test
   public void test14() {
     try {
-      Validator.parseAndTranslate("stdev store sales").toJSON();
+      Validator.parseAndTranslate(cube, "stdev store sales").toJSON(cube);
     } catch (Exception e) {
       e.printStackTrace();
       fail(e.getMessage());
@@ -472,9 +465,9 @@ public class TestOLAP {
   @Test
   public void test18() {
     try {
-      Validator.parseAndTranslate("select average unit sales for products of category \"Beer and Wine\"").toJSON();
-      Validator.parseAndTranslate("select average unit sales for products of category 'Beer and Wine'").toJSON();
-      Validator.parseAndTranslate("select average unit sales for products of category Beer and Wine\"").toJSON();
+      Validator.parseAndTranslate(cube, "select average unit sales for products of category \"Beer and Wine\"").toJSON(cube);
+      Validator.parseAndTranslate(cube, "select average unit sales for products of category 'Beer and Wine'").toJSON(cube);
+      Validator.parseAndTranslate(cube, "select average unit sales for products of category Beer and Wine\"").toJSON(cube);
     } catch (final Exception e) {
       e.printStackTrace();
       fail(e.getMessage());
@@ -519,7 +512,7 @@ public class TestOLAP {
     final ObjectInputStream objectInput = new ObjectInputStream(new ByteArrayInputStream(baos.toByteArray()));
     final Mapping deserialized = (Mapping) objectInput.readObject();
 
-    assertTrue(!deserialized.toJSON().isEmpty());
+    assertTrue(!deserialized.toJSON(cube).isEmpty());
     assertEquals(prev, deserialized);
   }
 
@@ -530,7 +523,7 @@ public class TestOLAP {
   @Test
   public void testOperatorSerialization() throws Exception {
     final Mapping prev = execute("return the average unit sales on 1997", "", "average unit sales where the year = 1997");
-    final Operator op1 = (Operator) Validator.parseAndTranslate(Operator.class, prev, 0.5, Lists.newArrayList(), "add store sales").getBest();
+    final Operator op1 = (Operator) Validator.parseAndTranslate(cube, Operator.class, prev, 0.5, Lists.newArrayList(), "add store sales").getBest();
 
     // write mapping to Byte stream
     final ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -540,7 +533,7 @@ public class TestOLAP {
     final ObjectInputStream objectInput = new ObjectInputStream(new ByteArrayInputStream(baos.toByteArray()));
     final Operator deserialized = (Operator) objectInput.readObject();
 
-    assertTrue(!deserialized.toJSON().isEmpty());
+    assertTrue(!deserialized.toJSON(cube).isEmpty());
     assertEquals(op1, deserialized);
   }
 
@@ -553,14 +546,14 @@ public class TestOLAP {
     final Map<String, Mapping> lookup_fullqry = Maps.newHashMap();
     final Map<String, Mapping> lookup_session = Maps.newHashMap();
 
-    lookup_fullqry.put("q1", Validator.parseAndTranslate("avg unit sales where the year = 1997"));
-    lookup_session.put("q1", Validator.parseAndTranslate("avg unit sales where the year = 1997 by category"));
+    lookup_fullqry.put("q1", Validator.parseAndTranslate(cube, "avg unit sales where the year = 1997"));
+    lookup_session.put("q1", Validator.parseAndTranslate(cube, "avg unit sales where the year = 1997 by category"));
 
-    lookup_fullqry.put("q2", Validator.parseAndTranslate("avg unit sales for category = beer and wine"));
-    lookup_session.put("q2", Validator.parseAndTranslate("max store sales"));
+    lookup_fullqry.put("q2", Validator.parseAndTranslate(cube, "avg unit sales for category = beer and wine"));
+    lookup_session.put("q2", Validator.parseAndTranslate(cube, "max store sales"));
 
-    lookup_fullqry.put("q3", Validator.parseAndTranslate("sum store sales by month for category = beer and wine"));
-    lookup_session.put("q3", Validator.parseAndTranslate("sum store sales max store sales by year for category = beer and wine"));
+    lookup_fullqry.put("q3", Validator.parseAndTranslate(cube, "sum store sales by month for category = beer and wine"));
+    lookup_session.put("q3", Validator.parseAndTranslate(cube, "sum store sales max store sales by year for category = beer and wine"));
 
     System.out.println("Scanning session ids...");
     try (
@@ -579,7 +572,7 @@ public class TestOLAP {
         final String user = s.nextLine();
         for (final String q : lookup_fullqry.keySet()) {
           try {
-            final Map<String, Object> statistics = QueryGeneratorChecker.getSessionStatistics(user + "_" + q, lookup_fullqry.get(q), lookup_session.get(q));
+            final Map<String, Object> statistics = QueryGenerator.getSessionStatistics(cube, user + "_" + q, lookup_fullqry.get(q), lookup_session.get(q));
             final String[] toWrite = new String[columns.length];
             toWrite[0] = user;
             toWrite[1] = q;
@@ -603,19 +596,19 @@ public class TestOLAP {
   @Test
   public void testSessionSerializationAndEvaluation01() throws Exception {
     final String sessionid = "foo1";
-    QueryGeneratorChecker.dropSession(sessionid);
+    QueryGenerator.dropSession(cube, sessionid);
 
-    QueryGeneratorChecker.saveSession(sessionid, null, "read", null, null, null, null);
+    QueryGenerator.saveSession(cube, sessionid, null, "read", null, null, null, null);
 
     final Mapping session = execute("avg unit sales on 1997", "", "average unit sales where the year = 1997");
-    QueryGeneratorChecker.saveSession(sessionid, null, "avg unit sales on 1997", "media delle unità vendute nel 1997", "100", session, null);
-    QueryGeneratorChecker.saveSession(sessionid, null, "navigate", null, null, session, null);
+    QueryGenerator.saveSession(cube, sessionid, null, "avg unit sales on 1997", "media delle unità vendute nel 1997", "100", session, null);
+    QueryGenerator.saveSession(cube, sessionid, null, "navigate", null, null, session, null);
 
-    final Operator op2 = (Operator) Validator.parseAndTranslate(Operator.class, session, 0.5, Lists.newArrayList(), "slice on beer and wine").getBest();
+    final Operator op2 = (Operator) Validator.parseAndTranslate(cube, Operator.class, session, 0.5, Lists.newArrayList(), "slice on beer and wine").getBest();
     op2.apply(session.bestNgram);
-    QueryGeneratorChecker.saveSession(sessionid, null, "slice on beer and wine", "selezione birra e vino", null, session, op2);
+    QueryGenerator.saveSession(cube, sessionid, null, "slice on beer and wine", "selezione birra e vino", null, session, op2);
 
-    QueryGeneratorChecker.saveSession(sessionid, null, "reset", null, null, session, op2);
+    QueryGenerator.saveSession(cube, sessionid, null, "reset", null, null, session, op2);
 
     final Mapping true_fullquery = execute("avg unit sales on 1997", "", "avg unit sales where the year = 1997");
     final Mapping true_session = execute("avg unit sales on 1997 and category is Beer and Wine", "", "avg unit sales where the_year = 1997 and product_category = Beer and Wine");
@@ -629,19 +622,19 @@ public class TestOLAP {
   @Test
   public void testSessionSerializationAndEvaluation02() throws Exception {
     final String sessionid = "foo2";
-    QueryGeneratorChecker.dropSession(sessionid);
+    QueryGenerator.dropSession(cube, sessionid);
 
-    QueryGeneratorChecker.saveSession(sessionid, null, "read", null, null, null, null);
+    QueryGenerator.saveSession(cube, sessionid, null, "read", null, null, null, null);
 
     final Mapping session = execute("avg unit sales on 1997", "", "average unit sales where the year = 1997");
-    QueryGeneratorChecker.saveSession(sessionid, null, "avg unit sales on 1997", "media delle unità vendute nel 1997", "100", session, null);
-    QueryGeneratorChecker.saveSession(sessionid, null, "navigate", null, null, session, null);
+    QueryGenerator.saveSession(cube, sessionid, null, "avg unit sales on 1997", "media delle unità vendute nel 1997", "100", session, null);
+    QueryGenerator.saveSession(cube, sessionid, null, "navigate", null, null, session, null);
 
-    final Operator op2 = (Operator) Validator.parseAndTranslate(Operator.class, session, 0.5, Lists.newArrayList(), "add category").getBest();
+    final Operator op2 = (Operator) Validator.parseAndTranslate(cube, Operator.class, session, 0.5, Lists.newArrayList(), "add category").getBest();
     op2.apply(session.bestNgram);
-    QueryGeneratorChecker.saveSession(sessionid, null, "add category", "aggiungi categoria", null, session, op2);
+    QueryGenerator.saveSession(cube, sessionid, null, "add category", "aggiungi categoria", null, session, op2);
 
-    QueryGeneratorChecker.saveSession(sessionid, null, "reset", null, null, session, op2);
+    QueryGenerator.saveSession(cube, sessionid, null, "reset", null, null, session, op2);
 
     final Mapping true_fullquery = execute("avg unit sales on 1997", "", "avg unit sales where the year = 1997");
     final Mapping true_session = execute("avg unit sales on 1997 by category", "", "avg unit sales where the_year = 1997 by product_category");

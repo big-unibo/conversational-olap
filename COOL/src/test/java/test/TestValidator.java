@@ -1,26 +1,26 @@
 package test;
 
-import static org.junit.Assert.assertEquals;
-
-import org.apache.commons.lang3.tuple.Pair;
-import org.junit.Test;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-
 import it.unibo.conversational.Utils.DataType;
 import it.unibo.conversational.Validator;
 import it.unibo.conversational.algorithms.Mapper;
 import it.unibo.conversational.algorithms.Parser;
 import it.unibo.conversational.algorithms.Parser.Type;
+import it.unibo.conversational.database.Config;
+import it.unibo.conversational.database.Cube;
 import it.unibo.conversational.datatypes.Entity;
 import it.unibo.conversational.datatypes.Mapping;
 import it.unibo.conversational.datatypes.Ngram;
+import org.apache.commons.lang3.tuple.Pair;
+import org.junit.jupiter.api.Test;
 import zhsh.Tree;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /** Test the validation accuracy. */
 public class TestValidator {
-
+  private final Cube cube = Config.getCube("sales_fact_1997");
   private int checkSentence(final String phrase, final String gbset, final String predicate, final String measures) throws Exception {
     return checkSentence(phrase, gbset, predicate, measures, Validator.THR_MEMBER, Validator.THR_META, Validator.N_SYNMEMBER, Validator.N_SYNMETA, Validator.THR_COVERAGE, Validator.THR_NGRAMDIST, Validator.NGRAM_SIZE, Validator.NGRAMSYNTHR);
   }
@@ -28,7 +28,7 @@ public class TestValidator {
   private int checkSentence(final String query, final String gbset, final String predicate, final String measures, // query
       final double thrSimilarityMember, final double thrSimilarityMetadata, final int synMember, final int synMeta, // effectiveness
       final double percPhrase, final int maxDist, final int ngramSize, final double nGramSimThr) throws Exception { // pruning
-    return new Validator().validate("test_java", -1, query, gbset, measures, predicate, thrSimilarityMember, thrSimilarityMetadata, synMember, synMeta, percPhrase, maxDist, 1, ngramSize, nGramSimThr, -1).getLeft();
+    return new Validator().validate(cube, "test_java", -1, query, gbset, measures, predicate, thrSimilarityMember, thrSimilarityMetadata, synMember, synMeta, percPhrase, maxDist, 1, ngramSize, nGramSimThr, -1).getLeft();
   }
 
   /**
@@ -37,17 +37,17 @@ public class TestValidator {
    */
   @Test
   public void test1() throws Exception {
-    final Mapping s1 = Parser.parse(//
-        new Mapping(//
+    final Mapping s1 = Parser.parse(cube, //
+        new Mapping(cube, //
             new Ngram("sum", Type.AGG, new Entity("sum"), Pair.of(2, 2)), // ;
             new Ngram("unit_sales", Type.MEA, new Entity("unit_sales"), Pair.of(3, 3)),
             new Ngram("by", Type.BY, new Entity("by"), Pair.of(0, 0)), //
             new Ngram("level", Type.ATTR, new Entity("level"), Pair.of(1, 1)), //
             new Ngram("the_year", Type.ATTR, new Entity("the_year"), Pair.of(4, 4)) //
         )).get();
-    assertEquals(s1.toString(), 9, s1.countNodes());
-    final Mapping s2 = Parser.parse(//
-        new Mapping(//
+    assertEquals(9, s1.countNodes(), s1.toString());
+    final Mapping s2 = Parser.parse(cube, //
+        new Mapping(cube, //
             new Ngram("sum", Type.AGG, new Entity("sum"), Pair.of(2, 2)), // ;
             new Ngram("unit_sales", Type.MEA, new Entity("unit_sales"), 0.4, Pair.of(3, 3)),
             new Ngram("by", Type.BY, new Entity("by"), Pair.of(0, 0)), //
@@ -64,7 +64,7 @@ public class TestValidator {
     final Ngram n1 = new Ngram("Sheri Nowmer", Type.VAL, new Entity("Sheri Nowmer", DataType.STRING), Pair.of(0, 0));
     final Ngram m = new Ngram(Type.SC, Lists.newArrayList(n1));
     assertEquals(1, m.children.size());
-    Parser.infer(new Mapping(m));
+    Parser.infer(cube, new Mapping(cube, m));
     assertEquals(3, m.children.size());
   }
 
@@ -73,31 +73,31 @@ public class TestValidator {
     final Ngram n1 = new Ngram("Salem", Type.VAL, new Entity("Salem", DataType.STRING), Pair.of(0, 0));
     final Ngram m = new Ngram(Type.SC, Lists.newArrayList(n1));
     assertEquals(1, m.children.size());
-    Parser.infer(new Mapping(m));
+    Parser.infer(cube, new Mapping(cube, m));
     assertEquals(1, m.children.size());
   }
 
   @Test
   public void test12() throws Exception {
-    final Mapping m = Validator.parseAndTranslate("sum unit sales in 2019", 1).get(0).getLeft();
-    Parser.infer(m);
+    final Mapping m = Validator.parseAndTranslate(cube, "sum unit sales in 2019", 1).get(0).getLeft();
+    Parser.infer(cube, m);
   }
 
   @Test
   public void test13() throws Exception {
-    final Mapping m = Validator.parseAndTranslate("sum unit sales for Sheri Nowmer", 1).get(0).getLeft();
-    Parser.infer(m);
+    final Mapping m = Validator.parseAndTranslate(cube, "sum unit sales for Sheri Nowmer", 1).get(0).getLeft();
+    Parser.infer(cube, m);
   }
 
   @Test
   public void test14() throws Exception {
     // Validator.parseAndTranslate("sum store cst by media for Nowmer as customer");
-    Validator.parseAndTranslate("store sales by month for club choc as product", 10);
+    Validator.parseAndTranslate(cube, "store sales by month for club choc as product", 10);
   }
 
   @Test
   public void test15() throws Exception {
-    Validator.parseAndTranslate("store sales by month in 2010 for Atomic Mints USA by store", 10);
+    Validator.parseAndTranslate(cube, "store sales by month in 2010 for Atomic Mints USA by store", 10);
   }
 
   @Test
@@ -155,7 +155,7 @@ public class TestValidator {
     final Ngram n1 = new Ngram("2019", Type.VAL, new Entity("2019", DataType.NUMERIC), Pair.of(0, 0));
     final Ngram m = new Ngram(Type.SC, Lists.newArrayList(n1));
     assertEquals(1, m.children.size());
-    Parser.infer(new Mapping(m));
+    Parser.infer(cube, new Mapping(cube, m));
     assertEquals(3, m.children.size());
   }
 
@@ -166,7 +166,7 @@ public class TestValidator {
 
   @Test
   public void testCorrectTree() throws Exception {
-    assertEquals("GPSJ(MC(sum unitsales) GC(by gender))", Validator.getBest("gender", "", "sum unit_sales").toStringTree());
+    assertEquals("GPSJ(MC(sum unitsales) GC(by gender))", Validator.getBest(cube, "gender", "", "sum unit_sales").toStringTree());
     // This is not GPSJ assertEquals("GPSJ(MC(count customerid) GC(by gender))", Validator.getBest("gender", "", "count customer_id").toStringTree());
     // This is not GPSJ assertEquals("GPSJ(MC(count customerid) GC(by gender) SC(theyear e v2019))", Validator.getBest("gender", "the_year = 2019", "count customer_id").toStringTree());
   }
@@ -174,7 +174,7 @@ public class TestValidator {
   @Test
   public void testCount() throws Exception {
     // This is not GPSJ assertEquals("GPSJ(MC(count customerid) GC(by gender))", Validator.parseAndTranslate("count customer by gender", 1).get(0).getLeft().toStringTree());
-    assertEquals("GPSJ(MC(count salesfact1997) GC(by gender))", Validator.parseAndTranslate("count sales fact 1997 by gender", 1).get(0).getLeft().toStringTree());
+    assertEquals("GPSJ(MC(count salesfact1997) GC(by gender))", Validator.parseAndTranslate(cube, "count sales fact 1997 by gender", 1).get(0).getLeft().toStringTree());
   }
 
   /**
@@ -183,8 +183,8 @@ public class TestValidator {
    */
   @Test
   public void testGen() throws Exception {
-    assertEquals(7, Mapper.createMappings(Ngram.class, "by gender year", 1, 0.5, 1, 1, 0, Integer.MAX_VALUE, 1, 1, Maps.newLinkedHashMap(), false).size());
-    assertEquals(1, Mapper.createMappings(Ngram.class, "media type", 1, 0.5, 1, 1, 0, Integer.MAX_VALUE, 2, 1, Maps.newLinkedHashMap(), false).size());
+    assertEquals(7, Mapper.createMappings(cube, Ngram.class, "by gender year", 1, 0.5, 1, 1, 0, Integer.MAX_VALUE, 1, 1, Maps.newLinkedHashMap(), false).size());
+    assertEquals(1, Mapper.createMappings(cube, Ngram.class, "media type", 1, 0.5, 1, 1, 0, Integer.MAX_VALUE, 2, 1, Maps.newLinkedHashMap(), false).size());
   }
 
   @Test

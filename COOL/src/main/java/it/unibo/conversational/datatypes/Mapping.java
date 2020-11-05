@@ -1,35 +1,31 @@
 package it.unibo.conversational.datatypes;
-import java.io.IOException;
-import java.io.Serializable;
-import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.LongAdder;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.NotImplementedException;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.lang3.tuple.Triple;
-import org.json.JSONObject;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-
 import it.unibo.conversational.Utils;
 import it.unibo.conversational.algorithms.Mapper;
 import it.unibo.conversational.algorithms.Parser;
 import it.unibo.conversational.algorithms.Parser.Type;
-import it.unibo.conversational.database.QueryGeneratorChecker;
+import it.unibo.conversational.database.Cube;
+import it.unibo.conversational.database.DBmanager;
+import it.unibo.conversational.database.QueryGenerator;
 import it.unibo.conversational.datatypes.Ngram.AnnotationType;
+import org.apache.commons.lang3.NotImplementedException;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
+import org.json.JSONObject;
 import zhsh.Tree;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.sql.ResultSet;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.LongAdder;
+import java.util.stream.Collectors;
 
 /** A Mapping is a forest of ngrams. */
 public final class Mapping implements Serializable {
@@ -134,7 +130,7 @@ public final class Mapping implements Serializable {
    * Create a mapping.
    * @param ngrams a list of ngrams
    */
-  public Mapping(final List<Ngram> ngrams) {
+  public Mapping(final Cube cube, final List<Ngram> ngrams) {
     this.ngrams = ImmutableList.copyOf(ngrams);
     if (!ngrams.isEmpty()) {
       for (Ngram n : ngrams) {
@@ -150,8 +146,8 @@ public final class Mapping implements Serializable {
    * Create a sentence as a list of ngrams.
    * @param ngrams list of ngrams
    */
-  public Mapping(final Ngram... ngrams) {
-    this(Arrays.asList(ngrams));
+  public Mapping(final Cube cube, final Ngram... ngrams) {
+    this(cube, Arrays.asList(ngrams));
   }
 
   /**
@@ -165,7 +161,6 @@ public final class Mapping implements Serializable {
   /**
    * Disambiguate the ambiguity with the given id with the given value
    * @param ambiguityId ambiguityId
-   * @param value value / drop
    */
   public void disambiguate(final String ambiguityId, final String approximateVal) {
     disambiguate(ambiguityId, approximateVal, Lists.newLinkedList());
@@ -174,7 +169,6 @@ public final class Mapping implements Serializable {
   /**
    * Disambiguate the ambiguity with the given id with the given value
    * @param annotationId id of the annotation
-   * @param value value / drop
    * @param log log
    */
   public void disambiguate(final String annotationId, final String approximateVal, final List<Triple<AnnotationType, Ngram, Ngram>> log) {
@@ -249,7 +243,7 @@ public final class Mapping implements Serializable {
       });
     }
     List<Ngram> ngramsCopy = Lists.newLinkedList(ngrams.stream().filter(n -> !n.children.isEmpty()).collect(Collectors.toList()));
-    toRemove.forEach(n -> ngramsCopy.remove(n));
+    toRemove.forEach(ngramsCopy::remove);
     ngrams = ImmutableList.copyOf(ngramsCopy);
     if (adder.intValue() == 0) {
       throw new IllegalArgumentException("Cannot find annotation with id: " + annotationId);
@@ -325,7 +319,7 @@ public final class Mapping implements Serializable {
    * @return the number of matched ngrams in a sentence
    */
   public int getNMatched() {
-    return (int) Ngram.countLeaves(bestNgram);
+    return Ngram.countLeaves(bestNgram);
   }
 
   /**
@@ -365,7 +359,6 @@ public final class Mapping implements Serializable {
 
   /**
    * Try to automatically resolve frequent disambiguations.
-   * @param mapping mapping
    * @param tau frequency threshold
    * @param log list of known disambiguations
    */
@@ -375,28 +368,26 @@ public final class Mapping implements Serializable {
     }
   }
 
-  public JSONObject JSONobj(final String nlp, final Optional<Long> limit) throws Exception {
-    final String sql = getAnnotatedNgrams().isEmpty() ? Parser.getSQLQuery(this) : "";
-    JSONObject result = null;
+  public JSONObject JSONobj(final Cube cube, final String nlp, final Optional<Long> limit) throws Exception {
+    final String sql = getAnnotatedNgrams().isEmpty() ? Parser.getSQLQuery(cube, this) : "";
+    final List<JSONObject> result = Lists.newLinkedList();
     final JSONObject res = new JSONObject();
     if (!sql.isEmpty()) {
       final long startTime = System.currentTimeMillis();
-      try (ResultSet queryRes = QueryGeneratorChecker.getDataConnection().createStatement().executeQuery(sql + (limit.isPresent() ? " limit " + limit.get() : ""))) {
-        result = Utils.resultSet2Json(queryRes);
-      } catch (final Exception e) {
-        e.printStackTrace();
-      }
+      DBmanager.executeDataQuery(cube, sql + (limit.isPresent() ? " limit " + limit.get() : ""), queryRes -> {
+        result.add(Utils.resultSet2Json(queryRes));
+      });
       res.put("execution_time", System.currentTimeMillis() - startTime);
     }
-    ngrams.stream().forEach(n -> {
-      final JSONObject ngram = n.toJSON();
+    ngrams.forEach(n -> {
+      final JSONObject ngram = n.toJSON(cube);
       ngram.put("main_tree", n.equals(bestNgram));
       res.append("clauses", ngram); 
     });
     // If the query is a GPSJ with no annotations, it can be executed. So return its SQL and query result.
     if (!sql.isEmpty()) {
       res.put("sql", sql);
-      res.put("result", result);
+      res.put("result", result.remove(0));
     }
     if (nlp != null) {
       res.put("tree_csv", toCsv(this, nlp));
@@ -409,16 +400,16 @@ public final class Mapping implements Serializable {
     return 1.0 - 1.0 * distance / Math.max(countNodes(), anotherMapping.countNodes());
   }
 
-  public String toJSON() throws Exception {
-    return JSONobj(null, Optional.absent()).toString();
+  public String toJSON(final Cube cube) throws Exception {
+    return JSONobj(cube, null, Optional.absent()).toString();
   }
 
-  public String toJSON(final String nlp) throws Exception {
-    return JSONobj(nlp, Optional.absent()).toString();
+  public String toJSON(final Cube cube, final String nlp) throws Exception {
+    return JSONobj(cube, nlp, Optional.absent()).toString();
   }
 
-  public String toJSON(final String nlp, final Optional<Long> limit) throws Exception {
-    return JSONobj(nlp, limit).toString();
+  public String toJSON(final Cube cube, final String nlp, final Optional<Long> limit) throws Exception {
+    return JSONobj(cube, nlp, limit).toString();
   }
 
   @Override
