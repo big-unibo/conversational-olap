@@ -21,7 +21,7 @@ before_install:
   - mysql -u root < COOL/resources/foodmart.sql
   - mysql -e 'use foodmart; select * from `customer` limit 5;'
   - mysql -u root < COOL/resources/meta-foodmart.sql
-  - mysql -e 'use meta-foodmart; select * from `queries` limit 5;'
+  - mysql -e 'use meta-foodmart; select * from `fact` limit 5;'
 script:
   - cd COOL
   - chmod +x gradlew
