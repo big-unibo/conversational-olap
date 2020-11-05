@@ -1,4 +1,0 @@
-rootProject.name = 'conversational-experiments'
-
-include 'COOL'
-// include 'Describe'
