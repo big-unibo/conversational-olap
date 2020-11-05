@@ -19,9 +19,9 @@ before_cache:
 before_install:
   - cp COOL/src/main/resources/config_example.yml COOL/src/main/resources/config.yml
   - mysql -u root < COOL/resources/foodmart.sql
-  - mysql -e 'use foodmart; select * from customer limit 5;'
+  - mysql -e 'use foodmart; select * from `customer` limit 5;'
   - mysql -u root < COOL/resources/meta-foodmart.sql
-  - mysql -e 'use meta-foodmart; select * from database limit 5;'
+  - mysql -e 'use meta-foodmart; select * from `queries` limit 5;'
 script:
   - cd COOL
   - chmod +x gradlew
