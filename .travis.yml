@@ -12,7 +12,7 @@ cache:
   - "$HOME/.gradle/caches/"
   - "$HOME/.gradle/wrapper/"
 services:
-- mysql
+  - mysql
 before_cache:
   - curl "${GRAVIS}.clean_gradle_cache.sh" --output ~/.clean_gradle_cache.sh
   - bash ~/.clean_gradle_cache.sh
@@ -25,4 +25,4 @@ before_install:
 script:
   - cd COOL
   - chmod +x gradlew
-  - ./gradlew
+  - ./gradlew --debug
