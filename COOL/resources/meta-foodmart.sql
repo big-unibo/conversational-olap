@@ -35,7 +35,7 @@ CREATE TABLE `column` (
   KEY `fkIdx_100` (`table_id`),
   KEY `fkIdx_166` (`relationship_id`),
   CONSTRAINT `FK_100` FOREIGN KEY (`table_id`) REFERENCES `table` (`table_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=246 DEFAULT CHARSET=utf8;
+);
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -63,7 +63,7 @@ CREATE TABLE `database` (
   PRIMARY KEY (`database_id`),
   UNIQUE KEY `database_name` (`database_name`),
   UNIQUE KEY `database_name_2` (`database_name`,`IPaddress`,`port`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+);
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -92,7 +92,7 @@ CREATE TABLE `fact` (
   UNIQUE KEY `fact_name` (`fact_name`),
   KEY `fkIdx_214` (`database_id`),
   CONSTRAINT `FK_214` FOREIGN KEY (`database_id`) REFERENCES `database` (`database_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+);
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -118,7 +118,7 @@ CREATE TABLE `groupbyoperator` (
   `groupbyoperator_synonyms` text,
   PRIMARY KEY (`groupbyoperator_id`),
   UNIQUE KEY `groupbyoperator_name` (`groupbyoperator_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+);
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -146,7 +146,7 @@ CREATE TABLE `groupbyoperator_of_measure` (
   KEY `fkIdx_34` (`measure_id`),
   CONSTRAINT `FK_30` FOREIGN KEY (`groupbyoperator_id`) REFERENCES `groupbyoperator` (`groupbyoperator_id`),
   CONSTRAINT `FK_34` FOREIGN KEY (`measure_id`) REFERENCES `measure` (`measure_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+);
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -172,7 +172,7 @@ CREATE TABLE `hierarchy` (
   `hierarchy_synonyms` text,
   PRIMARY KEY (`hierarchy_id`),
   UNIQUE KEY `hierarchy_name` (`hierarchy_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8;
+);
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -200,7 +200,7 @@ CREATE TABLE `hierarchy_in_fact` (
   KEY `fkIdx_48` (`hierarchy_id`),
   CONSTRAINT `FK_44` FOREIGN KEY (`fact_id`) REFERENCES `fact` (`fact_id`),
   CONSTRAINT `FK_48` FOREIGN KEY (`hierarchy_id`) REFERENCES `hierarchy` (`hierarchy_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+);
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -227,7 +227,7 @@ CREATE TABLE `language_operator` (
   `language_operator_type` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`language_operator_id`),
   UNIQUE KEY `language_operator_name` (`language_operator_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=539 DEFAULT CHARSET=utf8;
+);
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -254,7 +254,7 @@ CREATE TABLE `language_predicate` (
   `language_predicate_type` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`language_predicate_id`),
   UNIQUE KEY `language_predicate_name` (`language_predicate_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=539 DEFAULT CHARSET=utf8;
+);
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -295,7 +295,7 @@ CREATE TABLE `level` (
   KEY `fkIdx_56` (`hierarchy_id`),
   CONSTRAINT `FK_108` FOREIGN KEY (`column_id`) REFERENCES `column` (`column_id`),
   CONSTRAINT `FK_56` FOREIGN KEY (`hierarchy_id`) REFERENCES `hierarchy` (`hierarchy_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=210 DEFAULT CHARSET=utf8;
+);
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -324,7 +324,7 @@ CREATE TABLE `level_rollup` (
   KEY `fkIdx_142` (`level_to`),
   CONSTRAINT `FK_137` FOREIGN KEY (`level_start`) REFERENCES `level` (`level_id`),
   CONSTRAINT `FK_142` FOREIGN KEY (`level_to`) REFERENCES `level` (`level_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+);
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -355,7 +355,7 @@ CREATE TABLE `measure` (
   KEY `fkIdx_23` (`fact_id`),
   CONSTRAINT `FK_157` FOREIGN KEY (`column_id`) REFERENCES `column` (`column_id`),
   CONSTRAINT `FK_23` FOREIGN KEY (`fact_id`) REFERENCES `fact` (`fact_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
+);
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -384,7 +384,7 @@ CREATE TABLE `member` (
   UNIQUE KEY `member_name` (`member_name`,`level_id`),
   KEY `fkIdx_133` (`level_id`),
   CONSTRAINT `FK_133` FOREIGN KEY (`level_id`) REFERENCES `level` (`level_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=98442 DEFAULT CHARSET=utf8;
+);
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -414,7 +414,7 @@ CREATE TABLE `olapsession` (
   `fullquery_serialized` blob,
   `fullquery_tree` varchar(1000) DEFAULT NULL,
   `olapoperator_serialized` blob
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -443,7 +443,7 @@ CREATE TABLE `relationship` (
   KEY `fkIdx_75` (`table2`),
   CONSTRAINT `FK_72` FOREIGN KEY (`table1`) REFERENCES `table` (`table_id`),
   CONSTRAINT `FK_75` FOREIGN KEY (`table2`) REFERENCES `table` (`table_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8;
+);
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -470,7 +470,7 @@ CREATE TABLE `synonym` (
   `term` varchar(45) NOT NULL,
   PRIMARY KEY (`synonym_id`),
   UNIQUE KEY `term` (`term`,`reference_id`,`table_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=98901 DEFAULT CHARSET=utf8;
+);
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -502,7 +502,7 @@ CREATE TABLE `table` (
   KEY `fkIdx_160` (`hierarchy_id`),
   CONSTRAINT `FK_115` FOREIGN KEY (`fact_id`) REFERENCES `fact` (`fact_id`),
   CONSTRAINT `FK_160` FOREIGN KEY (`hierarchy_id`) REFERENCES `hierarchy` (`hierarchy_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8;
+);
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
