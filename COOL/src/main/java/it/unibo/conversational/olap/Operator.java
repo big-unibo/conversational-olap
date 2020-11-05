@@ -1,10 +1,13 @@
 package it.unibo.conversational.olap;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.util.Arrays;
-
+import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
+import it.unibo.antlr.gen.OLAPLexer;
+import it.unibo.antlr.gen.OLAPParser;
+import it.unibo.conversational.algorithms.Parser.Type;
+import it.unibo.conversational.database.Cube;
+import it.unibo.conversational.datatypes.Mapping;
+import it.unibo.conversational.datatypes.Ngram;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.BailErrorStrategy;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -12,14 +15,10 @@ import org.antlr.v4.runtime.ConsoleErrorListener;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ParseTree;
 
-import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
-
-import it.unibo.antlr.gen.OLAPLexer;
-import it.unibo.antlr.gen.OLAPParser;
-import it.unibo.conversational.algorithms.Parser.Type;
-import it.unibo.conversational.datatypes.Mapping;
-import it.unibo.conversational.datatypes.Ngram;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.util.Arrays;
 
 public class Operator extends Ngram {
 
@@ -31,7 +30,7 @@ public class Operator extends Ngram {
    * @param gpsj mapping to be translated
    * @return parsing interpretations sorted by number of matched entities
    */
-  public static Optional<Mapping> parse(final Mapping input) {
+  public static Optional<Mapping> parse(final Cube cube, final Mapping input) {
     final OLAPLexer lexer = new OLAPLexer(new ANTLRInputStream(input.getMappedNgrams())); // new ANTLRInputStream(System.in);
     lexer.removeErrorListener(ConsoleErrorListener.INSTANCE);
     final CommonTokenStream tokens = new CommonTokenStream(lexer); // create a buffer of tokens pulled from the lexer
@@ -41,7 +40,7 @@ public class Operator extends Ngram {
       parser.removeErrorListener(ConsoleErrorListener.INSTANCE);
       final ParseTree tree = parser.operator(); // begin parsing at init rule
       final Operator answer = (Operator) new CustomOLAPVisitor(input).visit(tree);
-      return answer == null ? Optional.absent() : Optional.of(new Mapping(answer));
+      return answer == null ? Optional.absent() : Optional.of(new Mapping(cube, answer));
     } catch (ParseCancellationException e) {
       return Optional.absent();
     }

@@ -1,14 +1,13 @@
 package it.unibo.conversational.algorithms;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import it.unibo.conversational.Utils;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-
-import it.unibo.conversational.Utils;
 
 /**
  * Match between two strings. Marriage problem.

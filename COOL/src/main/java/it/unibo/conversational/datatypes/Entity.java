@@ -1,11 +1,12 @@
 package it.unibo.conversational.datatypes;
 
+import com.google.common.base.Optional;
+import it.unibo.conversational.Utils.DataType;
+import it.unibo.conversational.database.Cube;
+
 import java.io.Serializable;
 import java.util.Objects;
 
-import com.google.common.base.Optional;
-
-import it.unibo.conversational.Utils.DataType;
 
 /** A reference to an element in the DW. */
 public class Entity implements Serializable {
@@ -19,9 +20,9 @@ public class Entity implements Serializable {
   /** Name of the element. */
   private final String nameInTable;
   /** Primary key of the element in its table. */
-  private final Optional<Integer> pkInTable;
+  private final Optional<String> pkInTable;
   /** Reference to other table. A member refers to the corresponding level. A level refers to the corresponding table. */
-  private final Optional<Integer> refToOtherTable;
+  private final Optional<String> refToOtherTable;
   /** Type of the entity in the database. */
   private final Optional<DataType> typeInDB;
 
@@ -29,7 +30,7 @@ public class Entity implements Serializable {
    * Necessary for testing type checker
    * @param nameInTable name in the table
    */
-  public Entity(final int pkInTable, final String nameInTable, final int refToOtherTable, final DataType typeInDB) {
+  public Entity(final String pkInTable, final String nameInTable, final String refToOtherTable, final DataType typeInDB) {
     this(Optional.of(pkInTable), nameInTable, Optional.of(refToOtherTable), Optional.absent(), Optional.of(typeInDB), Optional.absent(), Optional.absent());
   }
 
@@ -43,13 +44,13 @@ public class Entity implements Serializable {
    * @param dataTable name of the table in data DB
    */
   public Entity(//
-      final Integer pkInTable, //
-      final String nameInTable, //
-      final Integer refToOtherTable, //
-      final String nameInOtherTable, //
-      final DataType typeInDB, //
-      final String metaTable, //
-      final String dataTable) {
+                final String pkInTable, //
+                final String nameInTable, //
+                final String refToOtherTable, //
+                final String nameInOtherTable, //
+                final DataType typeInDB, //
+                final String metaTable, //
+                final String dataTable) {
     this(Optional.of(pkInTable), nameInTable, Optional.of(refToOtherTable), Optional.of(nameInOtherTable), Optional.of(typeInDB), Optional.of(metaTable), Optional.of(dataTable));
   }
 
@@ -59,7 +60,7 @@ public class Entity implements Serializable {
    * @param nameInTable name in table
    * @param metaTable table name
    */
-  public Entity(final Integer pkInTable, final String nameInTable, final String metaTable) {
+  public Entity(final String pkInTable, final String nameInTable, final String metaTable) {
     this(Optional.of(pkInTable), nameInTable, Optional.absent(), Optional.absent(), Optional.absent(), Optional.of(metaTable), Optional.absent());
   }
 
@@ -73,13 +74,13 @@ public class Entity implements Serializable {
    * @param dataTable name of the table in data DB
    */
   public Entity(
-      final Optional<Integer> pkInTable,
-      final String nameInTable, 
-      final Optional<Integer> refToOtherTable, 
-      final Optional<String> nameInOtherTable,
-      final Optional<DataType> typeInDB,
-      final Optional<String> metaTable,
-      final Optional<String> dataTable) {
+          final Optional<String> pkInTable,
+          final String nameInTable,
+          final Optional<String> refToOtherTable,
+          final Optional<String> nameInOtherTable,
+          final Optional<DataType> typeInDB,
+          final Optional<String> metaTable,
+          final Optional<String> dataTable) {
     this.pkInTable = pkInTable;
     this.nameInTable = nameInTable;
     this.refToOtherTable = refToOtherTable;
@@ -114,11 +115,11 @@ public class Entity implements Serializable {
     if (obj instanceof Entity) {
       final Entity o = (Entity) obj;
       return pkInTable.equals(o.pkInTable)//
-          && nameInTable.equals(o.nameInTable)//
-          && refToOtherTable.equals(o.refToOtherTable)//
-          && nameinOtherTable.equals(o.nameinOtherTable)//
-          && typeInDB.equals(o.typeInDB)//
-          && metaTable.equals(o.metaTable);
+              && nameInTable.equals(o.nameInTable)//
+              && refToOtherTable.equals(o.refToOtherTable)//
+              && nameinOtherTable.equals(o.nameinOtherTable)//
+              && typeInDB.equals(o.typeInDB)//
+              && metaTable.equals(o.metaTable);
     }
     return false;
   }
@@ -148,11 +149,11 @@ public class Entity implements Serializable {
     return nameInTable;
   }
 
-  public int pkInTable() {
+  public String pkInTable() {
     return pkInTable.get();
   }
 
-  public int refToOtherTable() {
+  public String refToOtherTable() {
     return refToOtherTable.get();
   }
 

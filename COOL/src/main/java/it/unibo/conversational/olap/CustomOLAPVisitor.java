@@ -1,34 +1,14 @@
 package it.unibo.conversational.olap;
 
-import java.util.List;
-
-import org.antlr.v4.runtime.tree.ErrorNode;
-
 import com.google.common.collect.Lists;
-
 import it.unibo.antlr.gen.OLAPBaseVisitor;
-import it.unibo.antlr.gen.OLAPParser.AddAttrContext;
-import it.unibo.antlr.gen.OLAPParser.AddMeaContext;
-import it.unibo.antlr.gen.OLAPParser.AddSSCContext;
-import it.unibo.antlr.gen.OLAPParser.AtomContext;
-import it.unibo.antlr.gen.OLAPParser.BinaryContext;
-import it.unibo.antlr.gen.OLAPParser.DrillContext;
-import it.unibo.antlr.gen.OLAPParser.FactContext;
-import it.unibo.antlr.gen.OLAPParser.GcContext;
-import it.unibo.antlr.gen.OLAPParser.MeaContext;
-import it.unibo.antlr.gen.OLAPParser.RemoveAttrContext;
-import it.unibo.antlr.gen.OLAPParser.RemoveMeaContext;
-import it.unibo.antlr.gen.OLAPParser.RemoveSSCContext;
-import it.unibo.antlr.gen.OLAPParser.ReplaceAttrContext;
-import it.unibo.antlr.gen.OLAPParser.ReplaceMeaContext;
-import it.unibo.antlr.gen.OLAPParser.ReplaceSSCContext;
-import it.unibo.antlr.gen.OLAPParser.RollupContext;
-import it.unibo.antlr.gen.OLAPParser.SadContext;
-import it.unibo.antlr.gen.OLAPParser.ScContext;
-import it.unibo.antlr.gen.OLAPParser.UnaryContext;
+import it.unibo.antlr.gen.OLAPParser.*;
 import it.unibo.conversational.algorithms.Parser.Type;
 import it.unibo.conversational.datatypes.Mapping;
 import it.unibo.conversational.datatypes.Ngram;
+import org.antlr.v4.runtime.tree.ErrorNode;
+
+import java.util.List;
 
 
 public class CustomOLAPVisitor extends OLAPBaseVisitor<Ngram> {

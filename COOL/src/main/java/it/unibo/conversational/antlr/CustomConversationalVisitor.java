@@ -1,25 +1,13 @@
 package it.unibo.conversational.antlr;
 
-import java.util.List;
-
 import com.google.common.collect.Lists;
-
 import it.unibo.antlr.gen.COOLBaseVisitor;
-import it.unibo.antlr.gen.COOLParser.AtomContext;
-import it.unibo.antlr.gen.COOLParser.BinaryContext;
-import it.unibo.antlr.gen.COOLParser.FactContext;
-import it.unibo.antlr.gen.COOLParser.FullContext;
-import it.unibo.antlr.gen.COOLParser.GcContext;
-import it.unibo.antlr.gen.COOLParser.GpsjContext;
-import it.unibo.antlr.gen.COOLParser.McContext;
-import it.unibo.antlr.gen.COOLParser.MeaContext;
-import it.unibo.antlr.gen.COOLParser.PartialContext;
-import it.unibo.antlr.gen.COOLParser.ScContext;
-import it.unibo.antlr.gen.COOLParser.UnaryContext;
-import it.unibo.antlr.gen.COOLParser.UnparsedContext;
+import it.unibo.antlr.gen.COOLParser.*;
 import it.unibo.conversational.algorithms.Parser.Type;
 import it.unibo.conversational.datatypes.Mapping;
 import it.unibo.conversational.datatypes.Ngram;
+
+import java.util.List;
 
 public class CustomConversationalVisitor extends COOLBaseVisitor<Ngram> {
   private Mapping mapping;

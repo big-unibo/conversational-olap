@@ -1,8 +1,18 @@
 package test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import com.google.common.collect.Lists;
+import it.unibo.conversational.Validator;
+import it.unibo.conversational.algorithms.Parser;
+import it.unibo.conversational.database.Config;
+import it.unibo.conversational.database.Cube;
+import it.unibo.conversational.database.DBmanager;
+import it.unibo.conversational.database.QueryGenerator;
+import it.unibo.conversational.datatypes.Mapping;
+import it.unibo.conversational.datatypes.Ngram;
+import org.apache.commons.lang3.tuple.Pair;
+import org.json.JSONObject;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -11,53 +21,36 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import it.unibo.conversational.Utils;
-import it.unibo.conversational.database.DBmanager;
-import it.unibo.conversational.database.DBreader;
-import org.apache.commons.lang3.tuple.Pair;
-import org.json.JSONObject;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import com.google.common.collect.Lists;
-
-import it.unibo.conversational.Validator;
-import it.unibo.conversational.algorithms.Parser;
-import it.unibo.conversational.database.QueryGeneratorChecker;
-import it.unibo.conversational.datatypes.Mapping;
-import it.unibo.conversational.datatypes.Ngram;
+import static org.junit.jupiter.api.Assertions.*;
 
 /** Test the validation accuracy. */
 public class TestAmbiguity {
 
-  @After
-  public void after() throws SQLException {
+  private final Cube cube = Config.getCube("sales_fact_1997");
+
+  @AfterEach
+  public void after() {
     Parser.resetIds();
-    // DBmanager.closeAllConnections();
   }
 
   private String ambiguitiesToString(final Mapping m) {
-    return m.getAnnotatedNgrams().stream().map(n -> n.getAnnotations()).collect(Collectors.toList()).toString();
+    return m.getAnnotatedNgrams().stream().map(Ngram::getAnnotations).collect(Collectors.toList()).toString();
   }
 
   private void checkEquals(final Mapping ambiguousMapping, final Mapping correctSentence, final boolean checkEquals) throws IOException {
     assertEquals(1, ambiguousMapping.ngrams.size());
     assertEquals(correctSentence.bestNgram.countNode(), ambiguousMapping.bestNgram.countNode());
     if (checkEquals) {
-      assertEquals(correctSentence.toString() + "\n" + ambiguousMapping.toString(), 1.0, correctSentence.similarity(ambiguousMapping), 0.001);
+      assertEquals(1.0, correctSentence.similarity(ambiguousMapping), 0.001, correctSentence.toString() + "\n" + ambiguousMapping.toString());
     } else {
       System.out.println(ambiguousMapping.toStringTree());
       System.out.println(correctSentence.toStringTree());
     }
     final List<Ngram> ann = ambiguousMapping.getAnnotatedNgrams();
-    assertTrue(ann.isEmpty());
-    String sql = "";
-    try (Statement stmt = QueryGeneratorChecker.getDataConnection().createStatement()) {
-      sql = Parser.getSQLQuery(ambiguousMapping);
-      stmt.execute(sql);
+    assertTrue(ann.isEmpty(), ann.toString());
+    try {
+      DBmanager.executeDataQuery(cube, Parser.getSQLQuery(cube, ambiguousMapping), res -> {});
     } catch (final Exception e) {
-      System.out.println(sql);
       e.printStackTrace();
       fail(e.getMessage());
     }
@@ -73,12 +66,12 @@ public class TestAmbiguity {
       // System.out.println(l);
       Parser.resetIds();
       try {
-        final Mapping ambiguousMapping = Validator.parseAndTranslate(nlp);
-        assertEquals(ambiguitiesToString(ambiguousMapping), ambiguousNgrams, ambiguousMapping.getAnnotatedNgrams().size());
+        final Mapping ambiguousMapping = Validator.parseAndTranslate(cube, nlp);
+        assertEquals(ambiguousNgrams, ambiguousMapping.getAnnotatedNgrams().size(), ambiguitiesToString(ambiguousMapping));
         for (Pair<String, String> d: l) {
           ambiguousMapping.disambiguate(d.getLeft(), d.getRight());
           try {
-            new JSONObject(ambiguousMapping.toJSON(nlp)).toString(2);
+            new JSONObject(ambiguousMapping.toJSON(cube, nlp));
           } catch (final Exception e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -113,14 +106,14 @@ public class TestAmbiguity {
   }
 
   private void test(final String nl, final String gc, final String sc, final String mc, final int expectedAnnotations) throws Exception {
-    final Mapping ambiguousMapping = Validator.parseAndTranslate(nl);
-    new JSONObject(ambiguousMapping.toJSON(nl));
-    assertEquals(ambiguitiesToString(ambiguousMapping), expectedAnnotations, ambiguousMapping.getAnnotatedNgrams().size());
-    final Mapping correctSentence = Validator.getBest(gc, sc, mc);
-    new JSONObject(correctSentence.toJSON());
+    final Mapping ambiguousMapping = Validator.parseAndTranslate(cube, nl);
+    new JSONObject(ambiguousMapping.toJSON(cube, nl));
+    assertEquals(ambiguousMapping.getAnnotatedNgrams().size(), expectedAnnotations, ambiguitiesToString(ambiguousMapping));
+    final Mapping correctSentence = Validator.getBest(cube, gc, sc, mc);
+    new JSONObject(correctSentence.toJSON(cube));
     for (int i = 0; i < 4; i++) {
       Parser.automaticDisambiguate(ambiguousMapping);
-      new JSONObject(ambiguousMapping.toJSON(nl));
+      new JSONObject(ambiguousMapping.toJSON(cube, nl));
     }
     checkEquals(ambiguousMapping, correctSentence, true);
   }
@@ -209,7 +202,7 @@ public class TestAmbiguity {
    */
   @Test
   public void test11() throws Exception {
-    final Mapping correctSentence = Validator.getBest("", "", "max unit_sales");
+    final Mapping correctSentence = Validator.getBest(cube, "", "", "max unit_sales");
     checkQuery(correctSentence, "unit sales for Salem", 2, Lists.newArrayList(Pair.of("i0", "max"), Pair.of("i1", "drop")));
   }
 
@@ -226,7 +219,7 @@ public class TestAmbiguity {
    */
   @Test
   public void test13() throws Exception {
-    final Mapping correctSentence = Validator.getBest("product_id, product_category", "", "avg unit_sales");
+    final Mapping correctSentence = Validator.getBest(cube, "product_id, product_category", "", "avg unit_sales");
     checkQuery(correctSentence, "by product_id unit_sales by product_category", 2, Lists.newArrayList(Pair.of("i0", "avg"), Pair.of("u0", "add")));
   }
 
@@ -235,7 +228,7 @@ public class TestAmbiguity {
    */
   @Test
   public void test14() throws Exception {
-    final Mapping correctSentence = Validator.getBest("product_id", "", "avg unit_sales");
+    final Mapping correctSentence = Validator.getBest(cube, "product_id", "", "avg unit_sales");
     checkQuery(correctSentence, "by product_id unit_sales by product_category", 2, Lists.newArrayList(Pair.of("i0", "avg"), Pair.of("u0", "drop")));
   }
 
@@ -245,7 +238,7 @@ public class TestAmbiguity {
    */
   @Test
   public void test16() throws Exception {
-    final Mapping correctSentence = Validator.getBest("", "", "max unit_sales");
+    final Mapping correctSentence = Validator.getBest(cube, "", "", "max unit_sales");
     checkQuery(correctSentence, "unit sales store sales", 2, Lists.newArrayList(Pair.of("i0", "max"), Pair.of("i1", "drop")));
   }
 
@@ -278,7 +271,7 @@ public class TestAmbiguity {
    */
   @Test
   public void test20() throws Exception {
-    final Mapping correctSentence = Validator.getBest("product_id", "", "avg unit_sales");
+    final Mapping correctSentence = Validator.getBest(cube, "product_id", "", "avg unit_sales");
     checkQuery(correctSentence, "unit_sales by product_id store_cost", 2, Lists.newArrayList(Pair.of("i0", "avg"), Pair.of("u0", "drop")));
   }
 
@@ -287,7 +280,7 @@ public class TestAmbiguity {
    */
   @Test
   public void test21() throws Exception {
-    final Mapping correctSentence = Validator.getBest("product_id", "", "avg store_cost, avg unit_sales");
+    final Mapping correctSentence = Validator.getBest(cube, "product_id", "", "avg store_cost, avg unit_sales");
     checkQuery(correctSentence, "unit_sales by product_id store_cost", 2, Lists.newArrayList(Pair.of("i1", "avg"), Pair.of("i0", "avg"), Pair.of("u0", "add")), false);
   }
 
@@ -296,7 +289,7 @@ public class TestAmbiguity {
    */
   @Test
   public void test22() throws Exception {
-    final Mapping correctSentence = Validator.getBest("", "product_name = Atomic Mints", "avg unit_sales");
+    final Mapping correctSentence = Validator.getBest(cube, "", "product_name = Atomic Mints", "avg unit_sales");
     checkQuery(correctSentence, "Atomic Mints unit_sales Atomic Mints", 2, Lists.newArrayList(Pair.of("i0", "avg"), Pair.of("u0", "drop")));
   }
 
@@ -305,7 +298,7 @@ public class TestAmbiguity {
    */
   @Test
   public void test23() throws Exception {
-    final Mapping correctSentence = Validator.getBest("", "product_name = Atomic Mints and product_name = Atomic Mints", "avg unit_sales");
+    final Mapping correctSentence = Validator.getBest(cube, "", "product_name = Atomic Mints and product_name = Atomic Mints", "avg unit_sales");
     checkQuery(correctSentence, "Atomic Mints unit_sales Atomic Mints", 2, Lists.newArrayList(Pair.of("i0", "avg"), Pair.of("u0", "add")));
   }
 

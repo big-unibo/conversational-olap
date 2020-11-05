@@ -1,38 +1,37 @@
 package it.unibo.conversational.web;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
+import com.google.common.base.Optional;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import com.google.common.collect.Lists;
+import it.unibo.conversational.Validator;
+import it.unibo.conversational.algorithms.Parser;
+import it.unibo.conversational.database.Config;
+import it.unibo.conversational.database.Cube;
+import it.unibo.conversational.database.DBmanager;
+import it.unibo.conversational.database.QueryGenerator;
+import it.unibo.conversational.datatypes.Mapping;
+import it.unibo.conversational.datatypes.Mapping.State;
+import it.unibo.conversational.datatypes.Ngram;
+import it.unibo.conversational.datatypes.Ngram.AnnotationType;
+import it.unibo.conversational.olap.Operator;
+import org.apache.commons.lang3.tuple.Triple;
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.lang3.tuple.Triple;
-import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Optional;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-import com.google.common.collect.Lists;
-
-import it.unibo.conversational.Validator;
-import it.unibo.conversational.algorithms.Parser;
-import it.unibo.conversational.database.DBmanager;
-import it.unibo.conversational.database.QueryGeneratorChecker;
-import it.unibo.conversational.datatypes.Mapping;
-import it.unibo.conversational.datatypes.Mapping.State;
-import it.unibo.conversational.datatypes.Ngram;
-import it.unibo.conversational.datatypes.Ngram.AnnotationType;
-import it.unibo.conversational.olap.Operator;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Servlet interface to COOL (COnversational OLap).
@@ -45,7 +44,7 @@ public class MainServlet extends HttpServlet {
   private static final int ERROR = 500;
   private static List<Triple<AnnotationType, Ngram, Ngram>> log = Lists.newArrayList();
   private static final double tau = 0.5;
-
+  private static final Cube cube = Config.getCube("sales_fact_1997");
   public class Session {
     public Session(final String uuid, final Mapping mapping, final Operator operator) {
       this.uuid = uuid == null ? (Parser.TEST ? "s0" : UUID.randomUUID().toString()) : uuid;
@@ -64,8 +63,8 @@ public class MainServlet extends HttpServlet {
     public JSONObject toJSON(final String value, final String limit) throws Exception {
       final JSONObject ret = new JSONObject();
       if (mapping != null) {
-        ret.put("parseforest", mapping == null ? new JSONObject() : mapping.JSONobj(value, limit == null ? Optional.absent() : Optional.of(Long.parseLong(limit))));
-        ret.put("operatorforest", operator == null || operator.countAnnotatedNodesInTree() == 0 ? new JSONObject() : operator.toJSON());
+        ret.put("parseforest", mapping == null ? new JSONObject() : mapping.JSONobj(cube, value, limit == null ? Optional.absent() : Optional.of(Long.parseLong(limit))));
+        ret.put("operatorforest", operator == null || operator.countAnnotatedNodesInTree() == 0 ? new JSONObject() : operator.toJSON(cube));
         ret.put("state", getState());
         ret.put("sessionid", uuid);
       }
@@ -83,9 +82,9 @@ public class MainServlet extends HttpServlet {
   public MainServlet() throws Exception {
     Parser.TEST = true;
     if (Parser.TEST) {
-      Mapping prevTree = Validator.parseAndTranslate("store cost", tau, log);
+      Mapping prevTree = Validator.parseAndTranslate(cube, "store cost", tau, log);
       prevTree.disambiguate("i0", "max", log);
-      prevTree = Validator.parseAndTranslate("store cost", tau, log);
+      prevTree = Validator.parseAndTranslate(cube, "store cost", tau, log);
       prevTree.disambiguate("i1", "max", log);
     }
   }
@@ -140,7 +139,7 @@ public class MainServlet extends HttpServlet {
     error.put("error", "An error occurred");
     try {
       if (request.getParameter("describe") != null) {
-        response.getOutputStream().print(QueryGeneratorChecker.describeLevel2JSON(request.getParameter("describe"), 5).toString());
+        response.getOutputStream().print(QueryGenerator.describeLevel2JSON(cube, request.getParameter("describe"), 5).toString());
       } else {
         
         Session result = null;
@@ -152,7 +151,7 @@ public class MainServlet extends HttpServlet {
           value = value.replace("\"", "'");
           Optional<Session> optionalResult = sessions.get(sessionid);
           if (value.equals("read") || value.equals("reset")) {
-            QueryGeneratorChecker.saveSession(sessionid, null, value, null, null, //
+            QueryGenerator.saveSession(cube, sessionid, null, value, null, null, //
                 value.equals("reset") ? (optionalResult.isPresent() ? optionalResult.get().mapping : null) : null, //
                 value.equals("reset") ? (optionalResult.isPresent() ? optionalResult.get().operator : null) : null);
             result = new Session();
@@ -161,12 +160,12 @@ public class MainServlet extends HttpServlet {
             result = optionalResult.orNull();
             if (result == null) { // SESSION ID does not exist, issuing a FULL QUERY
               final long startTime = System.currentTimeMillis();
-              result = new Session(sessionid, Validator.parseAndTranslate(value, tau, log));
+              result = new Session(sessionid, Validator.parseAndTranslate(cube, value, tau, log));
               parseTime = Optional.of(System.currentTimeMillis() - startTime);
               sessions.put(sessionid, Optional.of(result));
-              QueryGeneratorChecker.saveQuery(value, "", "", "");
+              QueryGenerator.saveQuery(cube, value, "", "", "");
               if (result.getState().equals(State.NAVIGATE)) {
-                QueryGeneratorChecker.saveSession(sessionid, null, "navigate", null, null, result.mapping, result.operator);
+                QueryGenerator.saveSession(cube, sessionid, null, "navigate", null, null, result.mapping, result.operator);
               }
             } else { // SESSION ID is not null
               switch (result.getState()) {
@@ -175,7 +174,7 @@ public class MainServlet extends HttpServlet {
                   result.mapping.disambiguate(annotationid, value, log);
                 }
                 if (result.getState().equals(State.NAVIGATE)) {
-                  QueryGeneratorChecker.saveSession(sessionid, null, "navigate", null, null, result.mapping, result.operator);
+                  QueryGenerator.saveSession(cube, sessionid, null, "navigate", null, null, result.mapping, result.operator);
                 }
                 break;
               case ENGAGE_HINT:
@@ -186,7 +185,7 @@ public class MainServlet extends HttpServlet {
               case NAVIGATE:
                 if (isEmpty(annotationid)) { // issuing an OLAP OPERATOR
                   final Mapping prevTree = result.mapping;
-                  final Operator op = (Operator) Validator.parseAndTranslate(Operator.class, prevTree, tau, log, value).getNgrams().get(0);
+                  final Operator op = (Operator) Validator.parseAndTranslate(cube, Operator.class, prevTree, tau, log, value).getNgrams().get(0);
                   if (op.countAnnotatedNodesInTree() == 0) {
                     op.apply(prevTree.bestNgram);
                   }
@@ -210,7 +209,7 @@ public class MainServlet extends HttpServlet {
           }
 
           if (!value.equals("read") && !value.equals("reset")) {
-            QueryGeneratorChecker.saveSession(sessionid, annotationid, value, valueIta, limit, result.mapping, result.operator);
+            QueryGenerator.saveSession(cube, sessionid, annotationid, value, valueIta, limit, result.mapping, result.operator);
           }
 
           if (status == OK) {
@@ -235,14 +234,8 @@ public class MainServlet extends HttpServlet {
       } catch (final IOException e) {
         e.printStackTrace();
       }
-    } finally {
-      try {
-        DBmanager.getMetaConnection().close();
-        DBmanager.getDataConnection().close();
-      } catch (final Exception e) {
-        e.printStackTrace();
-      }
     }
+    DBmanager.closeAllConnections();
   }
 
   /**

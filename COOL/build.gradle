@@ -1,8 +1,14 @@
 plugins {
-    id "java-library"
-    id "eclipse"
-    id "war"
-    id "antlr"
+    id 'java-library'
+    id 'war'
+    id 'antlr'
+    id 'org.jetbrains.kotlin.jvm' version '1.4.10'
+    id 'org.gretty' version '3.0.3'
+}
+
+gretty {   // Add these lines
+    contextPath = '/'
+    servletContainer = 'jetty9'
 }
 
 compileJava {
@@ -15,37 +21,69 @@ repositories {
     mavenCentral()
 }
 
-// sourceSets {
-//  main { resources { srcDirs 'src/main/python' } }
-//  main { resources { srcDirs 'src/main/sql' } }
-//  main { resources { srcDirs 'resources' } }
-//  test { resources { srcDirs 'resources' } }
-// }
+sourceSets {
+    main { resources { srcDirs 'src/main/resources' } }
+    // main { resources { srcDirs 'src/main/sql' } }
+    // main { resources { srcDirs 'resources' } }
+    // test { resources { srcDirs 'resources' } }
+}
 
 dependencies {
-    antlr "org.antlr:antlr4:4.5" // use ANTLR version 4
+    // ANTLR 4
+    antlr "org.antlr:antlr4:4.8-1"
     implementation 'org.antlr:antlr4:4.5'
-    implementation 'mysql:mysql-connector-java:8.0.19'
-    implementation 'javax.servlet:javax.servlet-api:4.0.1' // servlets 4.0.1
+    // servlet
+    implementation 'javax:javaee-api:8.0.1'
+    implementation 'io.ktor:ktor-server-servlet:1.4.0'
+    // kotlin
+    implementation 'de.mpicbg.scicomp:krangl:0.14'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
+    // java
+    implementation 'mysql:mysql-connector-java:8.0.21'
+    implementation 'org.apache.commons:commons-csv:1.8'
     // implementation 'net.sf.extjwnl:extjwnl:2.0.2' // wordnet
     // implementation 'net.sf.extjwnl:extjwnl-data-wn31:1.2'
-    implementation 'edu.stanford.nlp:stanford-corenlp:3.9.2'
     // implementation 'edu.stanford.nlp:stanford-corenlp:3.9.2:models'
-    implementation 'org.jgrapht:jgrapht-core:1.4.0'
-    implementation 'org.apache.commons:commons-lang3:3.9'
-    implementation 'commons-io:commons-io:2.6'
-    implementation 'org.slf4j:slf4j-api:1.7.26'
-    implementation 'org.slf4j:slf4j-log4j12:1.7.26'
-    implementation 'org.json:json:20180813'
-    implementation 'com.google.guava:guava:28.0-jre'
-    implementation 'com.opencsv:opencsv:5.1'
-    testImplementation 'junit:junit:4.12'
+    implementation 'org.jgrapht:jgrapht-core:1.5.0'
+    implementation 'edu.stanford.nlp:stanford-corenlp:4.0.0'
+    implementation 'org.apache.commons:commons-lang3:3.11'
+    implementation 'commons-io:commons-io:2.8.0'
+    implementation 'org.slf4j:slf4j-api:1.7.30'
+    implementation 'org.slf4j:slf4j-log4j12:1.7.30'
+    implementation 'org.json:json:20200518'
+    // implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+    implementation 'com.google.guava:guava:29.0-jre'
+    implementation 'com.opencsv:opencsv:5.2'
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.9.8'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.11.2'
+    implementation 'com.oracle.ojdbc:ojdbc8:19.3.0.0'
+    implementation 'org.jooq:jool:0.9.0'
+    // Test
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
 }
 
 generateGrammarSource {
     outputDirectory = file("src/main/java/it/unibo/antlr/gen")
     arguments += ["-visitor"]
 }
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
+
 
 task runDBreader(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
