@@ -73,7 +73,9 @@ public final class QueryGenerator {
 
     public static String getTable(final Cube cube, final String... attributes) {
         final List<String> acc = Lists.newLinkedList();
-        executeMetaQuery(cube, "select distinct `table_name` from `" + tabLEVEL + "` l join `" + tabCOLUMN + "` c on l.level_name = c.column_name join `" + tabTABLE + "` t on c.table_id = t.table_id where level_name in (" + Arrays.asList(attributes).stream().reduce((a, b) -> "'" + a + "','" + b + "'").get() + ")", res -> {
+        executeMetaQuery(cube, "select distinct table_name " +
+                "from `" + tabLEVEL + "` l join `" + tabCOLUMN + "` c on l.level_name = c.column_name join `" + tabTABLE + "` t on c.table_id = t.table_id " +
+                "where level_name in (" + Arrays.stream(attributes).map(a -> cube.getDbms().equals("mysql")? a : a.toUpperCase()).reduce((a, b) -> "'" + a + "','" + b + "'").get() + ")", res -> {
             while (res.next()) {
                 final String table = res.getString(name(tabTABLE));
                 if (!table.equals(cube.getFactTable())) {
@@ -150,7 +152,7 @@ public final class QueryGenerator {
      * @return the entity corresponding to the level
      */
     public static Entity getLevel(final Cube cube, final String level, final boolean throwException) {
-        if (throwException && !getLevels(cube).containsKey(level)) {
+        if (throwException && !getLevels(cube).containsKey(level.toLowerCase())) {
             throw new IllegalArgumentException("Cannot find level " + level);
         }
         return getLevels(cube).get(level.toLowerCase());
@@ -198,7 +200,10 @@ public final class QueryGenerator {
         final Set<Pair<String, Object>> attributes = Sets.newLinkedHashSet();
         final Set<String> members = Sets.newLinkedHashSet();
         DBmanager.executeMetaQuery(cube,
-                "select level_type, level_description, cardinality, min, max, avg, isDescriptive, mindate, maxdate, member_name from `level` l left join `member` m on (l.level_id = m.level_id) where level_name = \"" + level + "\" limit " + topN,
+                "select level_type, level_description, cardinality, min, max, avg, isDescriptive, mindate, maxdate, member_name "
+                        + "from `" + tabLEVEL + "` l left join `" + tabMEMBER + "` m on (l.level_id = m.level_id) "
+                        + "where level_name = \"" + (cube.getDbms().equals("mysql") ? level : level.toUpperCase()) + "\" " + (cube.getDbms().equals("oracle")? " and ROWNUM <= " + topN + " " : "")
+                        + (cube.getDbms().equals("mysql")? "limit " + topN : ""),
                 res -> {
                     final BiFunction<String, Set<Pair<String, Object>>, Object> get = (t, u) -> {
                         try {
@@ -268,9 +273,10 @@ public final class QueryGenerator {
      */
     public static Map<String, Set<Entity>> getOperatorOfMeasure(final Cube cube) {
         final Map<String, Set<Entity>> map = Maps.newLinkedHashMap();
-        final String query = "select gm." + id(tabGROUPBYOPERATOR) + ", gm." + id(tabMEASURE) + ", " + name(tabMEASURE) + ", " + name(tabGROUPBYOPERATOR) + " "
-                + "from `" + tabGRBYOPMEASURE + "` gm, `" + tabMEASURE + "` m, `" + tabGROUPBYOPERATOR + "` g " + "where g." + id(tabGROUPBYOPERATOR) + " = gm."
-                + id(tabGROUPBYOPERATOR) + " and gm." + id(tabMEASURE) + " = m." + id(tabMEASURE) + "";
+        final String query =
+                "select gm." + id(tabGROUPBYOPERATOR) + ", gm." + id(tabMEASURE) + ", " + name(tabMEASURE) + ", " + name(tabGROUPBYOPERATOR) + " "
+                + "from `" + tabGRBYOPMEASURE + "` gm, `" + tabMEASURE + "` m, `" + tabGROUPBYOPERATOR + "` g "
+                + "where g." + id(tabGROUPBYOPERATOR) + " = gm." + id(tabGROUPBYOPERATOR) + " and gm." + id(tabMEASURE) + " = m." + id(tabMEASURE);
         DBmanager.executeMetaQuery(cube,
                 query,
                 res -> {
@@ -294,7 +300,9 @@ public final class QueryGenerator {
     public static Map<String, Set<Entity>> getMembersOfLevels(final Cube cube) {
         final Map<String, Set<Entity>> members = Maps.newLinkedHashMap();
         DBmanager.executeMetaQuery(cube,
-                "select * from `level` l, `column` c, `table` t, `member` m where c.table_id = t.table_id and l.column_id = c.column_id and l." + id(tabLEVEL) + " = m." + id(tabLEVEL),
+                "select * " +
+                        "from `" + tabLEVEL + "` l, `" + tabCOLUMN + "` c, `" + tabTABLE + "` t, `" + tabMEMBER + "` m " +
+                        "where c.table_id = t.table_id and l.column_id = c.column_id and l." + id(tabLEVEL) + " = m." + id(tabLEVEL),
                 res -> {
                     while (res.next()) {
                         final Set<Entity> tmp = members.getOrDefault(res.getString(name(tabLEVEL)), Sets.newLinkedHashSet());
@@ -320,7 +328,9 @@ public final class QueryGenerator {
      */
     public static Map<String, Set<Entity>> getLevelsOfMembers(final Cube cube) {
         final Map<String, Set<Entity>> attributes = Maps.newLinkedHashMap();
-        DBmanager.executeMetaQuery(cube, "select * from `member` m, `level` a, `column` c, `table` t where c.table_id = t.table_id and a.column_id = c.column_id and m.level_id = a.level_id", res -> {
+        DBmanager.executeMetaQuery(cube, "select * " +
+                "from `" + tabLEVEL + "` a, `" + tabCOLUMN + "` c, `" + tabTABLE + "` t, `" + tabMEMBER + "` m " +
+                "where c.table_id = t.table_id and a.column_id = c.column_id and m.level_id = a.level_id", res -> {
             while (res.next()) {
                 final Set<Entity> tmp = attributes.getOrDefault(res.getString(name(tabMEMBER)), Sets.newLinkedHashSet());
                 tmp.add(new Entity(
@@ -356,7 +366,7 @@ public final class QueryGenerator {
      */
     public static void saveQuery(final Cube cube, final String query, final String gbset, final String predicate, final String selclause) {
         DBmanager.insertMeta(cube,
-                "INSERT INTO `" + tabQuery + "` (`" + colQueryText + "`, `" + colQueryGBset + "`, `" + colQueryMeasClause + "`, `" + colQuerySelClause + "`) " + "VALUES (\"" + query + "\", \"" + gbset + "\", \"" + selclause + "\", \"" + predicate + "\")",
+                "INSERT INTO `" + tabQUERY + "` (`" + colQueryText + "`, `" + colQueryGBset + "`, `" + colQueryMeasClause + "`, `" + colQuerySelClause + "`) " + "VALUES (\"" + query + "\", \"" + gbset + "\", \"" + selclause + "\", \"" + predicate + "\")",
                 PreparedStatement::execute);
     }
 
@@ -377,13 +387,13 @@ public final class QueryGenerator {
      */
     public static void saveSession(final Cube cube, final String sessionid, final String annotationid, final String valueEn, final String valueIta, final String limit, final Mapping fullquery, final Operator operator) {
         final String sql =
-                "INSERT INTO `" + tabOLAPsession + "` (`timestamp`, `session_id`, `value_en`"
-                        + checkNull(annotationid, ", `annotation_id`")
-                        + checkNull(valueIta, ", `value_ita`")
-                        + checkNull(limit, ", `limit`")
-                        + checkNull(fullquery, ", `fullquery_serialized`")
-                        + checkNull(fullquery, ", `fullquery_tree`")
-                        + checkNull(operator, ", `olapoperator_serialized`")
+                "INSERT INTO `" + tabOLAPsession + "` (timestamp, session_id, value_en"
+                        + checkNull(annotationid, ", annotation_id")
+                        + checkNull(valueIta, ", value_ita")
+                        + checkNull(limit, ", limit")
+                        + checkNull(fullquery, ", fullquery_serialized")
+                        + checkNull(fullquery, ", fullquery_tree")
+                        + checkNull(operator, ", olapoperator_serialized")
                         + ")"
                         + "VALUES (" + //
                         +System.currentTimeMillis() + "," //
@@ -396,7 +406,7 @@ public final class QueryGenerator {
                         + (fullquery != null ? ", ?" : "")
                         + (operator != null ? ", ?" : "")
                         + ")";
-        try (PreparedStatement pstmt = getMetaConnection(cube).prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        DBmanager.insertMeta(cube, sql, pstmt -> {
             if (fullquery != null) {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 ObjectOutputStream oout = new ObjectOutputStream(baos);
@@ -413,9 +423,7 @@ public final class QueryGenerator {
                 oout.close();
             }
             pstmt.execute();
-        } catch (SQLException | IOException e) {
-            e.printStackTrace();
-        }
+        });
     }
 
     /**
@@ -434,9 +442,14 @@ public final class QueryGenerator {
      */
     public static Map<String, Object> getSessionStatistics(final Cube cube, final String sessionid, final Mapping fullquery, final Mapping session) throws IOException {
         final String sql =
-                "select `value_en`, `timestamp`, `fullquery_serialized`, `olapoperator_serialized` "
-                        + "from OLAPsession where `value_en` in (\"read\", \"navigate\", \"reset\") and session_id = \"" + sessionid + "\" "
-                        + "and `timestamp` >= (select `timestamp` from OLAPsession where session_id = \"" + sessionid + "\" and value_en = \"read\" order by 1 desc limit 1)";
+                cube.getDbms().equalsIgnoreCase("mysql") ?
+                "select value_en, timestamp, fullquery_serialized, olapoperator_serialized "
+                        + "from OLAPsession where value_en in (\"read\", \"navigate\", \"reset\") and session_id = \"" + sessionid + "\" "
+                        + "and timestamp >= (select timestamp from OLAPsession where session_id = \"" + sessionid + "\" and value_en = \"read\" order by 1 desc limit 1)" :
+                "with timest as (select `TIMESTAMP` as timest from OLAPsession where session_id = \"" + sessionid + "\" and value_en = \"read\" and rownum <= 1 order by 1 desc) "
+                    + "select value_en, `TIMESTAMP`, fullquery_serialized, olapoperator_serialized "
+                    + "from OLAPsession, timest "
+                    + "where value_en in (\"read\", \"navigate\", \"reset\") and session_id = \"" + sessionid + "\" and `TIMESTAMP` >= timest.timest";
         final Map<String, Long> lookupTime = Maps.newLinkedHashMap();
         final Map<String, Mapping> lookupQuery = Maps.newLinkedHashMap();
         final Map<String, Operator> lookupOperator = Maps.newLinkedHashMap();
@@ -481,11 +494,19 @@ public final class QueryGenerator {
     public static Map<String, Double> getSessionCounts(final Cube cube, final String sessionid) {
         final Map<String, Double> statistics = Maps.newLinkedHashMap();
 
-        String sql = "select count(*) as steps, count(distinct case when annotation_id is null or annotation_id = '' then null else annotation_id end) as annotations "
-                + "from OLAPsession "
-                + "where `value_en` <> \"navigate\" and session_id = \"" + sessionid + "\" and "
-                + "    `timestamp` < (select `timestamp` from OLAPsession where session_id = \"" + sessionid + "\" and value_en = \"reset\" order by 1 desc limit 1) and "
-                + "    `timestamp` > (select `timestamp` from olapsession where session_id = \"" + sessionid + "\" and value_en = \"read\"  order by 1 desc limit 1)";
+        String sql =
+                cube.getDbms().equals("oracle") ?
+                        "with hightimest as (select timestamp as t1 from OLAPsession where session_id = '" + sessionid + "' and value_en = 'reset' and rownum <=1 order by 1 desc), "
+                                + "lowtimest  as (select timestamp as t2 from OLAPsession where session_id = '" + sessionid + "' and value_en = 'read' and rownum <=1 order by 1 desc) "
+                                + "select count(*) as steps, count(distinct case when annotation_id is null or annotation_id = '' then null else annotation_id end) as annotations "
+                                + "from OLAPsession, hightimest, lowtimest "
+                                + "where value_en <> 'navigate' and session_id = '" + sessionid + "' and timestamp < hightimest.t1 and timestamp > lowtimest.t2"
+                        :
+                        "select count(*) as steps, count(distinct case when annotation_id is null or annotation_id = '' then null else annotation_id end) as annotations "
+                                + "from OLAPsession "
+                                + "where `value_en` <> \"navigate\" and session_id = \"" + sessionid + "\" and "
+                                + "    `timestamp` < (select `timestamp` from OLAPsession where session_id = \"" + sessionid + "\" and value_en = \"reset\" order by 1 desc limit 1) and "
+                                + "    `timestamp` > (select `timestamp` from olapsession where session_id = \"" + sessionid + "\" and value_en = \"read\"  order by 1 desc limit 1)";
         DBmanager.executeMetaQuery(cube, sql, res -> {
             while (res.next()) {
                 statistics.put("session_iterations", res.getInt(1) * 1.0);
@@ -493,11 +514,20 @@ public final class QueryGenerator {
             }
         });
 
-        sql = "select count(*) as steps, count(distinct case when annotation_id is null or annotation_id = '' then null else annotation_id end)"
-                + " from OLAPsession "
-                + "where session_id = \"" + sessionid + "\" and `value_en` <> \"navigate\" and"
-                + "    `timestamp` > (select `timestamp` from OLAPsession where session_id = \"" + sessionid + "\" and value_en = \"read\" order by 1 desc limit 1) and "
-                + "    `timestamp` <= (select `timestamp` from olapsession where session_id = \"" + sessionid + "\" and value_en <> \"navigate\" and `timestamp` >= (select `timestamp` from olapsession where session_id = \"" + sessionid + "\" and value_en = \"navigate\" order by 1 desc limit 1) order by 1 asc limit 1)";
+        sql =
+                cube.getDbms().equals("oracle") ?
+                        "with t1 as (select timestamp as timest from OLAPsession where session_id = \"" + sessionid + "\" and value_en = 'read' and rownum <=1 order by 1 desc), "
+                                + "t2 as (select timestamp as timest from OLAPsession where session_id = \"" + sessionid + "\" and value_en = 'navigate' and rownum <=1 order by 1 desc), "
+                                + "t3 as (select timestamp as timest from OLAPsession, t2 where session_id = \"" + sessionid + "\" and value_en <> 'navigate' and timestamp >= t2.timest and rownum <=1 order by 1 asc) "
+                                + "select count(*) as steps, count(distinct case when annotation_id is null or annotation_id = '' then null else annotation_id end) "
+                                + "from OLAPsession, t1, t2, t3 "
+                                + "where session_id = \"" + sessionid + "\" and value_en <> 'navigate' and timestamp > t1.timest and timestamp <= t3.timest"
+                        :
+                        "select count(*) as steps, count(distinct case when annotation_id is null or annotation_id = '' then null else annotation_id end) "
+                                + "from OLAPsession "
+                                + "where session_id = \"" + sessionid + "\" and `value_en` <> \"navigate\" and"
+                                + "    `timestamp` > (select `timestamp` from OLAPsession where session_id = \"" + sessionid + "\" and value_en = \"read\" order by 1 desc limit 1) and "
+                                + "    `timestamp` <= (select `timestamp` from olapsession where session_id = \"" + sessionid + "\" and value_en <> \"navigate\" and `timestamp` >= (select `timestamp` from olapsession where session_id = \"" + sessionid + "\" and value_en = \"navigate\" order by 1 desc limit 1) order by 1 asc limit 1)";
         DBmanager.executeMetaQuery(cube, sql, res -> {
             while (res.next()) {
                 statistics.put("fullquery_iterations", res.getInt(1) * 1.0);

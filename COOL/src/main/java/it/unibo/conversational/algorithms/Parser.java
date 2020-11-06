@@ -24,13 +24,14 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultEdge;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -178,9 +179,9 @@ public final class Parser {
         if (lca == null) {
           c.annotate(incTypeCheckId(), AnnotationType.A2, Sets.newHashSet(from.mde(), to.mde()));
         } else {
-          if (from.getAnnotations().values().stream().allMatch(p -> !p.getKey().equals(AnnotationType.ENE))
-              && to.getAnnotations().values().stream().allMatch(p -> !p.getKey().equals(AnnotationType.EAE))
-              && (c.type.equals(Type.DRILL) && lca.equals(from.mde().nameInTable()) || c.type.equals(Type.ROLLUP) && lca.equals(to.mde().nameInTable()))) {
+          if (from.getAnnotations().values().stream().noneMatch(p -> p.getKey().equals(AnnotationType.ENE))
+              && to.getAnnotations().values().stream().noneMatch(p -> p.getKey().equals(AnnotationType.EAE))
+              && (c.type.equals(Type.DRILL) && lca.equalsIgnoreCase(from.mde().nameInTable()) || c.type.equals(Type.ROLLUP) && lca.equalsIgnoreCase(to.mde().nameInTable()))) {
             c.annotate(incTypeCheckId(), AnnotationType.GSA, Sets.newHashSet(from.mde(), to.mde()));
           }
         }
@@ -325,9 +326,9 @@ public final class Parser {
               final Graph<String, DefaultEdge> graph = DependencyGraph.getDependencies(cube);
               final Set<DefaultEdge> edges;
               if (c.type.equals(Type.DRILL)) {
-                edges = graph.incomingEdgesOf(attr.mde().nameInTable());
+                edges = graph.incomingEdgesOf(attr.mde().nameInTable().toLowerCase());
               } else {
-                edges = graph.outgoingEdgesOf(attr.mde().nameInTable());
+                edges = graph.outgoingEdgesOf(attr.mde().nameInTable().toLowerCase());
               }
               if (edges.size() == 1) { // infer coarser/finer attribute
                 final DefaultEdge edge = edges.stream().findAny().get();
@@ -350,7 +351,7 @@ public final class Parser {
                   boolean ret = cc.mde.isPresent() && cc.type.equals(Type.ATTR) && !cc.mde().equals(attr.mde());
                   if (ret) {
                     final Optional<String> lca = DependencyGraph.lca(cube, cc.mde().nameInTable(), attr.mde().nameInTable());
-                    ret &= lca.isPresent() && lca.get().equals(cc.mde().nameInTable());
+                    ret &= lca.isPresent() && lca.get().equalsIgnoreCase(cc.mde().nameInTable()); // NB: in the dependency graph all attributes names are lowercase
                   }
                   return ret;
                 });
@@ -359,7 +360,7 @@ public final class Parser {
                   boolean ret = cc.mde.isPresent() && cc.type.equals(Type.ATTR) && !cc.mde().equals(attr.mde());
                   if (ret) {
                     final Optional<String> lca = DependencyGraph.lca(cube, cc.mde().nameInTable(), attr.mde().nameInTable());
-                    ret &= lca.isPresent() && lca.get().equals(attr.mde().nameInTable());
+                    ret &= lca.isPresent() && lca.get().equalsIgnoreCase(attr.mde().nameInTable()); // NB: in the dependency graph all attributes names are lowercase
                   }
                   return ret;
                 });
@@ -596,6 +597,22 @@ public final class Parser {
       }
     }
 
-    return "select " + select.replace("stdev", "std") + " " + from + (where.isEmpty() ? "" : " where " + where) + (groupby.isEmpty() ? "" : " group by " + groupby);
+    return "select " + fixDeviation(cube, select) + " " + from + (where.isEmpty() ? "" : " where " + where) + (groupby.isEmpty() ? "" : " group by " + groupby);
+  }
+
+  /**
+   * Fix the standard deviation function
+   * @param cube cube
+   * @param select select clause
+   * @return fixed select clause
+   */
+  private static String fixDeviation(final Cube cube, final String select) {
+    if (cube.getDbms().equals("mysql")) {
+       return select.replace("stdev", "std");
+    } else if (cube.getDbms().equals("oracle")) {
+      return select.replace("stdev", "stddev");
+    } else {
+      return select;
+    }
   }
 }

@@ -7,9 +7,6 @@ import it.unibo.conversational.datatypes.Entity;
 import it.unibo.conversational.datatypes.Ngram;
 import org.apache.commons.lang3.tuple.Triple;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +21,7 @@ import static it.unibo.conversational.database.DBmanager.*;
  */
 public final class DBsynonyms {
 
-    private static Map<List<String>, List<Entity>> syns = Maps.newLinkedHashMap();
+    public static Map<List<String>, List<Entity>> syns = Maps.newLinkedHashMap();
     private static Map<Object[], List<Triple<Entity, Double, String>>> cache = Maps.newLinkedHashMap();
 
     /**
@@ -40,11 +37,14 @@ public final class DBsynonyms {
     /**
      * Load synonyms from the datawarehouse (for members: store reference to the corresponding level, for levels: store reference to the corresponding table).
      */
-    private static void initSynonyms(final Cube cube) {
+    public static void initSynonyms(final Cube cube) {
         // Add others
         for (final String table : DBmanager.tabsWithSyns.stream().filter(t -> !t.equals(tabMEMBER) && !t.equals(tabLEVEL)).collect(Collectors.toList())) {
             executeMetaQuery(cube,
-                    "select s.term, " + id(table) + ", " + name(table) + ", table_name from synonym s, " + table + " where s.reference_id = " + id(table) + " and s.table_name = '" + table + "'", res -> {
+                    "select s.term, " + id(table) + ", " + name(table) + ", table_name " +
+                            "from `" + tabSYNONYM + "` s, `" + table + "` " +
+                            "where s.reference_id = " + id(table) + " and s.table_name = '" + table + "'",
+                    res -> {
                         while (res.next()) {
                             List<String> synonym = Arrays.asList(res.getString(colSYNTERM).replace("_", " ").split(" ")).stream().filter(t -> !t.isEmpty()).collect(Collectors.toList());
                             List<Entity> tmp = syns.getOrDefault(synonym, Lists.newLinkedList());
@@ -53,10 +53,16 @@ public final class DBsynonyms {
                         }
                     });
         }
+        if (syns.isEmpty()) {
+            throw new IllegalArgumentException("This should not be null, pls check the where clause");
+        }
 
         // Add members
         executeMetaQuery(cube,
-                "select * from `synonym` s, `member` m, `level` l, `column` c, `table` t where s.table_name = 'member' and reference_id = m.member_id and m.level_id = l.level_id and c.table_id = t.table_id and l.column_id = c.column_id", res -> {
+                "select * " +
+                        "from `" + tabSYNONYM + "` s, `" + tabMEMBER + "` m, `" + tabLEVEL + "` l, `" + tabCOLUMN + "` c, `" + tabTABLE + "` t " +
+                        "where s.table_name = '" + tabMEMBER + "' and reference_id = m.member_id and m.level_id = l.level_id and c.table_id = t.table_id and l.column_id = c.column_id",
+                res -> {
                     while (res.next()) {
                         List<String> synonym = Arrays.asList(res.getString(colSYNTERM).replace("_", " ").split(" ")).stream().filter(t -> !t.isEmpty()).collect(Collectors.toList());
                         List<Entity> tmp = syns.getOrDefault(synonym, Lists.newLinkedList());
@@ -75,7 +81,9 @@ public final class DBsynonyms {
 
         // Add levels
         executeMetaQuery(cube,
-                "select s.term, l.level_name from synonym s, `level` l where s.table_name = 'level' and s.reference_id = l.level_id",
+                "select s.term, l.level_name " +
+                        "from `" + tabSYNONYM + "` s, `" + tabLEVEL + "` l " +
+                        "where s.table_name = '" + tabLEVEL + "' and s.reference_id = l.level_id",
                 res -> {
                     while (res.next()) {
                         List<String> synonym = Arrays.asList(res.getString(colSYNTERM).replace("_", " ").split(" ")).stream().filter(t -> !t.isEmpty()).collect(Collectors.toList());

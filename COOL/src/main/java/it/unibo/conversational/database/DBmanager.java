@@ -90,7 +90,7 @@ public final class DBmanager {
     /**
      * Table tabHiF.
      */
-    public static final String tabHiF = "hierarchy_in_fact".toUpperCase();
+    public static final String tabHIF = "hierarchy_in_fact".toUpperCase();
     /**
      * Table tabHIERARCHY.
      */
@@ -134,7 +134,7 @@ public final class DBmanager {
     /**
      * Table tabQuery.
      */
-    public static final String tabQuery = "queries".toUpperCase();
+    public static final String tabQUERY = "queries".toUpperCase();
     /**
      * Table tabQuery.
      */
