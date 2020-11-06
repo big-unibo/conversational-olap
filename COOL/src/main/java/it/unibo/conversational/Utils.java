@@ -426,7 +426,7 @@ public final class Utils {
      */
     public static double tokenSimilarity(final String first, final String second) {
         double maxl = Math.max(first.length(), second.length());
-        return 1 - (StringUtils.levenshteinDistance(first.toLowerCase(), second.toLowerCase()) / maxl);
+        return 1 - (StringUtils.levenshteinDistance(first, second) / maxl);
     }
 
     /**

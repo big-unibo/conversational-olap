@@ -970,11 +970,11 @@ public class Ngram implements Serializable {
   public String toStringTree() {
     return 
         (children.isEmpty() 
-            ? ((type.equals(Type.VAL) ? "v" : "") +  mde().nameInTable().replace(" ", ""))
+            ? (type.equals(Type.VAL) ? "v" + mde().nameInTable() : mde().nameInTable().toLowerCase()).replace(" ", "")
             : type + "(" + 
                 children.stream()
                         .sorted((a, b) -> type.equals(Type.GPSJ) ? a.type.compareTo(b.type) : 1)
-                        .map((Ngram n) -> n.toStringTree()).reduce((n1, n2) -> n1 + " " + n2).get() + ")")
+                        .map(Ngram::toStringTree).reduce((n1, n2) -> n1 + " " + n2).get() + ")")
         .replace("_", "") // Tree distance breaks when _ = > < are in the string
         .replace("=", "e")
         .replace(">", "g")

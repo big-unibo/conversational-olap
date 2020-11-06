@@ -96,10 +96,10 @@ public class DBreader {
                                 });
                                 break;
                             case DATE:
-                                executeDataQuery(c, "SELECT min(" + colName + ") AS min, max(" + colName + ") AS max, avg(" + colName + ") AS avg FROM " + tabName + ";", resI -> {
+                                executeDataQuery(c, "SELECT min(" + colName + "), max(" + colName + ") FROM " + tabName + ";", resI -> {
                                     resI.first();
-                                    final Date min = resI.getDate("v");
-                                    final Date max = resI.getDate("v");
+                                    final Date min = resI.getDate(1);
+                                    final Date max = resI.getDate(2);
                                     dbloader.modifyDateLevel(colName, idLevel, max, min, card);
                                 });
                                 break;
@@ -202,6 +202,9 @@ public class DBreader {
     public static void main(final String[] args) throws Exception {
         for (Cube cube : Config.getCubes()) {
             if (cube.getCreate()) {
+                L.debug("-------------------------");
+                L.debug(cube.getFactTable().toUpperCase());
+                L.debug("-------------------------");
                 new DBreader(cube).loadDataAndMetadata();
             }
         }

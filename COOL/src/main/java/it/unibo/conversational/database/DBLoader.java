@@ -10,10 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static it.unibo.conversational.database.DBmanager.*;
 
@@ -21,7 +18,7 @@ import static it.unibo.conversational.database.DBmanager.*;
  * Load metadata to the database.
  */
 public final class DBLoader {
-
+    private static Long counter = 0L;
     private static final Logger L = LoggerFactory.getLogger(DBLoader.class);
     private final Cube cube;
     private String factTABLEid;
@@ -136,10 +133,10 @@ public final class DBLoader {
         final String keyHierarchy = acc.remove(0);
 
         // Salvo, se non c'è già, l'appartenenza della gerarchia al fatto
-        executeMetaQuery(cube, "SELECT * FROM `" + tabHiF + "` WHERE `" + id(tabFACT) + "` = \"" + factID + "\" AND `" + id(tabHIERARCHY) + "` = \"" + keyHierarchy + "\"", res -> {
+        executeMetaQuery(cube, "SELECT * FROM `" + tabHIF + "` WHERE `" + id(tabFACT) + "` = \"" + factID + "\" AND `" + id(tabHIERARCHY) + "` = \"" + keyHierarchy + "\"", res -> {
             res.last();
             if (res.getRow() == 0) {
-                executeQuery(cube, "INSERT INTO `" + tabHiF + "` (`" + id(tabFACT) + "`, `" + id(tabHIERARCHY) + "`)" + " values(\"" + factID + "\", \"" + keyHierarchy + "\");");
+                executeQuery(cube, "INSERT INTO `" + tabHIF + "` (`" + id(tabFACT) + "`, `" + id(tabHIERARCHY) + "`)" + " values(\"" + factID + "\", \"" + keyHierarchy + "\");");
             }
         });
         return Pair.of(keyHierarchy, insertTableHierarchy(tabName, keyHierarchy, fk, factTABLEid));
@@ -167,7 +164,7 @@ public final class DBLoader {
 
     // Per i livelli di tipo data memorizzo massimo, minimo oltre che lacardinalita'
     public void modifyDateLevel(String colName, String levelID, Date max, Date min, int c) {
-        executeQuery(cube, "UPDATE `" + tabLEVEL + "` set `" + colLEVELMINDATE + "` = '" + min + "' , `" + colLEVELMAXDATE + "` = '" + max + "', `" + colLEVELCARD + "` = " + c + " WHERE `" + id(tabLEVEL) + "` = \"" + levelID + "\"");
+        executeQuery(cube, "UPDATE `" + tabLEVEL + "` set `" + colLEVELMINDATE + "` = " + Utils.toDate(cube, colName, "'" + min.toString() + "'") + " , `" + colLEVELMAXDATE + "` = " + Utils.toDate(cube, colName, "'" + max.toString() + "'") + ", `" + colLEVELCARD + "` = " + c + " WHERE `" + id(tabLEVEL) + "` = \"" + levelID + "\"");
     }
 
     // Per i valori numerici oltre alla cardinalità salvo anche il massimo e il minimo
@@ -182,7 +179,7 @@ public final class DBLoader {
             executeMetaQuery(cube, "SELECT * FROM `" + tabMEMBER + "` WHERE `" + name(tabMEMBER) + "` = \"" + v + "\" AND `" + id(tabLEVEL) + "` = \"" + levelID + "\"", res -> {
                 res.last();
                 if (res.getRow() == 0) {
-                    executeQueryReturnID(cube, id(tabMEMBER), "INSERT INTO `" + tabMEMBER + "` (`" + name(tabMEMBER) + "`, `" + id(tabLEVEL) + "`)" + " values(" + v + ", \"" + levelID + "\");");
+                    executeQueryReturnID(cube, id(tabMEMBER), "INSERT INTO `" + tabMEMBER + "` (`" + id(tabMEMBER) + "`, `" + name(tabMEMBER) + "`, `" + id(tabLEVEL) + "`)" + " values(" + counter++ + "," + v + ", \"" + levelID + "\");");
                 }
             });
         }
@@ -215,10 +212,11 @@ public final class DBLoader {
             }
         }
         values.close();
-        insertMeta(cube, "INSERT INTO `" + tabMEMBER + "` (`" + name(tabMEMBER) + "`, `" + id(tabLEVEL) + "`)" + " values(?, ?)", ps -> {
+        insertMeta(cube, "INSERT INTO `" + tabMEMBER + "` (`" + id(tabMEMBER) + "`, `" + name(tabMEMBER) + "`, `" + id(tabLEVEL) + "`)" + " values(?, ?, ?)", ps -> {
             for (final String v : acc) {
-                ps.setString(1, v);
-                ps.setString(2, levelID);
+                ps.setString(1, counter++ + "");
+                ps.setString(2, Objects.requireNonNull(v));
+                ps.setString(3, Objects.requireNonNull(levelID));
                 ps.addBatch();
             }
             ps.executeBatch();
@@ -235,33 +233,36 @@ public final class DBLoader {
             final String colID = id(tab);
             final String colSyn = synonyms(tab);
             final String colName = name(tab);
-            executeMetaQuery(cube, "SELECT `" + colID + "`, `" + colName + "`, `" + colSyn + "` FROM `" + tab + "`", syns -> {
-                insertMeta(cube, "INSERT INTO `" + tabSYNONYM + "` (`" + id(tabSYNONYM) + "`, `" + colSYNTERM + "`, `" + name(tabTABLE) + "`, `REFERENCE_ID`) values(?, ?, ?, ?)", ps -> {
-                    while (syns.next()) {
-                        String refID = syns.getString(colID);
-                        // Prima aggiungo il termine stesso
-                        String n = syns.getString(colName);
-                        ps.setString(1, refID + "_" + n);
-                        ps.setString(2, n);
-                        ps.setString(3, tab);
-                        ps.setString(4, refID);
-                        ps.addBatch();
-                        // Poi i suoi eventuali sinonimi
-                        String s = syns.getString(colSyn);
-                        if (s != null) {
-                            JSONArray js = new JSONArray(s);
-                            Iterator<Object> jsi = js.iterator();
-                            while (jsi.hasNext()) {
-                                ps.setString(1, (String) jsi.next());
-                                ps.setString(2, tab);
-                                ps.setString(3, refID);
+            executeMetaQuery(cube,
+                    "SELECT `" + colID + "`, `" + colName + "`, `" + colSyn + "` FROM `" + tab + "`",
+                    syns -> {
+                        insertMeta(cube, "INSERT INTO `" + tabSYNONYM + "` (`" + id(tabSYNONYM) + "`, `" + colSYNTERM + "`, `" + name(tabTABLE) + "`, `REFERENCE_ID`) values(?, ?, ?, ?)", ps -> {
+                            while (syns.next()) {
+                                String refID = syns.getString(colID);
+                                // Prima aggiungo il termine stesso
+                                String n = syns.getString(colName);
+                                // ps.setString(1, refID + "_" + n);
+                                ps.setString(1, counter++ + "");
+                                ps.setString(2, n);
+                                ps.setString(3, tab);
+                                ps.setString(4, refID);
                                 ps.addBatch();
+                                // Poi i suoi eventuali sinonimi
+                                String s = syns.getString(colSyn);
+                                if (s != null) {
+                                    JSONArray js = new JSONArray(s);
+                                    for (Object j : js) {
+                                        ps.setString(1, counter++ + "");
+                                        ps.setString(2, (String) j);
+                                        ps.setString(3, tab);
+                                        ps.setString(4, refID);
+                                        ps.addBatch();
+                                    }
+                                }
                             }
-                        }
-                    }
-                    ps.executeBatch();
-                });
-            });
+                            ps.executeBatch();
+                        });
+                    });
         }
     }
 

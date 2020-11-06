@@ -2,7 +2,6 @@ package it.unibo.conversational.datatypes;
 
 import com.google.common.base.Optional;
 import it.unibo.conversational.Utils.DataType;
-import it.unibo.conversational.database.Cube;
 
 import java.io.Serializable;
 import java.util.Objects;

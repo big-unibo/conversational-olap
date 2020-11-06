@@ -11,7 +11,6 @@ import it.unibo.conversational.algorithms.Parser;
 import it.unibo.conversational.algorithms.Parser.Type;
 import it.unibo.conversational.database.Cube;
 import it.unibo.conversational.database.DBmanager;
-import it.unibo.conversational.database.QueryGenerator;
 import it.unibo.conversational.datatypes.Ngram.AnnotationType;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.tuple.Pair;
@@ -21,7 +20,6 @@ import zhsh.Tree;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.sql.ResultSet;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.LongAdder;

@@ -31,14 +31,12 @@ public class DependencyGraph {
     }
 
     public static Graph<String, DefaultEdge> getDependencies(final Cube cube) {
-        switch (cube.getMetaData()) {
-            case "covid_metadata":
+        switch (cube.getFactTable()) {
+            case "covid":
                 return getCovidMartDependencies();
-            case "meta-foodmart":
-            case "conversational":
+            case "sales_fact_1997":
                 return getFoodMartDependencies();
-            case "research":
-            case "meta-ssb_flights":
+            case "lineorder2": // ssb cube
                 return getSSBDependencies();
         }
         throw new IllegalArgumentException(DependencyGraph.class + ": unknown schema " + cube.getMetaData());

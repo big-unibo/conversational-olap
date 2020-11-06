@@ -325,9 +325,13 @@ public class TestOLAP {
 
     // Infer TO attribute
     // 1 finer attribute
-    execute("sum unit sales by month", "roll up the year", "sum unit sales by the year"); 
+    execute("sum unit sales by month", "roll up the year", "sum unit sales by the year");
     // 2 finer attributes
     execute("sum unit sales by month quarter", "roll up the year", Lists.newArrayList(AnnotationType.CA), Lists.newArrayList(Pair.of("i3", "the_month")), "sum unit sales by quarter the year");
+//  }
+//  @Test
+//  public void test061bis() {
+
     // 0 finer attributes, 1 coarser attribute
     execute("sum unit sales by year", "roll up the date", Lists.newArrayList(AnnotationType.GSA));
     // 0 finer attributes, 0 coarser attribute

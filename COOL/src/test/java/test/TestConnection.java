@@ -5,6 +5,9 @@ import it.unibo.conversational.database.*;
 import it.unibo.conversational.datatypes.Ngram;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
+import static it.unibo.conversational.database.DBmanager.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -19,6 +22,13 @@ public class TestConnection {
         });
     }
 
+    private void count(final String table, final int rows) {
+        DBmanager.executeMetaQuery(cube, "select count(*) from `" + table + "`", res -> {
+            assertTrue(res.next(), table + " is empty");
+            assertEquals(res.getInt(1), rows, "Rows mismatch");
+        });
+    }
+
     /**
      * Test functions.
      *
@@ -27,6 +37,9 @@ public class TestConnection {
     @Test
     public void testFunctions() {
         try {
+            DBsynonyms.initSynonyms(cube);
+            assertTrue(DBsynonyms.syns.containsKey(Lists.newArrayList("sum")));
+            assertFalse(DBsynonyms.getEntities(cube, Ngram.class, Lists.newArrayList("sum"), 1.0, 1.0, 1, 1).isEmpty());
             assertFalse(QueryGenerator.getOperatorOfMeasure(cube).isEmpty());
             DBmanager.closeAllConnections();
             assertFalse(QueryGenerator.getMembersOfLevels(cube).isEmpty());
@@ -54,21 +67,26 @@ public class TestConnection {
      */
     @Test
     public void testNonEmptyTables() {
-        count(DBmanager.tabTABLE);
-        count(DBmanager.tabRELATIONSHIP);
-        count(DBmanager.tabCOLUMN);
-        count(DBmanager.tabDATABASE);
-        count(DBmanager.tabFACT);
-        count(DBmanager.tabHiF);
-        count(DBmanager.tabHIERARCHY);
-        count(DBmanager.tabLEVEL);
-        count(DBmanager.tabMEMBER);
-        count(DBmanager.tabMEASURE);
-        count(DBmanager.tabGROUPBYOPERATOR);
-        count(DBmanager.tabSYNONYM);
-        count(DBmanager.tabLANGUAGEPREDICATE);
-        count(DBmanager.tabLANGUAGEOPERATOR);
-        count(DBmanager.tabGRBYOPMEASURE); // MUST BY POPULATED MANUALLY
-        // count(DBmanager.tabLEVELROLLUP); MUST BY POPULATED MANUALLY
+        count(tabTABLE);
+        if (cube.getFactTable().equals("sales_fact_1997")) {
+            count(tabTABLE, 6);
+        }
+        count(tabRELATIONSHIP);
+        count(tabCOLUMN);
+        count(tabDATABASE);
+        count(tabFACT);
+        count(tabHIF);
+        count(tabHIERARCHY);
+        count(tabLEVEL);
+        count(tabMEMBER);
+        count(tabMEASURE);
+        count(tabGROUPBYOPERATOR);
+        count(tabSYNONYM);
+        count(tabGRBYOPMEASURE);
+        count(tabLANGUAGEPREDICATE);
+        count(tabLANGUAGEOPERATOR);
+        // count(tabLEVELROLLUP);
+        // count(tabQUERY);
+        // count(tabOLAPsession);
     }
 }
