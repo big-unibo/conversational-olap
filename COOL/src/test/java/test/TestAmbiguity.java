@@ -23,7 +23,8 @@ import static org.junit.jupiter.api.Assertions.*;
 /** Test the validation accuracy. */
 public class TestAmbiguity {
 
-  private final Cube cube = Config.getCube("sales_fact_1997");
+  private final Cube foodmart = Config.getCube("sales_fact_1997");
+  private final Cube ssb = Config.getCube("lineorder2");
 
   @AfterEach
   public void after() {
@@ -34,7 +35,7 @@ public class TestAmbiguity {
     return m.getAnnotatedNgrams().stream().map(Ngram::getAnnotations).collect(Collectors.toList()).toString();
   }
 
-  private void checkEquals(final Mapping ambiguousMapping, final Mapping correctSentence, final boolean checkEquals) throws IOException {
+  private void checkEquals(final Cube cube, final Mapping ambiguousMapping, final Mapping correctSentence, final boolean checkEquals) throws IOException {
     assertEquals(1, ambiguousMapping.ngrams.size());
     assertEquals(correctSentence.bestNgram.countNode(), ambiguousMapping.bestNgram.countNode());
     if (checkEquals) {
@@ -53,11 +54,11 @@ public class TestAmbiguity {
     }
   }
 
-  private void checkQuery(final Mapping correctSentence, final String nlp, final int ambiguousNgrams, final List<Pair<String, String>> disambiguations) {
-    checkQuery(correctSentence, nlp, ambiguousNgrams, disambiguations, true);
+  private void checkQuery(final Cube cube, final Mapping correctSentence, final String nlp, final int ambiguousNgrams, final List<Pair<String, String>> disambiguations) {
+    checkQuery(cube, correctSentence, nlp, ambiguousNgrams, disambiguations, true);
   }
 
-  private void checkQuery(final Mapping correctSentence, final String nlp, final int ambiguousNgrams, final List<Pair<String, String>> disambiguations, final boolean checkEquals) {
+  private void checkQuery(final Cube cube, final Mapping correctSentence, final String nlp, final int ambiguousNgrams, final List<Pair<String, String>> disambiguations, final boolean checkEquals) {
     Parser.TEST = true;
     permutations(disambiguations).forEach(l -> {
       // System.out.println(l);
@@ -74,7 +75,7 @@ public class TestAmbiguity {
             fail(e.getMessage());
           }
         }
-        checkEquals(ambiguousMapping, correctSentence, checkEquals);
+        checkEquals(cube, ambiguousMapping, correctSentence, checkEquals);
       } catch (final Exception e) {
         e.printStackTrace();
         fail(e.getMessage());
@@ -102,7 +103,7 @@ public class TestAmbiguity {
     return returnValue;
   }
 
-  private void test(final String nl, final String gc, final String sc, final String mc, final int expectedAnnotations) throws Exception {
+  private void test(final Cube cube, final String nl, final String gc, final String sc, final String mc, final int expectedAnnotations) throws Exception {
     final Mapping ambiguousMapping = Validator.parseAndTranslate(cube, nl);
     new JSONObject(ambiguousMapping.toJSON(cube, nl));
     assertEquals(ambiguousMapping.getAnnotatedNgrams().size(), expectedAnnotations, ambiguitiesToString(ambiguousMapping));
@@ -112,37 +113,37 @@ public class TestAmbiguity {
       Parser.automaticDisambiguate(ambiguousMapping);
       new JSONObject(ambiguousMapping.toJSON(cube, nl));
     }
-    checkEquals(ambiguousMapping, correctSentence, true);
+    checkEquals(cube, ambiguousMapping, correctSentence, true);
   }
 
-//  /** Test disambiguation. */
-//  @Test
-//  public void test7() throws Exception {
-//    test("unit sales by month in 2010 for Atomic Mints USA by store", "the_month, store_id", "the_year = 2010 and product_name = Atomic Mints and country = USA", "avg unit_sales");
-//  }
+  // /** Test disambiguation. */
+  // @Test
+  // public void foodmartTest7() throws Exception {
+  //   test("unit sales by month in 2010 for Atomic Mints USA by store", "the_month, store_id", "the_year = 2010 and product_name = Atomic Mints and country = USA", "avg unit_sales");
+  // }
 
   /** Test disambiguation.
    * @throws Exception in case of error 
    */
   @Test
-  public void test01() throws Exception {
-    test("sum unit sales by media type for USA", "media_type", "country = USA", "sum unit_sales", 1);
-  }
-
-  /** Test disambiguation.
-   * @throws Exception in case of error 
-   */
-  @Test
-  public void test02() throws Exception {
-    test("sum unit sales by media type for USA and Mexico", "media_type", "country = USA and country = Mexico", "sum unit_sales", 2);
+  public void foodmartTest01() throws Exception {
+    test(foodmart, "sum unit sales by media type for USA", "media_type", "country = USA", "sum unit_sales", 1);
   }
 
   /** Test disambiguation.
    * @throws Exception in case of error 
    */
   @Test
-  public void test03() throws Exception {
-    test("sum unit sales by media type for Salem", "media_type", "city = Salem", "sum unit_sales", 1);
+  public void foodmartTest02() throws Exception {
+    test(foodmart, "sum unit sales by media type for USA and Mexico", "media_type", "country = USA and country = Mexico", "sum unit_sales", 2);
+  }
+
+  /** Test disambiguation.
+   * @throws Exception in case of error 
+   */
+  @Test
+  public void foodmartTest03() throws Exception {
+    test(foodmart, "sum unit sales by media type for Salem", "media_type", "city = Salem", "sum unit_sales", 1);
   }
 
   
@@ -150,83 +151,83 @@ public class TestAmbiguity {
    * @throws Exception in case of error 
    */
   @Test
-  public void test04() throws Exception {
-    test("unit sales for USA", "", "country = USA", "avg unit_sales", 2);
+  public void foodmartTest04() throws Exception {
+    test(foodmart, "unit sales for USA", "", "country = USA", "avg unit_sales", 2);
   }
 
   /** Test disambiguation.
    * @throws Exception in case of error 
    */
   @Test
-  public void test05() throws Exception {
-    test("unit sales for USA and state province Sheri Nowmere", "", "country = USA and state_province = BC", "avg unit_sales", 3);
+  public void foodmartTest05() throws Exception {
+    test(foodmart, "unit sales for USA and state province Sheri Nowmere", "", "country = USA and state_province = BC", "avg unit_sales", 3);
   }
 
   /** Test disambiguation.
    * @throws Exception in case of error 
    */
   @Test
-  public void test06() throws Exception {
-    test("unit sales for USA and Sheri Nowmere as province", "", "country = USA and state_province = BC", "avg unit_sales", 3);
+  public void foodmartTest06() throws Exception {
+    test(foodmart, "unit sales for USA and Sheri Nowmere as province", "", "country = USA and state_province = BC", "avg unit_sales", 3);
   }
 
   /** Test disambiguation.
    * @throws Exception in case of error 
    */
   @Test
-  public void test08() throws Exception {
-    test("unit sales in 2010 and Atomic Mints", "", "the_year = 2010 and product_name = Atomic Mints", "avg unit_sales", 1);
+  public void foodmartTest08() throws Exception {
+    test(foodmart, "unit sales in 2010 and Atomic Mints", "", "the_year = 2010 and product_name = Atomic Mints", "avg unit_sales", 1);
   }
 
   /** Test disambiguation.
    * @throws Exception in case of error 
    */
   @Test
-  public void test09() throws Exception {
-    test("unit sales for Sheri Nowmere", "", "fullname = Sheri Nowmer", "avg unit_sales", 1);
+  public void foodmartTest09() throws Exception {
+    test(foodmart, "unit sales for Sheri Nowmere", "", "fullname = Sheri Nowmer", "avg unit_sales", 1);
   }
 
   /** Test disambiguation.
    * @throws Exception in case of error 
    */
   @Test
-  public void test10() throws Exception {
-    test("sum unit sales by media type for USA country", "media_type", "country = USA", "sum unit_sales", 0);
+  public void foodmartTest10() throws Exception {
+    test(foodmart, "sum unit sales by media type for USA country", "media_type", "country = USA", "sum unit_sales", 0);
   }
 
   /** Test disambiguation.
    * @throws Exception in case of error
    */
   @Test
-  public void test11() throws Exception {
-    final Mapping correctSentence = Validator.getBest(cube, "", "", "max unit_sales");
-    checkQuery(correctSentence, "unit sales for Salem", 2, Lists.newArrayList(Pair.of("i0", "max"), Pair.of("i1", "drop")));
+  public void foodmartTest11() throws Exception {
+    final Mapping correctSentence = Validator.getBest(foodmart, "", "", "max unit_sales");
+    checkQuery(foodmart, correctSentence, "unit sales for Salem", 2, Lists.newArrayList(Pair.of("i0", "max"), Pair.of("i1", "drop")));
   }
 
   /** Test disambiguation.
    * @throws Exception in case of error 
    */
   @Test
-  public void test12() throws Exception {
-    test("by product_id unit_sales by product_category", "product_id", "", "avg unit_sales", 2);
+  public void foodmartTest12() throws Exception {
+    test(foodmart, "by product_id unit_sales by product_category", "product_id", "", "avg unit_sales", 2);
   }
 
   /** Test disambiguation.
    * @throws Exception in case of error
    */
   @Test
-  public void test13() throws Exception {
-    final Mapping correctSentence = Validator.getBest(cube, "product_id, product_category", "", "avg unit_sales");
-    checkQuery(correctSentence, "by product_id unit_sales by product_category", 2, Lists.newArrayList(Pair.of("i0", "avg"), Pair.of("u0", "add")));
+  public void foodmartTest13() throws Exception {
+    final Mapping correctSentence = Validator.getBest(foodmart, "product_id, product_category", "", "avg unit_sales");
+    checkQuery(foodmart, correctSentence, "by product_id unit_sales by product_category", 2, Lists.newArrayList(Pair.of("i0", "avg"), Pair.of("u0", "add")));
   }
 
   /** Test disambiguation.
    * @throws Exception in case of error
    */
   @Test
-  public void test14() throws Exception {
-    final Mapping correctSentence = Validator.getBest(cube, "product_id", "", "avg unit_sales");
-    checkQuery(correctSentence, "by product_id unit_sales by product_category", 2, Lists.newArrayList(Pair.of("i0", "avg"), Pair.of("u0", "drop")));
+  public void foodmartTest14() throws Exception {
+    final Mapping correctSentence = Validator.getBest(foodmart, "product_id", "", "avg unit_sales");
+    checkQuery(foodmart, correctSentence, "by product_id unit_sales by product_category", 2, Lists.newArrayList(Pair.of("i0", "avg"), Pair.of("u0", "drop")));
   }
 
   
@@ -234,112 +235,117 @@ public class TestAmbiguity {
    * @throws Exception in case of error
    */
   @Test
-  public void test16() throws Exception {
-    final Mapping correctSentence = Validator.getBest(cube, "", "", "max unit_sales");
-    checkQuery(correctSentence, "unit sales store sales", 2, Lists.newArrayList(Pair.of("i0", "max"), Pair.of("i1", "drop")));
+  public void foodmartTest16() throws Exception {
+    final Mapping correctSentence = Validator.getBest(foodmart, "", "", "max unit_sales");
+    checkQuery(foodmart, correctSentence, "unit sales store sales", 2, Lists.newArrayList(Pair.of("i0", "max"), Pair.of("i1", "drop")));
   }
 
   /** Test disambiguation.
    * @throws Exception in case of error 
    */
   @Test
-  public void test17() throws Exception {
-    test("store sales e store cost for USA", "", "country = USA", "avg store_sales, avg store_cost", 3);
+  public void foodmartTest17() throws Exception {
+    test(foodmart, "store sales e store cost for USA", "", "country = USA", "avg store_sales, avg store_cost", 3);
   }
 
   /** Test tokenization.
    * @throws Exception in case of error 
    */
   @Test
-  public void test18() throws Exception {
-    test("total unit sales for gender=F", "", "gender = F", "sum unit_sales", 0);
+  public void foodmartTest18() throws Exception {
+    test(foodmart, "total unit sales for gender=F", "", "gender = F", "sum unit_sales", 0);
   }
 
   /** Test tokenization.
    * @throws Exception in case of error 
    */
   @Test
-  public void test19() throws Exception {
-    test("count sales fact by customers", "customer_id", "", "count sales_fact_1997", 0);
+  public void foodmartTest19() throws Exception {
+    test(foodmart, "count sales fact by customers", "customer_id", "", "count sales_fact_1997", 0);
   }
 
   /** Test disambiguation.
    * @throws Exception in case of error
    */
   @Test
-  public void test20() throws Exception {
-    final Mapping correctSentence = Validator.getBest(cube, "product_id", "", "avg unit_sales");
-    checkQuery(correctSentence, "unit_sales by product_id store_cost", 2, Lists.newArrayList(Pair.of("i0", "avg"), Pair.of("u0", "drop")));
+  public void foodmartTest20() throws Exception {
+    final Mapping correctSentence = Validator.getBest(foodmart, "product_id", "", "avg unit_sales");
+    checkQuery(foodmart, correctSentence, "unit_sales by product_id store_cost", 2, Lists.newArrayList(Pair.of("i0", "avg"), Pair.of("u0", "drop")));
   }
 
   /** Test disambiguation.
    * @throws Exception in case of error
    */
   @Test
-  public void test21() throws Exception {
-    final Mapping correctSentence = Validator.getBest(cube, "product_id", "", "avg store_cost, avg unit_sales");
-    checkQuery(correctSentence, "unit_sales by product_id store_cost", 2, Lists.newArrayList(Pair.of("i1", "avg"), Pair.of("i0", "avg"), Pair.of("u0", "add")), false);
+  public void foodmartTest21() throws Exception {
+    final Mapping correctSentence = Validator.getBest(foodmart, "product_id", "", "avg store_cost, avg unit_sales");
+    checkQuery(foodmart, correctSentence, "unit_sales by product_id store_cost", 2, Lists.newArrayList(Pair.of("i1", "avg"), Pair.of("i0", "avg"), Pair.of("u0", "add")), false);
   }
 
   /** Test disambiguation.
    * @throws Exception in case of error
    */
   @Test
-  public void test22() throws Exception {
-    final Mapping correctSentence = Validator.getBest(cube, "", "product_name = Atomic Mints", "avg unit_sales");
-    checkQuery(correctSentence, "Atomic Mints unit_sales Atomic Mints", 2, Lists.newArrayList(Pair.of("i0", "avg"), Pair.of("u0", "drop")));
+  public void foodmartTest22() throws Exception {
+    final Mapping correctSentence = Validator.getBest(foodmart, "", "product_name = Atomic Mints", "avg unit_sales");
+    checkQuery(foodmart, correctSentence, "Atomic Mints unit_sales Atomic Mints", 2, Lists.newArrayList(Pair.of("i0", "avg"), Pair.of("u0", "drop")));
   }
 
   /** Test disambiguation.
    * @throws Exception in case of error
    */
   @Test
-  public void test23() throws Exception {
-    final Mapping correctSentence = Validator.getBest(cube, "", "product_name = Atomic Mints and product_name = Atomic Mints", "avg unit_sales");
-    checkQuery(correctSentence, "Atomic Mints unit_sales Atomic Mints", 2, Lists.newArrayList(Pair.of("i0", "avg"), Pair.of("u0", "add")));
+  public void foodmartTest23() throws Exception {
+    final Mapping correctSentence = Validator.getBest(foodmart, "", "product_name = Atomic Mints and product_name = Atomic Mints", "avg unit_sales");
+    checkQuery(foodmart, correctSentence, "Atomic Mints unit_sales Atomic Mints", 2, Lists.newArrayList(Pair.of("i0", "avg"), Pair.of("u0", "add")));
   }
 
   /** Test disambiguation.
    * @throws Exception in case of error
    */
   @Test
-  public void test24() throws Exception {
-    test("units sales by country for 2015 as year", "country", "the_year = 2015", "avg unit_sales", 1);
-    test("sum unit sales by country for 2015 as year", "country", "the_year = 2015", "sum unit_sales", 0);
+  public void foodmartTest24() throws Exception {
+    test(foodmart, "units sales by country for 2015 as year", "country", "the_year = 2015", "avg unit_sales", 1);
+    test(foodmart, "sum unit sales by country for 2015 as year", "country", "the_year = 2015", "sum unit_sales", 0);
   }
 
   /** Test disambiguation.
    * @throws Exception in case of error
    */
   @Test
-  public void test25() throws Exception {
-    test("store sales for Sheri Nowmer as customer", "", "customer_id = -1", "avg store_sales", 2);
-    test("store sales for 1 as fullname", "", "fullname = A. Catherine Binkley", "avg store_sales", 2);
+  public void foodmartTest25() throws Exception {
+    test(foodmart, "store sales for Sheri Nowmer as customer", "", "customer_id = -1", "avg store_sales", 2);
+    test(foodmart, "store sales for 1 as fullname", "", "fullname = A. Catherine Binkley", "avg store_sales", 2);
   }
 
   /** Test disambiguation.
    * @throws Exception in case of error
    */
   @Test
-  public void test26() throws Exception {
-    test("max store sales by product family where occupation is usa and group by promotion name", "product_family", "occupation = Clerical", "max store_sales", 2);
+  public void foodmartTest26() throws Exception {
+    test(foodmart, "max store sales by product family where occupation is usa and group by promotion name", "product_family", "occupation = Clerical", "max store_sales", 2);
   }
 
   /** Test disambiguation.
    * @throws Exception in case of error
    */
   @Test
-  public void test27() throws Exception {
-    test("sum store sales where category is new york", "", "", "sum store_sales", 0);
-    test("sum store sales where category is Beer and wine", "", "product_category = Beer and Wine", "sum store_sales", 0);
+  public void foodmartTest27() throws Exception {
+    test(foodmart, "sum store sales where category is new york", "", "", "sum store_sales", 0);
+    test(foodmart, "sum store sales where category is Beer and wine", "", "product_category = Beer and Wine", "sum store_sales", 0);
   }
 
   /** Test disambiguation.
    * @throws Exception in case of error
    */
   @Test
-  public void test28() throws Exception {
-    test("sum store sales where occupation professional", "", "occupation = professional", "sum store_sales", 0);
-    test("sum store sales with occupation professional", "", "occupation = professional", "sum store_sales", 0);
+  public void foodmartTest28() throws Exception {
+    test(foodmart, "sum store sales where occupation professional", "", "occupation = professional", "sum store_sales", 0);
+    test(foodmart, "sum store sales with occupation professional", "", "occupation = professional", "sum store_sales", 0);
+  }
+
+  @Test
+  public void ssbTest01() throws Exception {
+    test(ssb, "sum quantity for Apolonia Gerlach", "", "customer = Apolonia Gerlach", "sum quantity", 0);
   }
 }
