@@ -123,9 +123,9 @@ public final class Parser {
   public static void typeCheck(final Cube cube, final Mapping m) {
     for (Ngram n : m.ngrams.stream().filter(n -> !n.children.isEmpty()).collect(Collectors.toList())) {
       typeCheck(cube, n,
-          QueryGenerator.operatorOfMeasure,
-          QueryGenerator.membersofLevels,
-          QueryGenerator.levelsOfMembers);
+          QueryGenerator.operatorOfMeasure(cube),
+          QueryGenerator.membersofLevels(cube),
+          QueryGenerator.levelsOfMembers(cube));
     }
   }
 
@@ -237,7 +237,9 @@ public final class Parser {
    */
   public static void infer(final Cube cube, final Mapping mapping, final Mapping prevTree) {
     for (Ngram n : mapping.ngrams) {
-      infer(cube, n, prevTree, QueryGenerator.operatorOfMeasure, QueryGenerator.membersofLevels, QueryGenerator.levelsOfMembers, QueryGenerator.string2level, QueryGenerator.yearLevels);
+      infer(cube, n, prevTree,
+              QueryGenerator.operatorOfMeasure(cube), QueryGenerator.membersofLevels(cube), QueryGenerator.levelsOfMembers(cube),
+              QueryGenerator.string2level(cube), QueryGenerator.yearLevels(cube));
       if (!n.equals(mapping.bestNgram)) {
         if (n.type.equals(Type.GPSJ)) {
           n.children.stream().filter(nn -> nn.type.equals(Type.MC)).findAny().get().annotate(incUnparsedId(), AnnotationType.UP, Sets.newHashSet());

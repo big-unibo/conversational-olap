@@ -63,7 +63,7 @@ public class MainServlet extends HttpServlet {
     public JSONObject toJSON(final String value, final String limit) throws Exception {
       final JSONObject ret = new JSONObject();
       if (mapping != null) {
-        ret.put("parseforest", mapping == null ? new JSONObject() : mapping.JSONobj(cube, value, limit == null ? Optional.absent() : Optional.of(Long.parseLong(limit))));
+        ret.put("parseforest", mapping.JSONobj(cube, value, limit == null ? Optional.absent() : Optional.of(Long.parseLong(limit))));
         ret.put("operatorforest", operator == null || operator.countAnnotatedNodesInTree() == 0 ? new JSONObject() : operator.toJSON(cube));
         ret.put("state", getState());
         ret.put("sessionid", uuid);
