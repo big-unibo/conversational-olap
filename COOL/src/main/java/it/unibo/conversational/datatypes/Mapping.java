@@ -153,7 +153,7 @@ public final class Mapping implements Serializable {
    * @return number of nested node (plus self)
    */
   public int countNodes() {
-    return ngrams.stream().mapToInt(n -> n.countNode()).max().getAsInt();
+    return ngrams.stream().mapToInt(Ngram::countNode).max().getAsInt();
   }
 
   /**

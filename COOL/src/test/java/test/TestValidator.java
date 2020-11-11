@@ -22,13 +22,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class TestValidator {
   private final Cube cube = Config.getCube("sales_fact_1997");
   private int checkSentence(final String phrase, final String gbset, final String predicate, final String measures) throws Exception {
-    return checkSentence(phrase, gbset, predicate, measures, Validator.THR_MEMBER, Validator.THR_META, Validator.N_SYNMEMBER, Validator.N_SYNMETA, Validator.THR_COVERAGE, Validator.THR_NGRAMDIST, Validator.NGRAM_SIZE, Validator.NGRAMSYNTHR);
+    return checkSentence(phrase, gbset, predicate, measures, Validator.THR_MEMBER, Validator.THR_META, Validator.N_SYNMEMBER, Validator.N_SYNMETA, Validator.THR_COVERAGE, Validator.THR_NGRAMDIST, Validator.NGRAM_SIZE, Validator.NGRAMSYNTHR, Validator.KB_LIMIT);
   }
 
   private int checkSentence(final String query, final String gbset, final String predicate, final String measures, // query
       final double thrSimilarityMember, final double thrSimilarityMetadata, final int synMember, final int synMeta, // effectiveness
-      final double percPhrase, final int maxDist, final int ngramSize, final double nGramSimThr) throws Exception { // pruning
-    return new Validator().validate(cube, "test_java", -1, query, gbset, measures, predicate, thrSimilarityMember, thrSimilarityMetadata, synMember, synMeta, percPhrase, maxDist, 1, ngramSize, nGramSimThr, -1).getLeft();
+      final double percPhrase, final int maxDist, final int ngramSize, final double nGramSimThr, final int kblimit) throws Exception { // pruning
+    return new Validator().validate(cube, "test_java", -1, query, gbset, measures, predicate, thrSimilarityMember, thrSimilarityMetadata, synMember, synMeta, percPhrase, maxDist, 1, ngramSize, nGramSimThr, -1, kblimit).getLeft();
   }
 
   /**

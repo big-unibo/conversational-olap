@@ -34,7 +34,6 @@ public class TestConnection {
     public void testFunctions() {
         try {
             for (final Cube cube: Config.getCubes()) {
-                DBsynonyms.initSynonyms(cube);
                 assertTrue(QueryGenerator.syns(cube).containsKey(Lists.newArrayList("sum")));
                 assertFalse(DBsynonyms.getEntities(cube, Ngram.class, Lists.newArrayList("sum"), 1.0, 1.0, 1, 1).isEmpty());
                 assertFalse(QueryGenerator.getOperatorOfMeasure(cube).isEmpty());
@@ -56,7 +55,7 @@ public class TestConnection {
             }
         } catch (final Exception e) {
             e.printStackTrace();
-            fail();
+            fail(e.getMessage());
         }
     }
 

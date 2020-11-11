@@ -31,7 +31,6 @@ import java.util.stream.Collectors;
 public class Validator {
 
     private FileWriter csvWriterTest;
-
     /**
      * Initialize a validator.
      *
@@ -50,8 +49,8 @@ public class Validator {
         this.csvWriterTest = csvWriterTest;
     }
 
-    private static final Logger L = Logger.getLogger(Validator.class);
 
+    private static final Logger L = Logger.getLogger(Validator.class);
     /**
      * Validate against dataset.
      *
@@ -68,7 +67,7 @@ public class Validator {
      * @throws Exception in case or error
      */
     public void validateAll(final Cube cube, final String dataset, final double thrSimilarityMember, final double thrSimilarityMetadata, final int synMember, final int synMeta,
-                            final double percMissingPhrase, final int maxDistInPhrase, final int nTopInterpretation, final int ngramSize, final double nGramSimThr, final int run) throws Exception {
+                            final double percMissingPhrase, final int maxDistInPhrase, final int nTopInterpretation, final int ngramSize, final double nGramSimThr, final int run, final int kblimit) {
         DBmanager.executeMetaQuery(cube, "SELECT * FROM " + dataset + " WHERE `" + DBmanager.colQueryGPSJ + "` = \"y\" ORDER BY length(" + DBmanager.colQueryText + ") desc", res -> {
             while (res.next()) {
                 final int id = res.getInt(DBmanager.colQueryID);
@@ -79,7 +78,7 @@ public class Validator {
                 String predicate = res.getString(DBmanager.colQuerySelClause);
                 predicate = predicate == null ? "" : predicate;
                 try {
-                    validate(cube, dataset, id, query, gbset, measures, predicate, thrSimilarityMember, thrSimilarityMetadata, synMember, synMeta, percMissingPhrase, maxDistInPhrase, nTopInterpretation, ngramSize, nGramSimThr, run);
+                    validate(cube, dataset, id, query, gbset, measures, predicate, thrSimilarityMember, thrSimilarityMetadata, synMember, synMeta, percMissingPhrase, maxDistInPhrase, nTopInterpretation, ngramSize, nGramSimThr, run, kblimit);
                 } catch (final Exception e) {
                     e.printStackTrace();
                 }
@@ -110,7 +109,7 @@ public class Validator {
      */
     public Pair<Integer, Double> validate(final Cube cube, final String dataset, final int id, final String query, final String gbset, final String measures,
                                           final String predicate, final double thrSimilarityMember, final double thrSimilarityMetadata, final int synMember, final int synMeta,
-                                          final double percMissingPhrase, final int maxDistInPhrase, final int nTopInterpretation, final int ngramSize, final double nGramSimThr, final int run) throws Exception {
+                                          final double percMissingPhrase, final int maxDistInPhrase, final int nTopInterpretation, final int ngramSize, final double nGramSimThr, final int run, final int kblimit) throws Exception {
         L.warn(id +": " + query);
         final Map<String, Object> stats = Maps.newLinkedHashMap();
         final Mapping correctSentence = getBest(cube, gbset, predicate, measures);
@@ -319,6 +318,7 @@ public class Validator {
                 .map(java.util.Optional::get).collect(Collectors.toList());
     }
 
+
     /**
      * Default TAU.
      */
@@ -359,9 +359,14 @@ public class Validator {
      * Default K.
      */
     public static final int K = 5;
+    /**
+     * Limit of the knowledge base
+     */
+    public static final int KB_LIMIT = 15000;
 
     // Test parameters
     private static final int N_RUNS = 2;
+    private static final int[] KB_LIMITS = new int[]{15000, 100000};
     private static final int[] N_SYNMETAS = new int[]{5, 3, 1};
     private static final double[] THR_METAS = new double[]{0.4, 0.5, 0.6};
     private static final double[] THR_MEMBERS = new double[]{0.8, 0.9};
@@ -388,11 +393,16 @@ public class Validator {
             csvWriterTest.write(toWrite.stream().map(Object::toString).reduce((a, b) -> a + ";" + b).get() + "\n");
             csvWriterTest.flush();
             for (final String dataset : Lists.newArrayList("dataset_patrick_ssb")) {
-                for (int r = 0; r < N_RUNS; r++) {
-                    for (double thrMemb : THR_MEMBERS) {
-                        for (double thrMeta : THR_METAS) {
-                            for (int synMeta : N_SYNMETAS) {
-                                new Validator(csvWriterTest).validateAll(cube, dataset, thrMemb, thrMeta, N_SYNMEMBER, synMeta, THR_COVERAGE, THR_NGRAMDIST, K, NGRAM_SIZE, NGRAMSYNTHR, r);
+                for (int KB_LIMIT : KB_LIMITS) {
+                    if (KB_LIMIT != Validator.KB_LIMIT) {
+                        QueryGenerator.initSynonyms(cube, KB_LIMIT);
+                    }
+                    for (int r = 0; r < N_RUNS; r++) {
+                        for (double thrMemb : THR_MEMBERS) {
+                            for (double thrMeta : THR_METAS) {
+                                for (int synMeta : N_SYNMETAS) {
+                                    new Validator(csvWriterTest).validateAll(cube, dataset, thrMemb, thrMeta, N_SYNMEMBER, synMeta, THR_COVERAGE, THR_NGRAMDIST, K, NGRAM_SIZE, NGRAMSYNTHR, r, KB_LIMIT);
+                                }
                             }
                         }
                     }
