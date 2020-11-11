@@ -34,66 +34,6 @@ public final class DBsynonyms {
     }
 
     /**
-     * Load synonyms from the datawarehouse (for members: store reference to the corresponding level, for levels: store reference to the corresponding table).
-     */
-    public static void initSynonyms(final Cube cube) {
-        final Map<List<String>, List<Entity>> syns = QueryGenerator.syns(cube);
-        // Add others
-        for (final String table : DBmanager.tabsWithSyns.stream().filter(t -> !t.equals(tabMEMBER) && !t.equals(tabLEVEL)).collect(Collectors.toList())) {
-            executeMetaQuery(cube,
-                    "select s.term, " + id(table) + ", " + name(table) + ", table_name " +
-                            "from `" + tabSYNONYM + "` s, `" + table + "` " +
-                            "where s.reference_id = " + id(table) + " and s.table_name = '" + table + "'",
-                    res -> {
-                        while (res.next()) {
-                            List<String> synonym = Arrays.asList(res.getString(colSYNTERM).replace("_", " ").split(" ")).stream().filter(t -> !t.isEmpty()).collect(Collectors.toList());
-                            List<Entity> tmp = syns.getOrDefault(synonym, Lists.newLinkedList());
-                            tmp.add(new Entity(res.getString(id(table)), res.getString(name(table)), table));
-                            syns.put(synonym, tmp);
-                        }
-                    });
-        }
-        if (syns.isEmpty()) {
-            throw new IllegalArgumentException("This should not be null, pls check the where clause");
-        }
-
-        // Add members
-        executeMetaQuery(cube,
-                "select " + colSYNTERM + ", m." + id(tabMEMBER) + ", m." + name(tabMEMBER) + ", l." + id(tabLEVEL) + ", c." + name(tabCOLUMN) + ", l." + type(tabLEVEL) + ", t." + name(tabTABLE) + " "
-                        + "from `" + tabSYNONYM + "` s, `" + tabMEMBER + "` m, `" + tabLEVEL + "` l, `" + tabCOLUMN + "` c, `" + tabTABLE + "` t "
-                        + "where s.table_name = '" + tabMEMBER + "' and reference_id = m.member_id and m.level_id = l.level_id and c.table_id = t.table_id and l.column_id = c.column_id",
-                res -> {
-                    while (res.next()) {
-                        List<String> synonym = Arrays.stream(res.getString(colSYNTERM).replace("_", " ").split(" ")).filter(t -> !t.isEmpty()).collect(Collectors.toList());
-                        List<Entity> tmp = syns.getOrDefault(synonym, Lists.newLinkedList());
-                        tmp.add(new Entity(
-                                res.getString(id(tabMEMBER)),
-                                res.getString(name(tabMEMBER)),
-                                res.getString(id(tabLEVEL)),
-                                res.getString(name(tabCOLUMN)),
-                                Utils.getDataType(res.getString(type(tabLEVEL))),
-                                tabMEMBER,
-                                res.getString(name(tabTABLE))));
-                        syns.put(synonym, tmp);
-                    }
-                });
-
-        // Add levels
-        executeMetaQuery(cube,
-                "select s.term, l.level_name " +
-                        "from `" + tabSYNONYM + "` s, `" + tabLEVEL + "` l " +
-                        "where s.table_name = '" + tabLEVEL + "' and s.reference_id = l.level_id",
-                res -> {
-                    while (res.next()) {
-                        List<String> synonym = Arrays.asList(res.getString(colSYNTERM).replace("_", " ").split(" ")).stream().filter(t -> !t.isEmpty()).collect(Collectors.toList());
-                        List<Entity> tmp = syns.getOrDefault(synonym, Lists.newLinkedList());
-                        tmp.add(QueryGenerator.getLevel(cube, res.getString(name(tabLEVEL))));
-                        syns.put(synonym, tmp);
-                    }
-                });
-    }
-
-    /**
      * Map the list of tokens (i.e., ngram) to a set of md_elements.
      *
      * @param tokens                ngram
@@ -105,9 +45,6 @@ public final class DBsynonyms {
      */
     public static List<Triple<Entity, Double, String>> getEntities(final Cube cube, final Class toParse, final List<String> tokens, final double thrSimilarityMember, final double thrSimilarityMetadata, final int synMember, final int synMeta) {
         final Map<List<String>, List<Entity>> syns = QueryGenerator.syns(cube);
-        if (syns.isEmpty()) {
-            initSynonyms(cube);
-        }
         final Object[] lookup = new Object[]{tokens, thrSimilarityMember, thrSimilarityMetadata, synMember, synMeta};
         List<Triple<Entity, Double, String>> cached = cache.get(lookup);
         if (cached == null) {

@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import it.unibo.conversational.Utils;
+import it.unibo.conversational.Validator;
 import it.unibo.conversational.datatypes.Entity;
 import it.unibo.conversational.datatypes.Mapping;
 import it.unibo.conversational.olap.Operator;
@@ -13,6 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -99,7 +102,7 @@ public final class QueryGenerator {
      * @return Synonyms for the given cube
      */
     public static Map<List<String>, List<Entity>> syns(final Cube cube) {
-        return syns.compute(cube, (k, v) -> v == null ? Maps.newLinkedHashMap() : v);
+        return syns.computeIfAbsent(cube, k -> initSynonyms(cube, Validator.KB_LIMIT));
     }
 
     // Initialize the metra structure at the beginning, this could be done by need
@@ -108,6 +111,7 @@ public final class QueryGenerator {
             L.debug("Loading meta-data from: " + cube.getFactTable());
             operatorOfMeasure.put(cube, QueryGenerator.getOperatorOfMeasure(cube));
             populateMembers(cube);
+            syns(cube);
             yearLevels.put(cube, QueryGenerator.getYearLevels(cube));
         }
         L.debug("Done loading.");
@@ -120,7 +124,7 @@ public final class QueryGenerator {
      * @return get the fact
      */
     public static Pair<String, String> getFactTable(final Cube cube) {
-        final List<Pair<String, String>> acc = Lists.newLinkedList();
+        final List<Pair<String, String>> acc = Lists.newArrayList();
         executeMetaQuery(cube, "SELECT " + id(tabTABLE) + ", " + name(tabTABLE) + " FROM `" + tabTABLE + "` WHERE `" + type(tabTABLE) + "` = \"" + TableTypes.FT + "\"", res -> {
             res.next();
             acc.add(Pair.of(res.getString(id(tabTABLE)), res.getString(name(tabTABLE))));
@@ -129,7 +133,7 @@ public final class QueryGenerator {
     }
 
     public static Pair<String, String> getTabDetails(final Cube cube, String idFT, String idTable) {
-        final List<Pair<String, String>> acc = Lists.newLinkedList();
+        final List<Pair<String, String>> acc = Lists.newArrayList();
         executeMetaQuery(cube, "SELECT " + name(tabTABLE) + " FROM `" + tabTABLE + "` WHERE `" + id(tabTABLE) + "` = \"" + idTable + "\"", resDet -> {
             executeMetaQuery(cube, "SELECT " + name(tabCOLUMN) + " FROM `" + tabCOLUMN + "` C INNER JOIN `" + tabRELATIONSHIP + "` R ON C." + id(tabRELATIONSHIP) + " = R." + id(tabRELATIONSHIP) + " WHERE `" + colRELTAB1 + "` = \"" + idFT + "\" AND `" + colRELTAB2 + "` = \"" + idTable + "\"", resCol -> {
                 resDet.next();
@@ -141,7 +145,7 @@ public final class QueryGenerator {
     }
 
     public static String getTable(final Cube cube, final String... attributes) {
-        final List<String> acc = Lists.newLinkedList();
+        final List<String> acc = Lists.newArrayList();
         executeMetaQuery(cube, "select distinct table_name " +
                 "from `" + tabLEVEL + "` l join `" + tabCOLUMN + "` c on l.level_name = c.column_name join `" + tabTABLE + "` t on c.table_id = t.table_id " +
                 "where level_name in (" + Arrays.stream(attributes).map(a -> cube.getDbms().equals("mysql")? a : a.toUpperCase()).reduce((a, b) -> "'" + a + "','" + b + "'").get() + ")", res -> {
@@ -252,8 +256,8 @@ public final class QueryGenerator {
      * @return Set of pairs (e.g., {(min, 1), (max, 10), ...})
      */
     public static Set<Pair<String, Object>> describeLevel(final Cube cube, final String level, final int topN) {
-        final Set<Pair<String, Object>> attributes = Sets.newLinkedHashSet();
-        final Set<String> members = Sets.newLinkedHashSet();
+        final Set<Pair<String, Object>> attributes = Sets.newHashSet();
+        final Set<String> members = Sets.newHashSet();
         DBmanager.executeMetaQuery(cube,
                 "select level_type, level_description, cardinality, min, max, avg, isDescriptive, mindate, maxdate, member_name "
                         + "from `" + tabLEVEL + "` l left join `" + tabMEMBER + "` m on (l.level_id = m.level_id) "
@@ -294,7 +298,7 @@ public final class QueryGenerator {
      * @return the <type, name> of the language predicate
      */
     public static Pair<String, String> getOperator(final Cube cube, final String id) {
-        final List<Pair<String, String>> acc = Lists.newLinkedList();
+        final List<Pair<String, String>> acc = Lists.newArrayList();
         DBmanager.executeMetaQuery(cube,
                 "SELECT " + type(tabLANGUAGEOPERATOR) + ", " + name(tabLANGUAGEOPERATOR) + " FROM `" + tabLANGUAGEOPERATOR + "` WHERE " + id(tabLANGUAGEOPERATOR) + " = " + id,
                 res -> {
@@ -311,7 +315,7 @@ public final class QueryGenerator {
      * @return the <type, name> of the language predicate
      */
     public static Pair<String, String> getPredicate(final Cube cube, final String id) {
-        final List<Pair<String, String>> acc = Lists.newLinkedList();
+        final List<Pair<String, String>> acc = Lists.newArrayList();
         DBmanager.executeMetaQuery(cube,
                 "SELECT " + type(tabLANGUAGEPREDICATE) + ", " + name(tabLANGUAGEPREDICATE) + " FROM `" + tabLANGUAGEPREDICATE + "` WHERE " + id(tabLANGUAGEPREDICATE) + " = " + id,
                 res -> {
@@ -339,7 +343,7 @@ public final class QueryGenerator {
                         final String mea = res.getString(name(tabMEASURE));
                         final String id = res.getString(id(tabGROUPBYOPERATOR));
                         final String op = res.getString(name(tabGROUPBYOPERATOR));
-                        final Set<Entity> val = map.getOrDefault(mea, Sets.newLinkedHashSet());
+                        final Set<Entity> val = map.getOrDefault(mea, Sets.newHashSet());
                         val.add(new Entity(id, op, tabGROUPBYOPERATOR));
                         map.put(mea, val);
                     }
@@ -360,44 +364,112 @@ public final class QueryGenerator {
                             + tabTABLE + "` t ON(c." + id(tabTABLE) + " = t." + id(tabTABLE) + ") LEFT JOIN `"
                             + tabMEMBER + "` m on (l." + id(tabLEVEL) + " = m." + id(tabLEVEL) + ")",
                 res -> {
+                    final long startTime = System.currentTimeMillis();
                     while (res.next()) {
-                        final Set<Entity> tmpMembers = members.getOrDefault(res.getString(name(tabLEVEL)), Sets.newLinkedHashSet());
-                        final Set<Entity> tmpAttributes = attributes.getOrDefault(res.getString(name(tabMEMBER)), Sets.newLinkedHashSet());
-                        if (res.getString(id(tabMEMBER)) != null) {
-                            tmpMembers.add(new Entity(
-                                    res.getString(id(tabMEMBER)),
-                                    res.getString(name(tabMEMBER)),
-                                    res.getString(id(tabLEVEL)),
-                                    res.getString(name(tabCOLUMN)),
-                                    Utils.getDataType(res.getString(type(tabLEVEL))),
-                                    tabMEMBER,
-                                    res.getString(name(tabTABLE))));
-                            members.put(res.getString(name(tabLEVEL)), tmpMembers);
+                        final String idTabMEMBER = res.getString(id(tabMEMBER));
+                        final String nameTabMEMBER = res.getString(name(tabMEMBER));
+                        final String idTabLEVEL = res.getString(id(tabLEVEL));
+                        final String nameTabLEVEL = res.getString(name(tabLEVEL));
+                        final String nameTabCOLUMN = res.getString(name(tabCOLUMN));
+                        final String typeTabLEVEL = res.getString(type(tabLEVEL));
+                        final String nameTabTABLE = res.getString(name(tabTABLE));
+                        final String idTabTABLE = res.getString(id(tabTABLE));
+                        final Entity level = new Entity(idTabLEVEL, nameTabLEVEL, idTabTABLE, nameTabCOLUMN, Utils.getDataType(typeTabLEVEL), tabLEVEL, nameTabTABLE);
+                        if (idTabMEMBER != null) {
+                            members.compute(nameTabLEVEL, (k, v) -> v == null ? Sets.newHashSet() : v)
+                                   .add(new Entity(idTabMEMBER, nameTabMEMBER, idTabLEVEL, nameTabCOLUMN, Utils.getDataType(typeTabLEVEL), tabMEMBER, nameTabTABLE));
+                            attributes.compute(nameTabMEMBER, (k, v) -> v == null ? Sets.newHashSet() : v).add(level);
                         }
-
-                        final Entity level = new Entity(
-                                res.getString(id(tabLEVEL)),
-                                res.getString(name(tabLEVEL)),
-                                res.getString(id(tabTABLE)),
-                                res.getString(name(tabCOLUMN)),
-                                Utils.getDataType(res.getString(type(tabLEVEL))),
-                                tabLEVEL,
-                                res.getString(name(tabTABLE)));
-                        if (res.getString(id(tabMEMBER)) != null) {
-                            tmpAttributes.add(level);
-                            attributes.put(res.getString(name(tabMEMBER)), tmpAttributes);
-                        }
-                        attrEntity.put(res.getString(name(tabLEVEL)).toLowerCase(), level);
+                        attrEntity.computeIfAbsent(nameTabLEVEL.toLowerCase(), k -> level);
                     }
+                    L.debug("Done populating in " + (System.currentTimeMillis() - startTime) + " ms");
                 });
         membersofLevels.put(cube, members);
         levelsOfMembers.put(cube, attributes);
         string2level.put(cube, attrEntity);
     }
 
+    private static Set<String> readElementsInKB() {
+        try {
+            final String data = new String(Files.readAllBytes(Paths.get(QueryGenerator.class.getClassLoader().getResource("PresentInKB.txt").toURI())));
+            return Arrays.stream(data.split("\n")).map(String::toLowerCase).collect(Collectors.toSet());
+        } catch (final Exception e) {
+            return Sets.newHashSet();
+        }
+    }
+
+    /**
+     * Load synonyms from the datawarehouse (for members: store reference to the corresponding level, for levels: store reference to the corresponding table).
+     *
+     * @param cube cube
+     * @param limit limit the number of synonyms
+     */
+    public static Map<List<String>, List<Entity>> initSynonyms(final Cube cube, final int limit) {
+        final Set<String> mustInKb = readElementsInKB();
+        final Map<List<String>, List<Entity>> syns = Maps.newHashMap();
+        final long startTime = System.currentTimeMillis();
+        // Add others
+        DBmanager.tabsWithSyns.stream().filter(t -> !t.equals(tabMEMBER) && !t.equals(tabLEVEL)).forEach(table -> {
+            executeMetaQuery(cube,
+                    "select s.term, " + id(table) + ", " + name(table) + " from `" + tabSYNONYM + "` s, `" + table + "` where s.reference_id = " + id(table) + " and s.table_name = '" + table + "'",
+                    res -> {
+                        while (res.next()) {
+                            final String term = res.getString(colSYNTERM);
+                            if (syns.size() > limit && !mustInKb.contains(term.toLowerCase())) {
+                                continue;
+                            }
+                            final List<String> synonym = Arrays.stream(term.replace("_", " ").split(" ")).filter(t -> !t.isEmpty()).collect(Collectors.toList());
+                            syns.computeIfAbsent(synonym, k -> Lists.newArrayList()).add(new Entity(res.getString(id(table)), res.getString(name(table)), table));
+                        }
+                    });
+        });
+
+        // Add levels
+        executeMetaQuery(cube,
+                "select s.term, l.level_name from `" + tabSYNONYM + "` s, `" + tabLEVEL + "` l where s.table_name = '" + tabLEVEL + "' and s.reference_id = l.level_id",
+                res -> {
+                    while (res.next()) {
+                        final String term = res.getString(colSYNTERM);
+                        if (syns.size() > limit && !mustInKb.contains(term.toLowerCase())) {
+                            continue;
+                        }
+                        final List<String> synonym = Arrays.stream(term.replace("_", " ").split(" ")).filter(t -> !t.isEmpty()).collect(Collectors.toList());
+                        syns.computeIfAbsent(synonym, k -> Lists.newArrayList()).add(QueryGenerator.getLevel(cube, res.getString(name(tabLEVEL))));
+                    }
+                });
+
+        // Add members
+        executeMetaQuery(cube,
+                "select " + colSYNTERM + ", m." + id(tabMEMBER) + ", m." + name(tabMEMBER) + ", l." + id(tabLEVEL) + ", c." + name(tabCOLUMN) + ", l." + type(tabLEVEL) + ", t." + name(tabTABLE) + " "
+                        + "from `" + tabSYNONYM + "` s, `" + tabMEMBER + "` m, `" + tabLEVEL + "` l, `" + tabCOLUMN + "` c, `" + tabTABLE + "` t "
+                        + "where s.table_name = '" + tabMEMBER + "' and reference_id = m.member_id and m.level_id = l.level_id and c.table_id = t.table_id and l.column_id = c.column_id",
+                res -> {
+                    while (res.next()) {
+                        final String term = res.getString(colSYNTERM);
+                        if (syns.size() > limit && !mustInKb.contains(term.toLowerCase())) {
+                            continue;
+                        }
+                        final List<String> synonym = Arrays.stream(term.replace("_", " ").split(" ")).filter(t -> !t.isEmpty()).collect(Collectors.toList());
+                        final List<Entity> tmp = syns.computeIfAbsent(synonym, k -> Lists.newArrayList());
+                        tmp.add(new Entity(
+                                res.getString(id(tabMEMBER)),
+                                res.getString(name(tabMEMBER)),
+                                res.getString(id(tabLEVEL)),
+                                res.getString(name(tabCOLUMN)),
+                                Utils.getDataType(res.getString(type(tabLEVEL))),
+                                tabMEMBER,
+                                res.getString(name(tabTABLE))));
+                    }
+                });
+        L.debug("#Synonyms: " + syns.size());
+        L.debug("Done synonym initialization in " + (System.currentTimeMillis() - startTime) + " ms");
+        return syns;
+    }
+
     /**
      * Returns the member of each level.
      *
+     * @param cube cube
      * @return set members (i.e., entities) for each levels
      */
     public static Map<String, Set<Entity>> getMembersOfLevels(final Cube cube) {
@@ -407,6 +479,7 @@ public final class QueryGenerator {
     /**
      * Returns the member of each level.
      *
+     * @param cube cube
      * @return set members (i.e., entities) for each levels
      */
     public static Map<String, Set<Entity>> getLevelsOfMembers(final Cube cube) {
@@ -416,6 +489,7 @@ public final class QueryGenerator {
     /**
      * Get levels with type "year". TODO: in this version only the level 'the_year' is retrieved. This is because it not easy to find "year" levels.
      *
+     * @param cube cube
      * @return levels with type "year"
      */
     public static Set<Entity> getYearLevels(final Cube cube) {
@@ -425,6 +499,7 @@ public final class QueryGenerator {
     /**
      * Save a query in the dataset.
      *
+     * @param cube      cube
      * @param query     nl query
      * @param gbset     correct group by set
      * @param predicate correct selection clause

@@ -6,11 +6,13 @@ import it.unibo.conversational.algorithms.Parser;
 import it.unibo.conversational.database.Config;
 import it.unibo.conversational.database.Cube;
 import it.unibo.conversational.database.DBmanager;
+import it.unibo.conversational.database.QueryGenerator;
 import it.unibo.conversational.datatypes.Mapping;
 import it.unibo.conversational.datatypes.Ngram;
 import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONObject;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -346,7 +348,7 @@ public class TestAmbiguity {
 
   @Test
   public void ssbTest01() throws Exception {
-    test(ssb, "sum quantity for Apolonia Gerlach", "", "customer = Apolonia Gerlach", "sum quantity", 0);
+    test(ssb, "sum quantity for Apolonia Carroll", "", "customer = Apolonia Carroll", "sum quantity", 0);
   }
 
   @Test

@@ -5,8 +5,8 @@ USE `conversational`;
 DROP TABLE IF EXISTS `database` CASCADE;
 CREATE TABLE `database` (
   `database_id` int(11) NOT NULL AUTO_INCREMENT,
-  `database_name` varchar(45) NOT NULL UNIQUE,
-  `IPaddress` varchar(12) NOT NULL,
+  `database_name` varchar2(45) NOT NULL UNIQUE,
+  `IPaddress` varchar2(12) NOT NULL,
   `port` int(11) NOT NULL,
   PRIMARY KEY (`database_id`),
   UNIQUE(`database_name`, `IPaddress`, `port`)
@@ -15,7 +15,7 @@ CREATE TABLE `database` (
 DROP TABLE IF EXISTS `groupbyoperator` CASCADE;
 CREATE TABLE `groupbyoperator` (
   `groupbyoperator_id` int(11) NOT NULL AUTO_INCREMENT,
-  `groupbyoperator_name` varchar(45) NOT NULL UNIQUE,
+  `groupbyoperator_name` varchar2(45) NOT NULL UNIQUE,
   `groupbyoperator_synonyms` text,
   PRIMARY KEY (`groupbyoperator_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
@@ -23,7 +23,7 @@ CREATE TABLE `groupbyoperator` (
 DROP TABLE IF EXISTS `hierarchy` CASCADE;
 CREATE TABLE `hierarchy` (
   `hierarchy_id` int(11) NOT NULL AUTO_INCREMENT,
-  `hierarchy_name` varchar(45) NOT NULL UNIQUE,
+  `hierarchy_name` varchar2(45) NOT NULL UNIQUE,
   `hierarchy_synonyms` text,
   PRIMARY KEY (`hierarchy_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
@@ -31,7 +31,7 @@ CREATE TABLE `hierarchy` (
 DROP TABLE IF EXISTS `fact` CASCADE;
 CREATE TABLE `fact` (
   `fact_id` int(11) NOT NULL AUTO_INCREMENT,
-  `fact_name` varchar(45) NOT NULL UNIQUE,
+  `fact_name` varchar2(45) NOT NULL UNIQUE,
   `fact_synonyms` text,
   `database_id` int(11) NOT NULL,
   PRIMARY KEY (`fact_id`),
@@ -42,8 +42,8 @@ CREATE TABLE `fact` (
 DROP TABLE IF EXISTS `table` CASCADE;
 CREATE TABLE `table` (
   `table_id` int(11) NOT NULL AUTO_INCREMENT,
-  `table_name` varchar(45) NOT NULL UNIQUE,
-  `table_type` varchar(45) NOT NULL,
+  `table_name` varchar2(45) NOT NULL UNIQUE,
+  `table_type` varchar2(45) NOT NULL,
   `fact_id` int(11) DEFAULT NULL,
   `hierarchy_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`table_id`),
@@ -68,8 +68,8 @@ CREATE TABLE `relationship` (
 DROP TABLE IF EXISTS `column` CASCADE;
 CREATE TABLE `column` (
   `column_id` int(11) NOT NULL AUTO_INCREMENT,
-  `column_name` varchar(45) NOT NULL,
-  `column_type` varchar(45) NOT NULL,
+  `column_name` varchar2(45) NOT NULL,
+  `column_type` varchar2(45) NOT NULL,
   `isKey` tinyint(1) NOT NULL,
   `relationship_id` int(11) DEFAULT NULL,
   `table_id` int(11) NOT NULL,
@@ -82,9 +82,9 @@ CREATE TABLE `column` (
 DROP TABLE IF EXISTS `level` CASCADE;
 CREATE TABLE `level` (
   `level_id` int(11) NOT NULL AUTO_INCREMENT,
-  `level_type` varchar(45) NOT NULL,
-  `level_description` varchar(200),
-  `level_name` varchar(45) NOT NULL UNIQUE,
+  `level_type` varchar2(45) NOT NULL,
+  `level_description` varchar2(200),
+  `level_name` varchar2(45) NOT NULL UNIQUE,
   `cardinality` int(11) DEFAULT NULL,
   `hierarchy_id` int(11) NOT NULL,
   `level_synonyms` text,
@@ -116,18 +116,18 @@ CREATE TABLE `hierarchy_in_fact` (
 DROP TABLE IF EXISTS `language_predicate` CASCADE;
 CREATE TABLE `language_predicate` (
   `language_predicate_id` int(11) NOT NULL AUTO_INCREMENT,
-  `language_predicate_name` varchar(45) NOT NULL UNIQUE,
+  `language_predicate_name` varchar2(45) NOT NULL UNIQUE,
   `language_predicate_synonyms` text DEFAULT NULL,
-  `language_predicate_type` varchar(45) DEFAULT NULL,
+  `language_predicate_type` varchar2(45) DEFAULT NULL,
   PRIMARY KEY (`language_predicate_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=539 DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `language_operator` CASCADE;
 CREATE TABLE `language_operator` (
   `language_operator_id` int(11) NOT NULL AUTO_INCREMENT,
-  `language_operator_name` varchar(45) NOT NULL UNIQUE,
+  `language_operator_name` varchar2(45) NOT NULL UNIQUE,
   `language_operator_synonyms` text DEFAULT NULL,
-  `language_operator_type` varchar(45) DEFAULT NULL,
+  `language_operator_type` varchar2(45) DEFAULT NULL,
   PRIMARY KEY (`language_operator_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=539 DEFAULT CHARSET=utf8;
 
@@ -146,7 +146,7 @@ CREATE TABLE `level_rollup` (
 DROP TABLE IF EXISTS `measure` CASCADE;
 CREATE TABLE `measure` (
   `measure_id` int(11) NOT NULL AUTO_INCREMENT,
-  `measure_name` varchar(45) NOT NULL,
+  `measure_name` varchar2(45) NOT NULL,
   `fact_id` int(11) NOT NULL,
   `measure_synonyms` text,
   `column_id` int(11) NOT NULL,
@@ -161,7 +161,7 @@ CREATE TABLE `measure` (
 DROP TABLE IF EXISTS `member` CASCADE;
 CREATE TABLE `member` (
   `member_id` int(11) NOT NULL AUTO_INCREMENT,
-  `member_name` varchar(45) NOT NULL,
+  `member_name` varchar2(45) NOT NULL,
   `level_id` int(11) NOT NULL,
   `member_synonyms` text,
   PRIMARY KEY (`member_id`),
@@ -184,9 +184,9 @@ CREATE TABLE `groupbyoperator_of_measure` (
 DROP TABLE IF EXISTS `synonym` CASCADE;
 CREATE TABLE `synonym` (
   `synonym_id` int(11) NOT NULL AUTO_INCREMENT,
-  `table_name` varchar(45) NOT NULL,
+  `table_name` varchar2(45) NOT NULL,
   `reference_id` int(11) NOT NULL, -- id of the Entity in the given table
-  `term` varchar(45) NOT NULL,
+  `term` varchar2(45) NOT NULL,
   PRIMARY KEY (`synonym_id`),
   UNIQUE(`term`, `reference_id`, `table_name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=86416 DEFAULT CHARSET=utf8;
@@ -194,37 +194,37 @@ CREATE TABLE `synonym` (
 DROP TABLE IF EXISTS OLAPsession;
 CREATE TABLE OLAPsession (
   `timestamp` long,
-  `session_id` varchar(255),
-  `annotation_id` varchar(255),
-  `value_en` varchar(1000),
-  `value_ita` varchar(1000),
+  `session_id` varchar2(255),
+  `annotation_id` varchar2(255),
+  `value_en` varchar2(1000),
+  `value_ita` varchar2(1000),
   `limit` long,
   `fullquery_serialized` blob,
-  `fullquery_tree` varchar(1000),
+  `fullquery_tree` varchar2(1000),
   `olapoperator_serialized` blob
 );
 
 DROP TABLE IF EXISTS queries;
 CREATE TABLE queries (
-  `query` varchar(1000),
-  `mc` varchar(255) default null,
-  `gc` varchar(255) default null,
-  `sc` varchar(255) default null
+  `query` varchar2(1000),
+  `mc` varchar2(255) default null,
+  `gc` varchar2(255) default null,
+  `sc` varchar2(255) default null
 );
 INSERT INTO `queries` VALUES (' sum unit by customer year greater 2018 and city = Cesena',NULL,NULL,NULL),('Analysis of purchases by promotion over several months',NULL,NULL,NULL),('Analysis of the earnings per month of each store',NULL,NULL,NULL),('Analyze the average number of units sold based on the cost of the promotion',NULL,NULL,NULL),('Analyze the costs by comparing the same month in different years',NULL,NULL,NULL),('Average cost of products for each quarter',NULL,NULL,NULL),('Average cost of products per quarter and product subcategory',NULL,NULL,NULL),('Average number of units purchased by each customer',NULL,NULL,NULL),('average store cost',NULL,NULL,NULL),('average store cost by promotion id',NULL,NULL,NULL),('average store sales',NULL,NULL,NULL),('average store_cost by promotion_id',NULL,NULL,NULL),('average the store cost and unit sales per category',NULL,NULL,NULL),('Average unit sales',NULL,NULL,NULL),('average unit sales by product category for product club chocolate milk',NULL,NULL,NULL),('average unit sales on 1997',NULL,NULL,NULL),('average unit sales sales by product category',NULL,NULL,NULL),('average unit sold by city and quarter','avg unit_sales','city, quarter',NULL),('average unit sold by customer','avg unit_sales','customer_id',NULL),('Average units',NULL,NULL,NULL),('avereage store sales',NULL,NULL,NULL),('avereage the store sales and unit sales per category',NULL,NULL,NULL),('avg cost for year greater 1900 and product = Club Chocolate Milk','avg store_cost',NULL,'the_year >= 1900 and product_name = \"Club Chocolate Milk\"\"\"'),('avg cost for year greater 1900 and product name = Club Chocolate Milk','avg   store_cost',NULL,'the_year >= 1900 and product_name = \"Club Chocolate Milk\"\"\"'),('avg store_cost by promotion_id',NULL,NULL,NULL),('avg unit sales  year = 1997',NULL,NULL,NULL),('avg unit sales for category = Beer and Wine',NULL,NULL,NULL),('avg unit sales for category beer and wine',NULL,NULL,NULL),('avg unit sales on 1997',NULL,NULL,NULL),('avg unit sales on year = 1997',NULL,NULL,NULL),('avg unit sales where the year = 1997',NULL,NULL,NULL),('by customer',NULL,'customer_id',NULL),('by customer and also year',NULL,'customer_id, the_year',NULL),('by customer and store',NULL,'customer_id, store_id',NULL),('by customer and year',NULL,'customer_id, the_year',NULL),('by customer year',NULL,'customer_id, the_year',NULL),('by customer year greater 2019',NULL,'customer_id','the_year >= 2019'),('by customer year greater 2019 and city = novato',NULL,'customer_id','the_year >= 2019 and city = \"Novato\"\"\"'),('by customer year greater 2019 city = Novato',NULL,NULL,NULL),('by cutomer and also year',NULL,'customer_id, the_year',NULL),('by cutomer and store',NULL,'customer_id, store_id',NULL),('by cutomer and year',NULL,'customer_id, the_year',NULL),('by gender the_year',NULL,NULL,NULL),('by gender year',NULL,NULL,NULL),('city = Novato',NULL,NULL,NULL),('count sales fact',NULL,NULL,NULL),('count store sales',NULL,NULL,NULL),('for promotion Daily Paper show the sum of store sales by quarter','sum store_sales','quarter','media_type = \"Daily Paper\"\"\"'),('Geographical analysis of payments by city and quarter',NULL,NULL,NULL),('Geographical analysis of sales (by city and month)',NULL,NULL,NULL),('Geographical analysis of sales (by city and period)',NULL,NULL,NULL),('get the minimun cost for store for product of brand Denny','min store_cost',NULL,'brand_name = Denny'),('get the minimun cost for store for product of Denny','min store_cost',NULL,'brand_name = Denny'),('give me the average unit sales for beer and wine',NULL,NULL,NULL),('give me the average unit sales for the category beer and wine',NULL,NULL,NULL),('give me the average unit sales for the year 1997',NULL,NULL,NULL),('give me the sum of store sales for each month where category is beer and wine',NULL,NULL,NULL),('grouping by customer return sum of sales','sum unit_sales','customer_id',NULL),('grouping by customer return the sales sum where year greater 2018','sum unit_sales','customer_id','the_year >= 2018'),('grouping by customer return the sum of sales where year greater 2018','sum unit_sales','customer_id','the_year >= 2018'),('grouping by customer where year greater 2018',NULL,'customer_id','the_year >= 2018'),('How many times have the products been bought by month, product category and store',NULL,NULL,NULL),('How much did each store earn in August?',NULL,NULL,NULL),('in which quarter there is the max number of unit sold','max unit_sales','quarter',NULL),('in which quarter there is the max store sales','max store_sales','quarter',NULL),('max store sales by product category',NULL,NULL,NULL),('max store sales by product family',NULL,NULL,NULL),('max store sales by product family where occupation is professional by promotion name',NULL,NULL,NULL),('max store sales by product family where occupation is usa',NULL,NULL,NULL),('max store sales by product family where occupation is usa by promotion name',NULL,NULL,NULL),('max store sales by product family where occupation s professional',NULL,NULL,NULL),('max store sales by product id and occupation professional',NULL,NULL,NULL),('maximum unit sales',NULL,NULL,NULL),('media type',NULL,NULL,NULL),('medium cost by promotion','avg store_cost','promotion_id',NULL),('medium store cost by promotion',NULL,NULL,NULL),('medium store cost by promotion id',NULL,NULL,NULL),('medium store cost by promotion_id',NULL,NULL,NULL),('min store cost per quarter',NULL,NULL,NULL),('Minimum unit sales',NULL,NULL,NULL),('Monthly costs of each store',NULL,NULL,NULL),('number of unit sold by gender',NULL,NULL,NULL),('number of unit sold by gender and the_year',NULL,NULL,NULL),('number of unit sold by gender and year',NULL,NULL,NULL),('number of unit sold for each customer',NULL,NULL,NULL),('number of unit sold per store','sum unit_sales','store_id',NULL),('Number of units sold on average to each customer',NULL,NULL,NULL),('numer of unit sold by gender','sum unit_sales','gender',NULL),('Performance of monthly sales for products sold with the Daily Paper promotion',NULL,NULL,NULL),('Performance of monthly sales for products sold with the Daily Papper promotion',NULL,NULL,NULL),('return the average store cost and average store sales per category',NULL,NULL,NULL),('return the average store cost and store sales per category per month for Beer and wine',NULL,NULL,NULL),('return the average unit sales for 1997',NULL,NULL,NULL),('return the sum of store sales by month for beer and wine',NULL,NULL,NULL),('return the sum store sales per month for Beer and wine',NULL,NULL,NULL),('Revenues by product category and by store in February',NULL,NULL,NULL),('sale sum','sum unit_sales',NULL,NULL),('salem gum',NULL,NULL,NULL),('salem salem',NULL,NULL,NULL),('Sales analysis based on the product department',NULL,NULL,NULL),('Sales by Customer and Month',NULL,NULL,NULL),('sales by customer for year greater 2018',NULL,NULL,NULL),('sales by month, product and year unit sales',NULL,NULL,NULL),('sales fact',NULL,NULL,NULL),('Sales made by each store',NULL,NULL,NULL),('Sales performance in the various months for products in the Candy category',NULL,NULL,NULL),('Sales related to each promotion',NULL,NULL,NULL),('select the total number of sales by quarter and store_state',NULL,NULL,NULL),('show me the sum of sales for each product','sum store_sales','product_id',NULL),('show me the sum of store sales for the month of January grouped by store city',NULL,NULL,NULL),('show me the unit sold by customer for product of category Fruit','sum unit_sales','customer_id','product_category = Fruit'),('show sum sales and avg cost','sum unit_sales, avg store_cost',NULL,NULL),('show sum unit sold grouped by quarter','sum unit_sales','quarter',NULL),('show the max sales grouped by customer gender','max unit_sales ','gender',NULL),('show the sum of sales for each product',NULL,NULL,NULL),('stdev unit sales',NULL,NULL,NULL),('store cost',NULL,NULL,NULL),('store cost by department',NULL,NULL,NULL),('store cost by department country',NULL,NULL,NULL),('store cost for USA',NULL,NULL,NULL),('store sales',NULL,NULL,NULL),('store sales  sum store cost',NULL,NULL,NULL),('store sales by category',NULL,NULL,NULL),('store sales by department',NULL,NULL,NULL),('store sales by occupation new york',NULL,NULL,NULL),('store sales by product category',NULL,NULL,NULL),('store sales by product id and occupation new york',NULL,NULL,NULL),('store sales for product usa',NULL,NULL,NULL),('store sales for usa',NULL,NULL,NULL),('store sales occupation new york',NULL,NULL,NULL),('store sales store by department',NULL,NULL,NULL),('store sales store cost',NULL,NULL,NULL),('store sales store cost by product category country where occupation is new york customer is new york',NULL,NULL,NULL),('store sales store cost by product id country where occupation is new york customer is new york',NULL,NULL,NULL),('sum cost',NULL,NULL,NULL),('sum min sales by customer region year ',NULL,NULL,NULL),('sum of sales','sum unit_sales',NULL,NULL),('sum of store sales by month of each store','sum store_sales','the_month, store_id',NULL),('sum of unit sold',NULL,NULL,NULL),('sum of unit sold based on media_type','sum unit_sales','media_type',NULL),('sum of unit sold for each customer','sum unit_sales','customer_id',NULL),('sum of unit sold for each promotion','sum unit_sales','promotion_id',NULL),('sum sale','sum unit_sales',NULL,NULL),('sum sales','sum unit_sales',NULL,NULL),('sum sales and avg cost','sum unit_sales, avg store_cost',NULL,NULL),('sum sales avg cost','sum unit_sales, avg store_cost',NULL,NULL),('sum sales avg sales',NULL,NULL,NULL),('sum sales avg store sales','sum unit_sales, avg store_sales',NULL,NULL),('sum sales by customer','sum unit_sales','customer_id',NULL),('sum sales by customer product_name = Club Chocolate Milk','sum unit_sales','customer_id','product_name = \"Club Chocolate Milk\"\"\"'),('sum sales by customer region year ','sum unit_sales','customer_id, the_year',NULL),('sum sales by customer year greater 1900','sum unit_sales','customer_id','the_year >= 1900'),('sum sales by customer year greater 2018',NULL,NULL,NULL),('sum sales by customer year greater 2018 and city = Cesena','sum unit_sales','customer_id','the_year >= 2018'),('sum sales by customer year greater 2018 and city = Novato','sum unit_sales','customer_id','the_year >= 2018 and city = \"Novato\"\"\"'),('sum sales by customer year greater 2019','sum unit_sales','customer_id','the_year >= 2019'),('sum sales by customer year region','sum unit_sales','customer_id, the_year',NULL),('sum sales customer',NULL,NULL,NULL),('sum sales customer year',NULL,NULL,NULL),('sum sotre sale',NULL,NULL,NULL),('sum sotre sales',NULL,NULL,NULL),('sum sotre sales by department',NULL,NULL,NULL),('sum sotre sales where year 1997',NULL,NULL,NULL),('sum store cost',NULL,NULL,NULL),('sum store cost by promotion id',NULL,NULL,NULL),('sum store costd',NULL,NULL,NULL),('sum store sales',NULL,NULL,NULL),('sum store sales avg store sales',NULL,NULL,NULL),('sum store sales avg store salesf',NULL,NULL,NULL),('sum store sales by category',NULL,NULL,NULL),('sum store sales by category country',NULL,NULL,NULL),('sum store sales by department',NULL,NULL,NULL),('sum store sales by department  sum store cost',NULL,NULL,NULL),('sum store sales by department for country usa',NULL,NULL,NULL),('sum store sales by department for professional',NULL,NULL,NULL),('sum store sales by department for usa',NULL,NULL,NULL),('sum store sales by department store cost',NULL,NULL,NULL),('sum store sales by department where store country usa',NULL,NULL,NULL),('sum store sales by family drink and year 1997',NULL,NULL,NULL),('sum store sales by for category = beer and wine',NULL,NULL,NULL),('sum store sales by month  for product category = Beer and Wine',NULL,NULL,NULL),('sum store sales by month for category = beer and wine',NULL,NULL,NULL),('sum store sales by product',NULL,NULL,NULL),('sum store sales by product id',NULL,NULL,NULL),('sum store sales by product it',NULL,NULL,NULL),('sum store sales by product store cost',NULL,NULL,NULL),('sum store sales by product subcategory',NULL,NULL,NULL),('sum store sales by store country',NULL,NULL,NULL),('sum store sales by subcategory',NULL,NULL,NULL),('sum store sales by the_year',NULL,NULL,NULL),('sum store sales by year 1997',NULL,NULL,NULL),('sum store sales for category usa',NULL,NULL,NULL),('sum store sales for product sheri norman',NULL,NULL,NULL),('sum store sales for product usa',NULL,NULL,NULL),('sum store sales for us',NULL,NULL,NULL),('sum store sales for usa',NULL,NULL,NULL),('sum store sales where acapulco',NULL,NULL,NULL),('sum store sales where category is new york',NULL,NULL,NULL),('sum store sales where country food',NULL,NULL,NULL),('sum store sales where occupatio professional and product new york',NULL,NULL,NULL),('sum store sales where occupation new york',NULL,NULL,NULL),('sum store sales where occupation professional',NULL,NULL,NULL),('sum store sales where product new york occupation professional',NULL,NULL,NULL),('sum store sales with occupation new york',NULL,NULL,NULL),('sum store_cost by promotion_id',NULL,NULL,NULL),('sum uni sales',NULL,NULL,NULL),('sum unit','sum unit_sales',NULL,NULL),('sum unit and avg cost ','sum unit_sales, avg store_cost',NULL,NULL),('sum unit and avg cost by customer and city = Cesena','sum unit_sales, avg store_cost','customer_id',NULL),('sum unit and avg cost by customer and year','sum unit_sales, avg store_cost','customer_id, the_year',NULL),('sum unit and avg cost by customer city = Cesena and year greater 2018','sum unit_sales, avg store_cost','customer_id','the_year >= 2018'),('sum unit and avg cost by customer year','sum unit_sales, avg store_cost','customer_id, the_year',NULL),('sum unit and avg cost by customer year greater 2018 and city = Cesena','sum unit_sales, avg store_cost','customer_id','the_year >= 2018'),('sum unit and avg cost by customer year greater 2018 and city = Novato','sum unit_sales, avg   store_cost','customer_id','the_year >= 2018 and city = \"Novato\"\"\"'),('sum unit and avg cost sales by customer year greater 1900','sum unit_sales, avg store_cost','customer_id','the_year >= 1900'),('sum unit and avg cost year greater 2018 and city = Cesena','sum unit_sales, avg store_cost',NULL,'the_year >= 2018'),('sum unit avg cost','sum unit_sales, avg store_cost',NULL,NULL),('sum unit by customer',NULL,NULL,NULL),('sum unit by customer for 1900',NULL,NULL,NULL),('sum unit by customer where year greater 1900','sum unit_sales','customer_id','the_year >= 1900'),('sum unit by customer year','sum unit_sales','customer_id, the_year',NULL),('sum unit by customer year greater 2018','sum unit_sales','customer_id','the_year >= 2018'),('sum unit by customer year greater 2018 and city = Cesena','sum unit_sales','customer_id','the_year >= 2018'),('sum unit by customer year greater 2018 and city = Novato','sum unit_sales','customer_id','the_year >= 2018 and city = \"Novato\"\"\"'),('sum unit by customer year greater 2018 and city = Rimini','sum unit_sales','customer_id','the_year >= 2018'),('sum unit by customer year greater 2018 or product name = Club Chocolate Milk','sum unit_sales','customer_id','the_year >= 2018 or product_name = \"Club Chocolate   Milk\"\"\"'),('sum unit by cutomer','sum unit_sales','customer_id',NULL),('sum unit city = Rimini','sum unit_sales','customer_id','the_year >= 2018'),('sum unit for 1900',NULL,NULL,NULL),('sum unit for city Novato',NULL,NULL,NULL),('sum unit for city Novato and year 1900',NULL,NULL,NULL),('sum unit for Club Chocolate Milk',NULL,NULL,NULL),('sum unit for Novato',NULL,NULL,NULL),('sum unit for year = 1900',NULL,NULL,NULL),('sum unit for year = 1900 and city = Novato',NULL,NULL,NULL),('sum unit for year greater 1900 and product name = Club Chocolate Milk','sum   unit_sales',NULL,'the_year >= 1900 and product_name = \"Club Chocolate Milk\"\"\"'),('sum unit for year not 1900',NULL,NULL,NULL),('sum unit sale',NULL,NULL,NULL),('sum unit sale by customer',NULL,NULL,NULL),('sum unit sale for 1900',NULL,NULL,NULL),('sum unit sale for year 1900',NULL,NULL,NULL),('sum unit sales',NULL,NULL,NULL),('sum unit sales  by customer  year greater 1900',NULL,NULL,NULL),('sum unit sales  year greater 1900 by customer',NULL,NULL,NULL),('sum unit sales an avg cost','sum unit_sales, avg store_cost',NULL,NULL),('sum unit sales and avg cost','sum unit_sales, avg store_cost',NULL,NULL),('sum unit sales and avg cost by customer','sum unit_sales, avg store_cost','customer_id',NULL),('sum unit sales and avg cost by customer and state for year greater 1900','sum unit_sales, avg store_cost','customer_id, store_state','the_year >= 1900'),('sum unit sales and avg cost by customer and state for year greater 1900 and product = Club Chocolate Milk',NULL,NULL,NULL),('sum unit sales and avg cost by customer and year','sum unit_sales, avg store_cost','customer_id, the_year',NULL),('sum unit sales and avg cost by customer year greater 1900','sum unit_sales, avg store_cost','customer_id','the_year >= 1900'),('sum unit sales and avg cost by customer year greater 1900 and city = Novato','sum unit_sales,   avg store_cost','customer_id','the_year >= 1900 and city = \"Novato\"\"\"'),('sum unit sales average',NULL,NULL,NULL),('sum unit sales avg store sales','sum unit_sales, avg store_sales',NULL,NULL),('sum unit sales by category',NULL,NULL,NULL),('sum unit sales by customer','sum unit_sales','customer_id',NULL),('sum unit sales by customer and product year is 2019','sum unit_sales','customer_id, product_id',NULL),('sum unit sales by customer and promotion',NULL,NULL,NULL),('sum unit sales by customer and promotion and product',NULL,NULL,NULL),('sum unit sales by customer and year','sum unit_sales','customer_id, the_year',NULL),('sum unit sales by customer product name = Club Chocolate Milk','sum unit_sales','customer_id','product_name = \"Club Chocolate Milk\"\"\"'),('sum unit sales by customer product_name = Club Chocolate Milk','sum unit_sales','customer_id','product_name = \"Club Chocolate Milk\"\"\"'),('sum unit sales by customer where year greater 1900','sum unit_sales','customer_id','the_year >= 1900'),('sum unit sales by customer where year is 2019',NULL,NULL,NULL),('sum unit sales by customer year greater 1900','sum unit_sales','customer_id','the_year >= 1900'),('sum unit sales by customer year greater 1900 and city = Novato','sum unit_sales','customer_id','the_year >= 1900 and city = Novato'),('sum unit sales by customer year greater 1950',NULL,NULL,NULL),('sum unit sales by product id',NULL,NULL,NULL),('sum unit sales by year',NULL,NULL,NULL),('sum unit sales for 1900',NULL,NULL,NULL),('sum unit sales for 2019',NULL,NULL,NULL),('sum unit sales for country usa',NULL,NULL,NULL),('sum unit sales for state province Sheri Nowmere',NULL,NULL,NULL),('sum unit sales for usa',NULL,NULL,NULL),('sum unit sales for year',NULL,NULL,NULL),('sum unit sales for year 1900',NULL,NULL,NULL),('sum unit sales for year 2019 and group by customer promotion and product',NULL,NULL,NULL),('sum unit sales in 2019',NULL,NULL,NULL),('sum unit sales in year',NULL,NULL,NULL),('sum unit sales where customer is Salem and year is 2019',NULL,NULL,NULL),('sum unit sales where customer is Salem and year is 2019 or year is 2020',NULL,NULL,NULL),('sum unit sales where customer is Salem and year is 2019 product is club chocolate milk',NULL,NULL,NULL),('sum unit sales where customer is Salem and year is 2019 product is coca',NULL,NULL,NULL),('sum unit sales year greater 1900','sum unit_sales',NULL,'the_year >= 1900'),('sum unit sales year greater 1900 by customer ',NULL,NULL,NULL),('sum unit sales year greater 1950',NULL,NULL,NULL),('sum unit sold by customer year greater 2018',NULL,NULL,NULL),('sum unit year between 1900 1950','sum unit_sales',NULL,'the_year between 1900 1950'),('sum unit year between 1900 and 1950','sum unit_sales',NULL,'the_year between 1900 1950'),('sum unit year greater 1900',NULL,NULL,NULL),('sum unit_sales by product_id',NULL,NULL,NULL),('sum unit_sales by product_id store cost',NULL,NULL,NULL),('sum unit_sales by product_id store_cost',NULL,NULL,NULL),('sum unit_sales for country usa by product_id for fullname professional',NULL,NULL,NULL),('sum unit_sales for country usa by product_id for occupation professional',NULL,NULL,NULL),('sum unit_sales for country usa by product_id where fullname is professional',NULL,NULL,NULL),('sum units and avg cost by customer year greater 1900','sum unit_sales, avg store_cost','customer_id','the_year >= 1900'),('sum units by customer','sum unit_sales','customer_id',NULL),('sum units by customer for year greater than 1990','sum unit_sales','customer_id','the_year >= 1990'),('sum units by customer year greater 1900','sum unit_sales','customer_id','the_year >= 1900'),('sum units saless',NULL,NULL,NULL),('sumstore sales by department',NULL,NULL,NULL),('Tell me the sum of unit sold grouped by customer',NULL,NULL,NULL),('tore sales for usa',NULL,NULL,NULL),('unit by customer year 2018',NULL,NULL,NULL),('unit sales',NULL,NULL,NULL),('unit sales by customer and promotion and product',NULL,NULL,NULL),('unit sales by month, product and year unit sales',NULL,NULL,NULL),('unit sales for club chockolate milk',NULL,NULL,NULL),('unit sales for customer Salem',NULL,NULL,NULL),('unit sales for product club chockolate milk',NULL,NULL,NULL),('unit sales for Salem',NULL,NULL,NULL),('unit sales for state province Sheri Nowmere',NULL,NULL,NULL),('unit sales for subcategory',NULL,NULL,NULL),('unit sales where product club chockolate milk',NULL,NULL,NULL),('unit sales where product is club chockolate milk',NULL,NULL,NULL),('unit sales where year is 2019 by customer and promotion and product',NULL,NULL,NULL),('unit sales year 2019 by customer and promotion and product',NULL,NULL,NULL),('unit sold',NULL,NULL,NULL),('unit sold by customer year 2018',NULL,NULL,NULL),('unit_sales',NULL,NULL,NULL),('unit_sales by product_id store_cost',NULL,NULL,NULL),('unit\'s sum','sum unit_sales',NULL,NULL),('unit\'s sum for year between 1900 and 1950',NULL,NULL,NULL),('units saless by customer',NULL,NULL,NULL),('units saless by customer unit sales',NULL,NULL,NULL),('Units sold based on the media type',NULL,NULL,NULL),('Units sold based on the media type of the promotion',NULL,NULL,NULL),('Units sold by media type of the promotion',NULL,NULL,NULL),('View monthly earnings by product category',NULL,NULL,NULL),('View products by media type of the promotion and by store in the month of September',NULL,NULL,NULL),('year = 1900 and city = Novato',NULL,NULL,NULL),('year between 1900 and 1950',NULL,NULL,NULL),('year greater 1900 and city = Novato',NULL,NULL,'the_year >= 1900 and city = \"Novato\"\"\"'),('year greater 1900 and product name = Club Chocolate Milk',NULL,NULL,'the_year >= 1900 and product_name = \"Club Chocolate Milk\"\"\"'),('year greater 2018 and city = Cesena',NULL,NULL,'the_year >= 2018'),('year greater 2018 and city = Novato',NULL,NULL,'the_year >= 2018 and city = \"Novato\"\"\"'),('year greater 2019 and city = novato',NULL,NULL,'the_year >= 2019 and city = \"Novato\"'),('year not 1900',NULL,NULL,NULL),('avg unit sales  year = 1997','','',''),('avg unit sales category = Beer and Wine','','',''),('avg unit sales year = 1997','','',''),('avg unit sales category = Beer and Wine','','',''),('sum store sales by month for product category = Beer and Wine','','',''),('select the average unit sales for year =1997','','',''),('select the average unit sales for Category Beer and wine','','',''),('return the total store sales by month for product equal beer and wine','','',''),('sum store sales where beer and wine','','',''),('sum store sales where product is beer and wine','','',''),('sum store sales where date is beer and wine','','','');
 
 DROP TABLE IF EXISTS dataset_patrick;
 CREATE TABLE dataset_patrick (
   `id` int primary key,
-  `origin` varchar(255),
-  `gpsj` varchar(1),
-  `query`  varchar(255), 
-  `mc` varchar(255),
-  `gc` varchar(255),
-  `sc` varchar(255),
-  `missing` varchar(255),
-  `ambiguity` varchar(255),
-  `notes` varchar(255)
+  `origin` varchar2(255),
+  `gpsj` varchar2(1),
+  `query`  varchar2(255), 
+  `mc` varchar2(255),
+  `gc` varchar2(255),
+  `sc` varchar2(255),
+  `missing` varchar2(255),
+  `ambiguity` varchar2(255),
+  `notes` varchar2(255)
 );
 LOCK TABLES `dataset_patrick` WRITE;
 /*!40000 ALTER TABLE `dataset_patrick` DISABLE KEYS */;
@@ -279,7 +279,6 @@ INSERT INTO `language_operator` VALUES
 --   (OP_ID, MEA_ID);
 -- ... Or populate it with all the operators
 INSERT INTO `groupbyoperator_of_measure` select groupbyoperator_id, measure_id from measure, groupbyoperator;
-UPDATE fact SET fact_synonyms = '[\"sales\"]' WHERE fact_name = 'sales_fact_1997';
 UPDATE `level` SET level_description = 'Numeric product identifier' WHERE level_name = 'product_id';
 INSERT INTO synonym(`table_name`, `reference_id`, `term`) VALUES ("fact", (select fact_id from fact where fact_name = "sales_fact_1997"), "sales");
 -- INSERT INTO synonym(`table_name`, `reference_id`, `term`) select "language_operator", (select language_operator_id from language_operator where language_operator_name = "all"), concat("all ", hierarchy_name) from hierarchy h;
