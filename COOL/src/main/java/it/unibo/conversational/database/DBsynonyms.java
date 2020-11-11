@@ -78,7 +78,6 @@ public final class DBsynonyms {
                     }
                 });
 
-
         // Add levels
         executeMetaQuery(cube,
                 "select s.term, l.level_name " +
