@@ -4,6 +4,8 @@ plugins {
     id 'antlr'
     id 'org.jetbrains.kotlin.jvm' version '1.4.10'
     id 'org.gretty' version '3.0.3'
+    id 'idea'
+    id 'checkstyle'
 }
 
 gretty {   // Add these lines

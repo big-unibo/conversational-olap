@@ -248,7 +248,7 @@ public final class Mapper {
     }
     stats.put("match_count", validMatch.size());
     final List<Ngram> confidentMatch = validMatch.stream().filter(n -> n.similarity() >= nGramSimThr).collect(Collectors.toList());
-    confidentMatch.stream() //
+    confidentMatch //
         .forEach(m -> { //
           final Set<Integer> range = IntStream.rangeClosed(m.pos().getLeft(), m.pos().getRight()).boxed().collect(Collectors.toSet());
           final List<Ngram> toRemove = validMatch //

@@ -315,10 +315,10 @@ public final class Utils {
         JSONArray mc = json.getJSONArray(quote(Type.MC.toString(), ignoreQuotes));
         final JSONArray union = new JSONArray();
         if (json.has(quote(Type.GC.toString(), ignoreQuotes))) {
-            json.getJSONArray(quote(Type.GC.toString(), ignoreQuotes)).forEach(o -> union.put(o));
+            json.getJSONArray(quote(Type.GC.toString(), ignoreQuotes)).forEach(union::put);
         }
         if (json.has(quote("PROPERTIES", ignoreQuotes))) {
-            json.getJSONArray(quote("PROPERTIES", ignoreQuotes)).forEach(o -> union.put(o));
+            json.getJSONArray(quote("PROPERTIES", ignoreQuotes)).forEach(union::put);
         }
         String select = "SELECT "; // SQL_NO_CACHE
         final Iterator<Object> mcIterator = mc.iterator();

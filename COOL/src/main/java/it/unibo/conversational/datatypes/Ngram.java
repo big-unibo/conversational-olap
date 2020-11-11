@@ -235,8 +235,7 @@ public class Ngram implements Serializable {
     traverse(n, (c, acc) -> {
       final boolean isAnnotated = (acc == null ? false : (boolean) acc) || !c.getAnnotations().isEmpty();
       if (c.getChildren().isEmpty() && (!c.tokens.equals("where") || c.tokens.equals("where") && !c.pos().equals(DUMMY_POSITION))) {
-        if (isAnnotated) System.out.println(isAnnotated);
-        score.add((isAnnotated ? 0.99 : 1) * c.similarity()); 
+        score.add((isAnnotated ? 0.99 : 1) * c.similarity());
       }
       return isAnnotated;
     });

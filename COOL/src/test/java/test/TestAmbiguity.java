@@ -348,4 +348,14 @@ public class TestAmbiguity {
   public void ssbTest01() throws Exception {
     test(ssb, "sum quantity for Apolonia Gerlach", "", "customer = Apolonia Gerlach", "sum quantity", 0);
   }
+
+  @Test
+  public void ssbTest02() throws Exception {
+    test(ssb, "count sales", "", "", "count lineorder2", 0);
+  }
+
+  @Test
+  public void ssbTest108() throws Exception {
+    test(ssb, "extended price for united states", "", "nation = united states", "avg extendedprice", 2);
+  }
 }
