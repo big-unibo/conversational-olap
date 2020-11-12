@@ -366,7 +366,7 @@ public class Validator {
 
     // Test parameters
     private static final int N_RUNS = 2;
-    private static final int[] KB_LIMITS = new int[]{15000, 100000};
+    private static final int[] KB_LIMITS = new int[]{1000, 10000, 100000, 1000000};
     private static final int[] N_SYNMETAS = new int[]{5, 3, 1};
     private static final double[] THR_METAS = new double[]{0.4, 0.5, 0.6};
     private static final double[] THR_MEMBERS = new double[]{0.8, 0.9};
@@ -393,15 +393,13 @@ public class Validator {
             csvWriterTest.write(toWrite.stream().map(Object::toString).reduce((a, b) -> a + ";" + b).get() + "\n");
             csvWriterTest.flush();
             for (final String dataset : Lists.newArrayList("dataset_patrick_ssb")) {
-                for (int KB_LIMIT : KB_LIMITS) {
-                    if (KB_LIMIT != Validator.KB_LIMIT) {
-                        QueryGenerator.initSynonyms(cube, KB_LIMIT);
-                    }
+                for (final int kblimit : KB_LIMITS) {
+                    QueryGenerator.syns.compute(cube, (k, v) -> QueryGenerator.initSynonyms(cube, kblimit));
                     for (int r = 0; r < N_RUNS; r++) {
                         for (double thrMemb : THR_MEMBERS) {
                             for (double thrMeta : THR_METAS) {
                                 for (int synMeta : N_SYNMETAS) {
-                                    new Validator(csvWriterTest).validateAll(cube, dataset, thrMemb, thrMeta, N_SYNMEMBER, synMeta, THR_COVERAGE, THR_NGRAMDIST, K, NGRAM_SIZE, NGRAMSYNTHR, r, KB_LIMIT);
+                                    new Validator(csvWriterTest).validateAll(cube, dataset, thrMemb, thrMeta, N_SYNMEMBER, synMeta, THR_COVERAGE, THR_NGRAMDIST, K, NGRAM_SIZE, NGRAMSYNTHR, r, kblimit);
                                 }
                             }
                         }

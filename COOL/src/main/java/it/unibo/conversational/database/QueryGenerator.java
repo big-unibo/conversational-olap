@@ -55,7 +55,7 @@ public final class QueryGenerator {
     /**
      * Synonyms
      */
-    private static Map<Cube, Map<List<String>, List<Entity>>> syns = Maps.newLinkedHashMap();
+    public static Map<Cube, Map<List<String>, List<Entity>>> syns = Maps.newLinkedHashMap();
 
     /**
      * @param cube cube
