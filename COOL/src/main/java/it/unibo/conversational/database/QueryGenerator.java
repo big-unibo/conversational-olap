@@ -12,6 +12,9 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import smile.math.distance.EditDistance;
+import smile.neighbor.BKTree;
+import smile.neighbor.Neighbor;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -35,28 +38,35 @@ public final class QueryGenerator {
     /**
      * Aggregation operator for each measure
      */
-    private static Map<Cube, Map<String, Set<Entity>>> operatorOfMeasure = Maps.newLinkedHashMap();
+    private static Map<Cube, Map<String, Set<Entity>>> operatorOfMeasure = Maps.newHashMap();
     /**
      * Members of each each level (note that a member can be in more levels)
      */
-    private static Map<Cube, Map<String, Set<Entity>>> membersofLevels = Maps.newLinkedHashMap();
+    private static Map<Cube, Map<String, Set<Entity>>> membersofLevels = Maps.newHashMap();
     /**
      * Levels of each member
      */
-    private static Map<Cube, Map<String, Set<Entity>>> levelsOfMembers = Maps.newLinkedHashMap();
+    private static Map<Cube, Map<String, Set<Entity>>> levelsOfMembers = Maps.newHashMap();
     /**
      * From string to level
      */
-    private static Map<Cube, Map<String, Entity>> string2level = Maps.newLinkedHashMap();
+    private static Map<Cube, Map<String, Entity>> string2level = Maps.newHashMap();
+    /**
+     * From string to members
+     */
+    private static Map<Cube, Map<String, List<Entity>>> string2members = Maps.newHashMap();
     /**
      * Year levels
      */
-    private static Map<Cube, Set<Entity>> yearLevels = Maps.newLinkedHashMap();
+    private static Map<Cube, Set<Entity>> yearLevels = Maps.newHashMap();
     /**
      * Synonyms
      */
-    private static Map<Cube, Map<List<String>, List<Entity>>> syns = Maps.newLinkedHashMap();
-
+    private static Map<Cube, Map<List<String>, List<Entity>>> syns = Maps.newHashMap();
+    /**
+     * Synonyms
+     */
+    private static Map<Cube, BKTree<String>> bktrees = Maps.newHashMap();
     /**
      * @param cube cube
      * @return Aggregation operator for each measure of the given cube
@@ -105,14 +115,22 @@ public final class QueryGenerator {
         return syns.computeIfAbsent(cube, k -> initSynonyms(cube, Validator.KB_LIMIT));
     }
 
+    /**
+     * @param cube cube
+     * @return Synonyms for the given cube
+     */
+    public static BKTree<String> bktree(final Cube cube) {
+        return bktrees.computeIfAbsent(cube, k -> new BKTree<>(new EditDistance()));
+    }
+
     // Initialize the metra structure at the beginning, this could be done by need
     static {
         for (final Cube cube : Config.getCubes()) {
             L.debug("Loading meta-data from: " + cube.getFactTable());
-            operatorOfMeasure.put(cube, QueryGenerator.getOperatorOfMeasure(cube));
+            operatorOfMeasure.put(cube, getOperatorOfMeasure(cube));
             populateMembers(cube);
             syns(cube);
-            yearLevels.put(cube, QueryGenerator.getYearLevels(cube));
+            yearLevels.put(cube, getYearLevels(cube));
         }
         L.debug("Done loading.");
     }
@@ -167,7 +185,7 @@ public final class QueryGenerator {
      * @return Map of <generic value, specific values> entries
      */
     public static Map<String, List<String>> getFunctionalDependency2(final Cube cube, final String specific, final String generic) {
-        final Map<String, List<String>> tables = Maps.newLinkedHashMap();
+        final Map<String, List<String>> tables = Maps.newHashMap();
         executeDataQuery(cube, "select distinct " + specific + ", " + generic + " from " + getTable(cube, specific, generic), res -> {
             while (res.next()) {
                 if (!tables.containsKey(res.getString(generic))) {
@@ -188,7 +206,7 @@ public final class QueryGenerator {
      * @return Map of <specific value, generic value> entries
      */
     public static Map<String, String> getFunctionalDependency(final Cube cube, final String specific, final String generic) {
-        final Map<String, String> tables = Maps.newLinkedHashMap();
+        final Map<String, String> tables = Maps.newHashMap();
         executeDataQuery(cube, "select distinct " + specific + ", " + generic + " from " + getTable(cube, specific, generic), res -> {
             while (res.next()) {
                 if (tables.containsKey(res.getString(specific))) {
@@ -331,7 +349,7 @@ public final class QueryGenerator {
      * @return a map <measure, operators> (i.e., the operators that are appliable to the given measure)
      */
     public static Map<String, Set<Entity>> getOperatorOfMeasure(final Cube cube) {
-        final Map<String, Set<Entity>> map = Maps.newLinkedHashMap();
+        final Map<String, Set<Entity>> map = Maps.newHashMap();
         final String query =
                 "select gm." + id(tabGROUPBYOPERATOR) + ", gm." + id(tabMEASURE) + ", " + name(tabMEASURE) + ", " + name(tabGROUPBYOPERATOR) + " "
                 + "from `" + tabGRBYOPMEASURE + "` gm, `" + tabMEASURE + "` m, `" + tabGROUPBYOPERATOR + "` g "
@@ -352,9 +370,10 @@ public final class QueryGenerator {
     }
 
     private static void populateMembers(final Cube cube) {
-        final Map<String, Set<Entity>> attributes = Maps.newLinkedHashMap();
-        final Map<String, Set<Entity>> members = Maps.newLinkedHashMap();
-        final Map<String, Entity> attrEntity = Maps.newLinkedHashMap();
+        final Map<String, Set<Entity>> attributes = Maps.newHashMap();
+        final Map<String, Set<Entity>> members = Maps.newHashMap();
+        final Map<String, Entity> attrEntity = Maps.newHashMap();
+        final Map<String, List<Entity>> memberEntity = Maps.newHashMap();
         DBmanager.executeMetaQuery(cube,
                 "select m." + id(tabMEMBER) + ", m." + name(tabMEMBER)
                                 + ", l." + id(tabLEVEL) + ", l." + name(tabLEVEL) + ", l." + type(tabLEVEL)
@@ -376,9 +395,10 @@ public final class QueryGenerator {
                         final String idTabTABLE = res.getString(id(tabTABLE));
                         final Entity level = new Entity(idTabLEVEL, nameTabLEVEL, idTabTABLE, nameTabCOLUMN, Utils.getDataType(typeTabLEVEL), tabLEVEL, nameTabTABLE);
                         if (idTabMEMBER != null) {
-                            members.compute(nameTabLEVEL, (k, v) -> v == null ? Sets.newHashSet() : v)
-                                   .add(new Entity(idTabMEMBER, nameTabMEMBER, idTabLEVEL, nameTabCOLUMN, Utils.getDataType(typeTabLEVEL), tabMEMBER, nameTabTABLE));
-                            attributes.compute(nameTabMEMBER, (k, v) -> v == null ? Sets.newHashSet() : v).add(level);
+                            final Entity member = new Entity(idTabMEMBER, nameTabMEMBER, idTabLEVEL, nameTabCOLUMN, Utils.getDataType(typeTabLEVEL), tabMEMBER, nameTabTABLE);
+                            members.computeIfAbsent(nameTabLEVEL, k -> Sets.newHashSet()).add(member);
+                            attributes.computeIfAbsent(nameTabMEMBER, k -> Sets.newHashSet()).add(level);
+                            memberEntity.computeIfAbsent(nameTabMEMBER, k -> Lists.newArrayList()).add(member);
                         }
                         attrEntity.computeIfAbsent(nameTabLEVEL.toLowerCase(), k -> level);
                     }
@@ -387,11 +407,15 @@ public final class QueryGenerator {
         membersofLevels.put(cube, members);
         levelsOfMembers.put(cube, attributes);
         string2level.put(cube, attrEntity);
+        string2members.put(cube, memberEntity);
     }
 
+    /**
+     * @return elements that *must* be present in the knowledge base
+     */
     private static Set<String> readElementsInKB() {
         try {
-            final String data = new String(Files.readAllBytes(Paths.get(QueryGenerator.class.getClassLoader().getResource("PresentInKB.txt").toURI())));
+            final String data = new String(Files.readAllBytes(Paths.get(Objects.requireNonNull(QueryGenerator.class.getClassLoader().getResource("PresentInKB.txt")).toURI())));
             return Arrays.stream(data.split("\n")).map(String::toLowerCase).collect(Collectors.toSet());
         } catch (final Exception e) {
             return Sets.newHashSet();
@@ -409,9 +433,9 @@ public final class QueryGenerator {
         final Map<List<String>, List<Entity>> syns = Maps.newHashMap();
         final long startTime = System.currentTimeMillis();
         // Add others
-        DBmanager.tabsWithSyns.stream().filter(t -> !t.equals(tabMEMBER) && !t.equals(tabLEVEL)).forEach(table -> {
+        DBmanager.tabsWithSyns.forEach(table -> {
             executeMetaQuery(cube,
-                    "select s.term, " + id(table) + ", " + name(table) + " from `" + tabSYNONYM + "` s, `" + table + "` where s.reference_id = " + id(table) + " and s.table_name = '" + table + "'",
+                    "select s.term, " + (!table.equals(tabMEMBER) && table.equals(tabLEVEL) ? id(table) + ", " : "") + name(table) + " from `" + tabSYNONYM + "` s, `" + table + "` where s.reference_id = " + id(table) + " and s.table_name = '" + table + "'",
                     res -> {
                         while (res.next()) {
                             final String term = res.getString(colSYNTERM);
@@ -419,51 +443,29 @@ public final class QueryGenerator {
                                 continue;
                             }
                             final List<String> synonym = Arrays.stream(term.replace("_", " ").split(" ")).filter(t -> !t.isEmpty()).collect(Collectors.toList());
-                            syns.computeIfAbsent(synonym, k -> Lists.newArrayList()).add(new Entity(res.getString(id(table)), res.getString(name(table)), table));
+                            if (table.equals(tabLEVEL)) {
+                                syns.computeIfAbsent(synonym, k -> Lists.newArrayList()).add(getLevel(cube, res.getString(name(table))));
+                            } else if (table.equals(tabMEMBER)) {
+                                syns.computeIfAbsent(synonym, k -> Lists.newArrayList()).addAll(getMembers(cube, res.getString(name(table))));
+                            } else {
+                                syns.computeIfAbsent(synonym, k -> Lists.newArrayList()).add(new Entity(res.getString(id(table)), res.getString(name(table)), table));
+                            }
+                            bktree(cube).add(term);
                         }
                     });
         });
-
-        // Add levels
-        executeMetaQuery(cube,
-                "select s.term, l.level_name from `" + tabSYNONYM + "` s, `" + tabLEVEL + "` l where s.table_name = '" + tabLEVEL + "' and s.reference_id = l.level_id",
-                res -> {
-                    while (res.next()) {
-                        final String term = res.getString(colSYNTERM);
-                        if (syns.size() > limit && !mustInKb.contains(term.toLowerCase())) {
-                            continue;
-                        }
-                        final List<String> synonym = Arrays.stream(term.replace("_", " ").split(" ")).filter(t -> !t.isEmpty()).collect(Collectors.toList());
-                        syns.computeIfAbsent(synonym, k -> Lists.newArrayList()).add(QueryGenerator.getLevel(cube, res.getString(name(tabLEVEL))));
-                    }
-                });
-
-        // Add members
-        executeMetaQuery(cube,
-                "select " + colSYNTERM + ", m." + id(tabMEMBER) + ", m." + name(tabMEMBER) + ", l." + id(tabLEVEL) + ", c." + name(tabCOLUMN) + ", l." + type(tabLEVEL) + ", t." + name(tabTABLE) + " "
-                        + "from `" + tabSYNONYM + "` s, `" + tabMEMBER + "` m, `" + tabLEVEL + "` l, `" + tabCOLUMN + "` c, `" + tabTABLE + "` t "
-                        + "where s.table_name = '" + tabMEMBER + "' and reference_id = m.member_id and m.level_id = l.level_id and c.table_id = t.table_id and l.column_id = c.column_id",
-                res -> {
-                    while (res.next()) {
-                        final String term = res.getString(colSYNTERM);
-                        if (syns.size() > limit && !mustInKb.contains(term.toLowerCase())) {
-                            continue;
-                        }
-                        final List<String> synonym = Arrays.stream(term.replace("_", " ").split(" ")).filter(t -> !t.isEmpty()).collect(Collectors.toList());
-                        final List<Entity> tmp = syns.computeIfAbsent(synonym, k -> Lists.newArrayList());
-                        tmp.add(new Entity(
-                                res.getString(id(tabMEMBER)),
-                                res.getString(name(tabMEMBER)),
-                                res.getString(id(tabLEVEL)),
-                                res.getString(name(tabCOLUMN)),
-                                Utils.getDataType(res.getString(type(tabLEVEL))),
-                                tabMEMBER,
-                                res.getString(name(tabTABLE))));
-                    }
-                });
         L.debug("#Synonyms: " + syns.size());
         L.debug("Done synonym initialization in " + (System.currentTimeMillis() - startTime) + " ms");
         return syns;
+    }
+
+    /**
+     * @param cube cube
+     * @param member member
+     * @return members of the current level
+     */
+    private static Collection<? extends Entity> getMembers(final Cube cube, final String member) {
+        return string2members.get(cube).get(member.toLowerCase());
     }
 
     /**
@@ -591,9 +593,9 @@ public final class QueryGenerator {
                     + "select value_en, `TIMESTAMP`, fullquery_serialized, olapoperator_serialized "
                     + "from OLAPsession, timest "
                     + "where value_en in (\"read\", \"navigate\", \"reset\") and session_id = \"" + sessionid + "\" and `TIMESTAMP` >= timest.timest";
-        final Map<String, Long> lookupTime = Maps.newLinkedHashMap();
-        final Map<String, Mapping> lookupQuery = Maps.newLinkedHashMap();
-        final Map<String, Operator> lookupOperator = Maps.newLinkedHashMap();
+        final Map<String, Long> lookupTime = Maps.newHashMap();
+        final Map<String, Mapping> lookupQuery = Maps.newHashMap();
+        final Map<String, Operator> lookupOperator = Maps.newHashMap();
         DBmanager.executeMetaQuery(cube, sql, res -> {
             while (res.next()) {
                 lookupTime.put(res.getString(1), res.getLong(2));
@@ -610,7 +612,7 @@ public final class QueryGenerator {
         if (lookupOperator.isEmpty()) {
             throw new IllegalArgumentException("Could not find session: " + sessionid);
         }
-        final Map<String, Object> statistics = Maps.newLinkedHashMap();
+        final Map<String, Object> statistics = Maps.newHashMap();
         statistics.put("fullquery_time", (lookupTime.get("navigate") - lookupTime.get("read")) / 1000);
         statistics.put("session_time", (lookupTime.get("reset") - lookupTime.get("read")) / 1000);
         statistics.put("operator_time", ((long) statistics.get("session_time") - (long) statistics.get("fullquery_time")) / 2);
@@ -633,7 +635,7 @@ public final class QueryGenerator {
      * @return number of steps in section
      */
     public static Map<String, Double> getSessionCounts(final Cube cube, final String sessionid) {
-        final Map<String, Double> statistics = Maps.newLinkedHashMap();
+        final Map<String, Double> statistics = Maps.newHashMap();
 
         String sql =
                 cube.getDbms().equals("oracle") ?

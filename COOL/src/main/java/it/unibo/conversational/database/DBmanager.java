@@ -142,7 +142,7 @@ public final class DBmanager {
     /**
      * List of table containing the synonyms column.
      */
-    public static final Set<String> tabsWithSyns = Sets.newHashSet(tabGROUPBYOPERATOR, tabFACT, tabLEVEL, tabMEASURE, tabMEMBER, tabLANGUAGEPREDICATE, tabLANGUAGEOPERATOR);
+    public static final Set<String> tabsWithSyns = Sets.newHashSet(tabGROUPBYOPERATOR, tabFACT, tabMEASURE, tabLANGUAGEPREDICATE, tabLANGUAGEOPERATOR, tabLEVEL, tabMEMBER);
     public static final String colRELTAB1 = "table1".toUpperCase();
     public static final String colRELTAB2 = "table2".toUpperCase();
     public static final String colCOLISKEY = "isKey".toUpperCase();
