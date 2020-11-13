@@ -33,8 +33,6 @@ public class Validator {
     private FileWriter csvWriterTest;
     /**
      * Initialize a validator.
-     *
-     * @throws Exception in case of error.
      */
     public Validator() {
     }
@@ -43,12 +41,10 @@ public class Validator {
      * Initialize a validator.
      *
      * @param csvWriterTest where to write the output
-     * @throws Exception in case of error
      */
     public Validator(final FileWriter csvWriterTest) {
         this.csvWriterTest = csvWriterTest;
     }
-
 
     private static final Logger L = Logger.getLogger(Validator.class);
     /**
@@ -64,7 +60,6 @@ public class Validator {
      * @param nTopInterpretation    top N queries
      * @param ngramSize             max ngram size
      * @param nGramSimThr           ngram similarity threshold
-     * @throws Exception in case or error
      */
     public void validateAll(final Cube cube, final String dataset, final double thrSimilarityMember, final double thrSimilarityMetadata, final int synMember, final int synMeta,
                             final double percMissingPhrase, final int maxDistInPhrase, final int nTopInterpretation, final int ngramSize, final double nGramSimThr, final int run, final int kblimit) {

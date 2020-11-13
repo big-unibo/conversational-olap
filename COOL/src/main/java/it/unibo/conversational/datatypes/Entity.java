@@ -136,7 +136,7 @@ public class Entity implements Serializable {
             return pkInTable.equals(o.pkInTable)//
                     && nameInTable.equals(o.nameInTable)//
                     && refToOtherTable.equals(o.refToOtherTable)//
-                    && nameinOtherTable.equals(o.nameinOtherTable)//
+                    // && nameinOtherTable.equals(o.nameinOtherTable) // unused
                     && typeInDB.equals(o.typeInDB)//
                     && metaTable.equals(o.metaTable);
         }
@@ -156,7 +156,7 @@ public class Entity implements Serializable {
     @Override
     public int hashCode() {
         if (hashCode == null) {
-            hashCode = Objects.hash(pkInTable, nameInTable, refToOtherTable, nameinOtherTable, typeInDB, metaTable);
+            hashCode = Objects.hash(pkInTable, nameInTable, refToOtherTable, typeInDB, metaTable); // nameinOtherTable, // unused
         }
         return hashCode;
     }
@@ -165,9 +165,9 @@ public class Entity implements Serializable {
         return metaTable.get();
     }
 
-    public String nameinOtherTable() {
-        return nameinOtherTable.get();
-    }
+    // public String nameinOtherTable() {  // unused
+    //     return nameinOtherTable.get();  // unused
+    // }                                   // unused
 
     public String nameInTable() {
         return nameInTable;
