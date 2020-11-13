@@ -22,3 +22,7 @@ supplycost
 avg
 extendedprice
 A Catskill Eagle
+by
+in
+for
+supplier

@@ -378,21 +378,21 @@ public class Validator {
      * @throws Exception in case of error
      */
     public static void main(final String[] args) {
-        final String filePathTest = "resources\\test\\results_IS\\test.csv";
-        // final Cube cube = Config.getCube("sales_fact_1997");
-        final Cube cube = Config.getCube("lineorder2");
-        try (FileWriter csvWriterTest = new FileWriter(filePathTest)) {
-            final List<Object> toWrite = Lists.newArrayList("simMember", "simMeta", "synMember", "synMeta", "%missing", "maxDistance", "ngramSize",
-                    "id", "k", "disambiguationStep",
-                    "score", "potentialscore", "dataset",
-                    "similarity", "correctParsing",
-                    "measures", "predicate", "gbset", "nl_query", "ngrams", "sentence_parsed",
-                    "ngrams_count", "lemmatization_time", "lemmatization_sentence", "match_time", "match_count", "match_confident_count",
-                    "sentence_time", "sentence_count", "sentence_count_pruned", "sentence_pruned", "mapping_time", "parsing_time", "total_time",
-                    "isFullyParsed", "countAnnotations", "run", "kbsize");
-            csvWriterTest.write(toWrite.stream().map(Object::toString).reduce((a, b) -> a + ";" + b).get() + "\n");
-            csvWriterTest.flush();
-            for (final String dataset : Lists.newArrayList("dataset_patrick_ssb")) {
+        for (final String dataset : Lists.newArrayList("dataset_patrick_ssb")) {
+            final String path = "resources\\test\\results_IS\\";
+            final String file = "test_" + dataset + ".csv";
+            final Cube cube = Config.getCube(dataset.equals("dataset_patrick_ssb") ? "lineorder2" : "sales_fact_1997");
+            try (FileWriter csvWriterTest = new FileWriter(path + file)) {
+                final List<Object> toWrite = Lists.newArrayList("simMember", "simMeta", "synMember", "synMeta", "%missing", "maxDistance", "ngramSize",
+                        "id", "k", "disambiguationStep",
+                        "score", "potentialscore", "dataset",
+                        "similarity", "correctParsing",
+                        "measures", "predicate", "gbset", "nl_query", "ngrams", "sentence_parsed",
+                        "ngrams_count", "lemmatization_time", "lemmatization_sentence", "match_time", "match_count", "match_confident_count",
+                        "sentence_time", "sentence_count", "sentence_count_pruned", "sentence_pruned", "mapping_time", "parsing_time", "total_time",
+                        "isFullyParsed", "countAnnotations", "run", "kbsize");
+                csvWriterTest.write(toWrite.stream().map(Object::toString).reduce((a, b) -> a + ";" + b).get() + "\n");
+                csvWriterTest.flush();
                 for (final int kblimit : KB_LIMITS) {
                     QueryGenerator.syns.compute(cube, (k, v) -> QueryGenerator.initSynonyms(cube, kblimit));
                     for (int r = 0; r < N_RUNS; r++) {
@@ -405,9 +405,10 @@ public class Validator {
                         }
                     }
                 }
+
+            } catch (final Exception e1) {
+                e1.printStackTrace();
             }
-        } catch (final Exception e1) {
-            e1.printStackTrace();
         }
     }
 }

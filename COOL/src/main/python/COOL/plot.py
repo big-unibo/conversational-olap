@@ -117,14 +117,9 @@ with codecs.open(path + filename, 'r', encoding='utf-8') as f:
     ddata = ddata[ddata["k"] == 1]
     ddata = ddata[ddata["run"] == 0]
 ddata = ddata.sort_values(['id', 'disambiguationStep'], ascending=[True, True])
-ddata[["id", "lemmatization_sentence", "isFullyParsed", "sentence_parsed", "k", "disambiguationStep", "similarity"]]
-
+# ddata[["id", "lemmatization_sentence", "isFullyParsed", "sentence_parsed", "k", "disambiguationStep", "similarity"]]
 
 # Aggregate sentences by number of annotations
-
-# In[3]:
-
-
 with codecs.open(path + filename, 'r', encoding='utf-8') as f:
     msize, m, ls, l, c = marker(filename)    
     data = pd.read_csv(f, sep=';')

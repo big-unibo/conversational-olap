@@ -361,6 +361,12 @@ public class TestAmbiguity {
   public void ssbTest05() throws Exception {
     test(ssb, "extended price", "", "", "avg extendedprice", 1);
     test(ssb, "extended price for catskill eagle", "", "product = A Catskill Eagle", "avg extendedprice", 1);
+    // test(ssb, "extended price by month in 2010 for catskill eagle united states by supplier", "month, supplier", "year = 2010 and product = A Catskill Eagle", "avg extendedprice", 1);
+  }
+
+  @Test
+  public void ssbTest58() throws Exception {
+    test(ssb, "sum revenue for mint milk chocolate as product name", "", "product = mint milk chocolate", "sum revenue", 0);
   }
 
   @Test
