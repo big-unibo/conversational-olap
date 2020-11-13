@@ -398,7 +398,7 @@ public final class QueryGenerator {
                             final Entity member = new Entity(idTabMEMBER, nameTabMEMBER, idTabLEVEL, nameTabCOLUMN, Utils.getDataType(typeTabLEVEL), tabMEMBER, nameTabTABLE);
                             members.computeIfAbsent(nameTabLEVEL, k -> Sets.newHashSet()).add(member);
                             attributes.computeIfAbsent(nameTabMEMBER, k -> Sets.newHashSet()).add(level);
-                            memberEntity.computeIfAbsent(nameTabMEMBER, k -> Lists.newArrayList()).add(member);
+                            memberEntity.computeIfAbsent(nameTabMEMBER.toLowerCase(), k -> Lists.newArrayList()).add(member);
                         }
                         attrEntity.computeIfAbsent(nameTabLEVEL.toLowerCase(), k -> level);
                     }
@@ -435,7 +435,7 @@ public final class QueryGenerator {
         // Add others
         DBmanager.tabsWithSyns.forEach(table -> {
             executeMetaQuery(cube,
-                    "select s.term, " + (!table.equals(tabMEMBER) && table.equals(tabLEVEL) ? id(table) + ", " : "") + name(table) + " from `" + tabSYNONYM + "` s, `" + table + "` where s.reference_id = " + id(table) + " and s.table_name = '" + table + "'",
+                    "select s.term, " + (!table.equals(tabMEMBER) && !table.equals(tabLEVEL) ? id(table) + ", " : "") + name(table) + " from `" + tabSYNONYM + "` s, `" + table + "` where s.reference_id = " + id(table) + " and s.table_name = '" + table + "'",
                     res -> {
                         while (res.next()) {
                             final String term = res.getString(colSYNTERM);
@@ -533,7 +533,7 @@ public final class QueryGenerator {
                 "INSERT INTO `" + tabOLAPsession + "` (timestamp, session_id, value_en"
                         + checkNull(annotationid, ", annotation_id")
                         + checkNull(valueIta, ", value_ita")
-                        + checkNull(limit, ", limit")
+                        + checkNull(limit, ", `LIMIT`")
                         + checkNull(fullquery, ", fullquery_serialized")
                         + checkNull(fullquery, ", fullquery_tree")
                         + checkNull(operator, ", olapoperator_serialized")
