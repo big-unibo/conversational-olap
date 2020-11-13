@@ -64,7 +64,7 @@ public final class DBsynonyms {
                             }
                         } else if (metaCount.intValue() < synMeta && sim >= thrSimilarityMetadata) { // è un metadato con sim suff (level, >=, by, etc.)
                             // do not add entities from `tabLANGUAGEOPERATOR` while parsing a complete query
-                            if (toParse.equals(Operator.class) || !toParse.equals(Ngram.class) && !e.metaTable().equals(tabLANGUAGEOPERATOR)) {
+                            if (toParse.equals(Operator.class) || toParse.equals(Ngram.class) && !e.metaTable().equals(tabLANGUAGEOPERATOR)) {
                                 res.add(t);
                             }
                             metaCount.add(1L);

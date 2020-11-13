@@ -1,9 +1,15 @@
 package test;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import it.unibo.conversational.database.*;
+import it.unibo.conversational.datatypes.Entity;
 import it.unibo.conversational.datatypes.Ngram;
+import org.apache.commons.lang3.tuple.Triple;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
+import java.util.Set;
 
 import static it.unibo.conversational.database.DBmanager.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -35,7 +41,9 @@ public class TestConnection {
         try {
             for (final Cube cube: Config.getCubes()) {
                 assertTrue(QueryGenerator.syns(cube).containsKey(Lists.newArrayList("sum")));
-                assertEquals(DBsynonyms.searchSequential(cube, Lists.newArrayList("sum"), 0), DBsynonyms.searchBKtree(cube, Lists.newArrayList("sum"), 0));
+                Set<Triple<Entity, Double, String>> resBK = Sets.newLinkedHashSet(DBsynonyms.searchBKtree(cube, Lists.newArrayList("sum"), 0.6));
+                Set<Triple<Entity, Double, String>> resSeq = Sets.newLinkedHashSet(DBsynonyms.searchSequential(cube, Lists.newArrayList("sum"), 0.6));
+                assertEquals(resSeq.size(), resBK.size(), "Results mismatch");
                 assertFalse(DBsynonyms.getEntities(cube, Ngram.class, Lists.newArrayList("sum"), 1.0, 1.0, 1, 1).isEmpty());
                 assertFalse(QueryGenerator.getOperatorOfMeasure(cube).isEmpty());
                 DBmanager.closeAllConnections();
