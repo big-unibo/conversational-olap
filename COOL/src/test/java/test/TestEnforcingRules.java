@@ -18,6 +18,10 @@ import it.unibo.conversational.datatypes.Mapping;
 import it.unibo.conversational.datatypes.Ngram;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
+import smile.math.distance.EditDistance;
+import smile.math.distance.Metric;
+import smile.neighbor.BKTree;
+import smile.neighbor.Neighbor;
 import zhsh.Tree;
 
 import java.io.IOException;
@@ -58,6 +62,31 @@ public class TestEnforcingRules {
     m2.put(0, 1);
     m2.put(1, 0);
     assertEquals(m2, MarriageProblem.getBestMatch(l2, l3));
+  }
+
+  @Test
+  public void testBKtree() {
+    final BKTree<String> tree = new BKTree<>(new EditDistance());
+    tree.add(Lists.newArrayList("foo", "foo", "foa", "foobar"));
+    List<Neighbor<String, String>> res = Lists.newArrayList();
+    tree.range("boo", 1, res);
+    assertEquals(Lists.newArrayList("foo"), res.stream().map(n -> n.value).collect(Collectors.toList()));
+    res = Lists.newArrayList();
+    tree.range("boo", 2, res);
+    assertEquals(Lists.newArrayList("foo", "foa"), res.stream().map(n -> n.value).collect(Collectors.toList()));
+  }
+
+  @Test
+  public void testBKtreeEntity() {
+    final Metric<String> distance = new EditDistance();
+    final BKTree<Entity> tree = new BKTree<>((x , y) -> distance.d(x.nameInTable(), y.nameInTable()));
+    tree.add(Lists.newArrayList(new Entity("foo"), new Entity("foa"), new Entity("foobar")));
+    List<Neighbor<Entity, Entity>> res = Lists.newArrayList();
+    tree.range(new Entity("boo"), 1, res);
+    assertEquals(Lists.newArrayList("foo"), res.stream().map(n -> n.value.nameInTable()).collect(Collectors.toList()));
+    res = Lists.newArrayList();
+    tree.range(new Entity("boo"), 2, res);
+    assertEquals(Lists.newArrayList("foo", "foa"), res.stream().map(n -> n.value.nameInTable()).collect(Collectors.toList()));
   }
 
   /** Test format. */
