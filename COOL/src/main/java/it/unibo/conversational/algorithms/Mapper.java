@@ -25,6 +25,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static it.unibo.conversational.Utils.ngram2string;
+
 /** Prepare the mappings for the parsing. */
 public final class Mapper {
   private Mapper() {
@@ -233,13 +235,14 @@ public final class Mapper {
         int idxend = i + j;
         if (idxend <= tokens.size()) {
           final List<String> ngrams = tokens.subList(i, idxend);
-          if (numericValues.containsKey(StringUtils.join(ngrams))) { // Se l'ngramma è taggato lo aggiungo ai match
-            final Ngram n = new Ngram(StringUtils.join(ngrams), Type.VAL, new Entity(StringUtils.join(ngrams), Utils.getDataType(numericValues.get(StringUtils.join(ngrams)))), Pair.of(i, (i + j - 1)));
+          final String s = ngram2string(ngrams);
+          if (numericValues.containsKey(s)) { // Se l'ngramma è taggato lo aggiungo ai match
+            final Ngram n = new Ngram(s, Type.VAL, new Entity(s, Utils.getDataType(numericValues.get(s))), Pair.of(i, (i + j - 1)));
             validMatch.add(n);
           } else { // Altrimenti cerco i migliori sinonimi tra i membri e i migliori tra i metadati
             final List<Triple<Entity, Double, String>> syns = DBsynonyms.getEntities(cube, toParse, ngrams, thrSimilarityMember, thrSimilarityMetadata, synMember, synMeta);
             for (final Triple<Entity, Double, String> dbm : syns) {
-              final Ngram ngram = new Ngram(StringUtils.join(ngrams), getNgramType(cube, dbm.getLeft()), dbm.getLeft(), dbm.getMiddle(), dbm.getRight(), Pair.of(i, (i + j - 1)));
+              final Ngram ngram = new Ngram(s, getNgramType(cube, dbm.getLeft()), dbm.getLeft(), dbm.getMiddle(), dbm.getRight(), Pair.of(i, (i + j - 1)));
               validMatch.add(ngram);
             }
           }

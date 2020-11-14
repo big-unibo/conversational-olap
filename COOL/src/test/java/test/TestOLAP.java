@@ -235,8 +235,8 @@ public class TestOLAP {
     execute(prevTree, "drill product subcategory", "sum unit sales by product id");
     execute(prevTree, "rollup product id", Lists.newArrayList(AnnotationType.BA));
     execute(prevTree, "rollup product id to product category", "sum unit sales by product category");
-    execute(prevTree, "add the month", "sum unit sales by product category the month");
-    execute(prevTree, "rollup the month", "sum unit sales by product category the year");
+    execute(prevTree, "add month", "sum unit sales by product category month");
+    execute(prevTree, "rollup month", "sum unit sales by product category year");
   }
 
   /**
@@ -316,34 +316,34 @@ public class TestOLAP {
     execute("sum unit sales", "drill down product id", "sum unit sales by product id");
 
     // Infer FROM attribute (i.e., when given attr is already in GC)
-    execute("sum unit sales by month", "rollup month", "sum unit sales by the year");
-    execute("sum unit sales by date", "rollup date", Lists.newArrayList(AnnotationType.BA), Lists.newArrayList(Pair.of("i0", "the_month")), "sum unit sales by the month");
-    execute("sum unit sales by year", "roll up the year", "sum unit sales");
-    execute("sum unit sales by month", "drill down month", "sum unit sales by the date");
-    execute("sum unit sales by year", "drill down year", Lists.newArrayList(AnnotationType.BA), Lists.newArrayList(Pair.of("i1", "the_month")), "sum unit sales by the month");
+    execute("sum unit sales by month", "rollup month", "sum unit sales by year");
+    execute("sum unit sales by date", "rollup date", Lists.newArrayList(AnnotationType.BA), Lists.newArrayList(Pair.of("i0", "month")), "sum unit sales by month");
+    execute("sum unit sales by year", "roll up year", "sum unit sales");
+    execute("sum unit sales by month", "drill down month", "sum unit sales by date");
+    execute("sum unit sales by year", "drill down year", Lists.newArrayList(AnnotationType.BA), Lists.newArrayList(Pair.of("i1", "month")), "sum unit sales by month");
     execute("sum unit sales by product id", "drill product id", Lists.newArrayList(AnnotationType.A3));
 
     // Infer TO attribute
     // 1 finer attribute
-    execute("sum unit sales by month", "roll up the year", "sum unit sales by the year");
+    execute("sum unit sales by month", "roll up year", "sum unit sales by year");
     // 2 finer attributes
-    execute("sum unit sales by month quarter", "roll up the year", Lists.newArrayList(AnnotationType.CA), Lists.newArrayList(Pair.of("i3", "the_month")), "sum unit sales by quarter the year");
+    execute("sum unit sales by month quarter", "roll up year", Lists.newArrayList(AnnotationType.CA), Lists.newArrayList(Pair.of("i3", "month")), "sum unit sales by quarter year");
 //  }
 //  @Test
 //  public void test061bis() {
 
     // 0 finer attributes, 1 coarser attribute
-    execute("sum unit sales by year", "roll up the date", Lists.newArrayList(AnnotationType.GSA));
+    execute("sum unit sales by year", "roll up date", Lists.newArrayList(AnnotationType.GSA));
     // 0 finer attributes, 0 coarser attribute
-    execute("sum unit sales", "roll up the year", Lists.newArrayList(AnnotationType.GSA));
+    execute("sum unit sales", "roll up year", Lists.newArrayList(AnnotationType.GSA));
     // 1 coarser attribute
-    execute("sum unit sales by month", "drill down the date", "sum unit sales by the date"); 
+    execute("sum unit sales by month", "drill down date", "sum unit sales by date"); 
     // 2 coarser attributes
-    execute("sum unit sales by month quarter", "drill down the date", Lists.newArrayList(AnnotationType.CA), Lists.newArrayList(Pair.of("i4", "the_month")), "sum unit sales by quarter the date");
+    execute("sum unit sales by month quarter", "drill down date", Lists.newArrayList(AnnotationType.CA), Lists.newArrayList(Pair.of("i4", "month")), "sum unit sales by quarter date");
     // 0 coarser attributes, 1 finer attribute
-    execute("sum unit sales by date", "drill down the month", Lists.newArrayList(AnnotationType.GSA));
+    execute("sum unit sales by date", "drill down month", Lists.newArrayList(AnnotationType.GSA));
     // 0 finer attributes, 0 coarser attribute
-    execute("sum unit sales", "drill down the year", "sum unit sales by the year");
+    execute("sum unit sales", "drill down year", "sum unit sales by year");
   }
 
   /**
@@ -385,38 +385,38 @@ public class TestOLAP {
   /** Test all OLAP operator ambiguities */
   @Test
   public void test10() {
-    Mapping prev = execute("return the average store cost and average store sales per category", "", "average store cost average store sales by product category");
+    Mapping prev = execute("return average store cost and average store sales per category", "", "average store cost average store sales by product category");
     execute(prev, "drill down from category", "average store cost average store sales by product subcategory");
 
-    prev = execute("return the average store cost and average store sales per category", "", "average store cost average store sales by product category");
+    prev = execute("return average store cost and average store sales per category", "", "average store cost average store sales by product category");
     execute(prev, "drill down category", "average store cost average store sales by product subcategory");
    
-    execute(prev, "slice on 1997", "average store cost average store sales by product subcategory where the year = 1997");
+    execute(prev, "slice on 1997", "average store cost average store sales by product subcategory where year = 1997");
 
-    execute("average store cost average store sales by product subcategory", "slice on year 1997", "average store cost average store sales by product subcategory where the year = 1997");
+    execute("average store cost average store sales by product subcategory", "slice on year 1997", "average store cost average store sales by product subcategory where year = 1997");
   }
 
   /** Test Q1 */
   @Test
   public void test11() {
-    Mapping prev = execute("avg unit sales for year = 1997", "", "average unit sales where the year = 1997");
-    execute(prev, "drill down subcategory", "average unit sales where the year = 1997 by product subcategory");
-    execute(prev, "rollup category", "average unit sales where the year = 1997 by product category");
+    Mapping prev = execute("avg unit sales for year = 1997", "", "average unit sales where year = 1997");
+    execute(prev, "drill down subcategory", "average unit sales where year = 1997 by product subcategory");
+    execute(prev, "rollup category", "average unit sales where year = 1997 by product category");
 
-    prev = execute("avg unit sales for year = 1997", "", "average unit sales where the year = 1997");
-    execute(prev, "drill down subcategory", "average unit sales where the year = 1997 by product subcategory");
-    execute(prev, "rollup subcategory", Lists.newArrayList(AnnotationType.BA), Lists.newArrayList(Pair.of("i0", "product_category")),  "average unit sales where the year = 1997 by product category");
+    prev = execute("avg unit sales for year = 1997", "", "average unit sales where year = 1997");
+    execute(prev, "drill down subcategory", "average unit sales where year = 1997 by product subcategory");
+    execute(prev, "rollup subcategory", Lists.newArrayList(AnnotationType.BA), Lists.newArrayList(Pair.of("i0", "product_category")),  "average unit sales where year = 1997 by product category");
 
-    prev = execute("return the average unit sales on 1997", "", "average unit sales where the year = 1997");
-    execute(prev, "add subcategory", "average unit sales where the year = 1997 by product subcategory");
-    execute(prev, "rollup subcategory to category", "average unit sales where the year = 1997 by product category");
+    prev = execute("return average unit sales on 1997", "", "average unit sales where year = 1997");
+    execute(prev, "add subcategory", "average unit sales where year = 1997 by product subcategory");
+    execute(prev, "rollup subcategory to category", "average unit sales where year = 1997 by product category");
   }
 
   /** Test Q2 */
   @Test
   public void test12() {
-    Mapping prev = execute("return the average unit sales for Beer and Wine", "", "average unit sales where product category = Beer and Wine");
-    execute(prev, "replace unit sales with the maximum of store sales", "max store sales where product category = Beer and Wine");
+    Mapping prev = execute("return average unit sales for Beer and Wine", "", "average unit sales where product category = Beer and Wine");
+    execute(prev, "replace unit sales with maximum of store sales", "max store sales where product category = Beer and Wine");
     execute(prev, "remove Beer and Wine", "maximum store sales");
   }
 
@@ -425,10 +425,10 @@ public class TestOLAP {
   public void test13() {
     try {
       Validator.parseAndTranslate(cube, "avg unit sales category = Beer and Wine");
-      Validator.parseAndTranslate(cube, "return the sum of store sales for each month where the category is beer and wine");
-      Validator.parseAndTranslate(cube, "return the sum of store sales by month where the category is beer and wine");
-      Validator.parseAndTranslate(cube, "return the sum of store sales by month for category beer and wine");
-      Validator.parseAndTranslate(cube, "return the sum of store sales by month for beer and wine");
+      Validator.parseAndTranslate(cube, "return sum of store sales for each month where category is beer and wine");
+      Validator.parseAndTranslate(cube, "return sum of store sales by month where category is beer and wine");
+      Validator.parseAndTranslate(cube, "return sum of store sales by month for category beer and wine");
+      Validator.parseAndTranslate(cube, "return sum of store sales by month for beer and wine");
     } catch (Exception e) {
       e.printStackTrace();
       fail(e.getMessage());
@@ -478,7 +478,7 @@ public class TestOLAP {
     }
   }
 
-//  /** TODO: Need to add type checking before computing scorePFM in the parsing. In this way we can distinguish between mappings with(out) annotations */
+//  /** TODO: Need to add type checking before computing scorePFM in parsing. In this way we can distinguish between mappings with(out) annotations */
 //  @Test
 //  public void test19() {
 //    execute("sum unit sales", "slice on gender m", "sum unit sales where gender = M");
@@ -506,7 +506,7 @@ public class TestOLAP {
    */
   @Test
   public void testMappingSerialization() throws Exception {
-    final Mapping prev = execute("return the average unit sales on 1997", "", "average unit sales where the year = 1997");
+    final Mapping prev = execute("return average unit sales on 1997", "", "average unit sales where year = 1997");
 
     // write mapping to Byte stream
     final ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -526,7 +526,7 @@ public class TestOLAP {
    */
   @Test
   public void testOperatorSerialization() throws Exception {
-    final Mapping prev = execute("return the average unit sales on 1997", "", "average unit sales where the year = 1997");
+    final Mapping prev = execute("return average unit sales on 1997", "", "average unit sales where year = 1997");
     final Operator op1 = (Operator) Validator.parseAndTranslate(cube, Operator.class, prev, 0.5, Lists.newArrayList(), "add store sales").getBest();
 
     // write mapping to Byte stream
@@ -550,8 +550,8 @@ public class TestOLAP {
     final Map<String, Mapping> lookup_fullqry = Maps.newHashMap();
     final Map<String, Mapping> lookup_session = Maps.newHashMap();
 
-    lookup_fullqry.put("q1", Validator.parseAndTranslate(cube, "avg unit sales where the year = 1997"));
-    lookup_session.put("q1", Validator.parseAndTranslate(cube, "avg unit sales where the year = 1997 by category"));
+    lookup_fullqry.put("q1", Validator.parseAndTranslate(cube, "avg unit sales where year = 1997"));
+    lookup_session.put("q1", Validator.parseAndTranslate(cube, "avg unit sales where year = 1997 by category"));
 
     lookup_fullqry.put("q2", Validator.parseAndTranslate(cube, "avg unit sales for category = beer and wine"));
     lookup_session.put("q2", Validator.parseAndTranslate(cube, "max store sales"));
@@ -604,7 +604,7 @@ public class TestOLAP {
 
     QueryGenerator.saveSession(cube, sessionid, null, "read", null, null, null, null);
 
-    final Mapping session = execute("avg unit sales on 1997", "", "average unit sales where the year = 1997");
+    final Mapping session = execute("avg unit sales on 1997", "", "average unit sales where year = 1997");
     QueryGenerator.saveSession(cube, sessionid, null, "avg unit sales on 1997", "media delle unità vendute nel 1997", "100", session, null);
     QueryGenerator.saveSession(cube, sessionid, null, "navigate", null, null, session, null);
 
@@ -614,8 +614,8 @@ public class TestOLAP {
 
     QueryGenerator.saveSession(cube, sessionid, null, "reset", null, null, session, op2);
 
-    final Mapping true_fullquery = execute("avg unit sales on 1997", "", "avg unit sales where the year = 1997");
-    final Mapping true_session = execute("avg unit sales on 1997 and category is Beer and Wine", "", "avg unit sales where the_year = 1997 and product_category = Beer and Wine");
+    final Mapping true_fullquery = execute("avg unit sales on 1997", "", "avg unit sales where year = 1997");
+    final Mapping true_session = execute("avg unit sales on 1997 and category is Beer and Wine", "", "avg unit sales where year = 1997 and product_category = Beer and Wine");
     checkSerializedSession(sessionid, true_fullquery, true_session, 2);
   }
 
@@ -630,7 +630,7 @@ public class TestOLAP {
 
     QueryGenerator.saveSession(cube, sessionid, null, "read", null, null, null, null);
 
-    final Mapping session = execute("avg unit sales on 1997", "", "average unit sales where the year = 1997");
+    final Mapping session = execute("avg unit sales on 1997", "", "average unit sales where year = 1997");
     QueryGenerator.saveSession(cube, sessionid, null, "avg unit sales on 1997", "media delle unità vendute nel 1997", "100", session, null);
     QueryGenerator.saveSession(cube, sessionid, null, "navigate", null, null, session, null);
 
@@ -640,8 +640,8 @@ public class TestOLAP {
 
     QueryGenerator.saveSession(cube, sessionid, null, "reset", null, null, session, op2);
 
-    final Mapping true_fullquery = execute("avg unit sales on 1997", "", "avg unit sales where the year = 1997");
-    final Mapping true_session = execute("avg unit sales on 1997 by category", "", "avg unit sales where the_year = 1997 by product_category");
+    final Mapping true_fullquery = execute("avg unit sales on 1997", "", "avg unit sales where year = 1997");
+    final Mapping true_session = execute("avg unit sales on 1997 by category", "", "avg unit sales where year = 1997 by product_category");
     checkSerializedSession(sessionid, true_fullquery, true_session, 2);
   }
 }

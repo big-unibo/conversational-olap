@@ -16,6 +16,8 @@ import java.util.*;
 import java.util.concurrent.atomic.LongAdder;
 import java.util.stream.Collectors;
 
+import static it.unibo.conversational.Utils.ngram2string;
+import static it.unibo.conversational.Utils.string2ngram;
 import static it.unibo.conversational.database.DBmanager.*;
 
 /**
@@ -48,7 +50,8 @@ public final class DBsynonyms {
     public static List<Triple<Entity, Double, String>> getEntities(final Cube cube, final Class toParse, final List<String> tokens, final double thrSimilarityMember, final double thrSimilarityMetadata, final int synMember, final int synMeta) {
         final Object[] lookup = new Object[]{tokens, thrSimilarityMember, thrSimilarityMetadata, synMember, synMeta};
         return cache.computeIfAbsent(lookup, k -> {
-            final List<Triple<Entity, Double, String>> acc = searchSequential(cube, tokens, Math.min(thrSimilarityMember, thrSimilarityMetadata));
+//             final List<Triple<Entity, Double, String>> acc = searchSequential(cube, tokens, Math.min(thrSimilarityMember, thrSimilarityMetadata));
+            final List<Triple<Entity, Double, String>> acc = searchBKtree(cube, tokens, Math.min(thrSimilarityMember, thrSimilarityMetadata));
             final LongAdder memberCount = new LongAdder();
             final LongAdder metaCount = new LongAdder();
             final Set<Triple<Entity, Double, String>> res = Sets.newHashSet();
@@ -76,14 +79,18 @@ public final class DBsynonyms {
 
     /**
      * Return similar entities using sequential scan
+     *
      * @param tokens string to find
-     * @param thr similarity threshold
+     * @param thr    similarity threshold
      * @return similar entities
      */
     @NotNull
     public static List<Triple<Entity, Double, String>> searchSequential(final Cube cube, final List<String> tokens, final double thr) {
         final Map<List<String>, List<Entity>> syns = QueryGenerator.syns(cube);
         final List<Triple<Entity, Double, String>> acc = Lists.newArrayList();
+        if (tokens.stream().mapToDouble(String::length).sum() == 1) {
+            QueryGenerator.syns(cube).get(string2ngram(tokens.get(0)));
+        }
         syns.forEach((synonym, referredEntities) -> {
             final double sim = Utils.tokenSimilarity(tokens, synonym); // estimate the similarity
             if (sim >= thr) {
@@ -95,18 +102,23 @@ public final class DBsynonyms {
 
     /**
      * Return similar entities using BKTree
+     *
      * @param tokens string to find
-     * @param thr similarity threshold
+     * @param thr    similarity threshold
      * @return similar entities
      */
     @NotNull
     public static List<Triple<Entity, Double, String>> searchBKtree(final Cube cube, final List<String> tokens, final double thr) {
         final BKTree<String> syns = QueryGenerator.bktree(cube);
         final List<Neighbor<String, String>> res = Lists.newArrayList();
-        syns.range(String.join(" ", tokens), (int) Math.ceil(tokens.size() * 0.3), res);
+        final double sum = tokens.stream().mapToDouble(String::length).sum();
+        if (sum == 1) {
+            QueryGenerator.syns(cube).get(string2ngram(tokens.get(0)));
+        }
+        syns.range(ngram2string(tokens), Math.max(sum - 2, 1), res); // (int) Math.ceil(tokens.size() * 0.5)
         return res
                 .stream()
-                .flatMap(n -> QueryGenerator.syns(cube).get(Arrays.asList(n.value.split(" "))).stream().map(e -> Triple.of(e, 1 - (1.0 * n.distance / Math.max(n.key.length(), n.value.length())), String.join(" ", n.value))))
+                .flatMap(n -> QueryGenerator.syns(cube).get(string2ngram(n.value)).stream().map(e -> Triple.of(e, 1 - (1.0 * n.distance / Math.max(n.key.length(), n.value.length())), n.value)))
                 .filter(t -> t.getMiddle() >= thr)
                 .collect(Collectors.toList());
     }

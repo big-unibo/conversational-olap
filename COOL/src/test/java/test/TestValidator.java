@@ -43,7 +43,7 @@ public class TestValidator {
             new Ngram("unit_sales", Type.MEA, new Entity("unit_sales"), Pair.of(3, 3)),
             new Ngram("by", Type.BY, new Entity("by"), Pair.of(0, 0)), //
             new Ngram("level", Type.ATTR, new Entity("level"), Pair.of(1, 1)), //
-            new Ngram("the_year", Type.ATTR, new Entity("the_year"), Pair.of(4, 4)) //
+            new Ngram("year", Type.ATTR, new Entity("year"), Pair.of(4, 4)) //
         )).get();
     assertEquals(9, s1.countNodes(), s1.toString());
     final Mapping s2 = Parser.parse(cube, //
@@ -107,7 +107,7 @@ public class TestValidator {
 
   @Test
   public void test3() throws Exception {
-    assertEquals(0, checkSentence("number of unit sold by gender and year", "gender, the_year", "", "sum unit_sales"));
+    assertEquals(0, checkSentence("number of unit sold by gender and year", "gender, year", "", "sum unit_sales"));
   }
 
   @Test
@@ -143,11 +143,11 @@ public class TestValidator {
 
   @Test
   public void test8() throws Exception {
-    assertEquals(0, checkSentence("sum unit sales for year", "the_year", "", "sum unit_sales"));
-    assertEquals(0, checkSentence("sum unit sales by year", "the_year", "", "sum unit_sales"));
-    assertEquals(0, checkSentence("sum unit sales per year", "the_year", "", "sum unit_sales"));
-    // assertEquals(4, checkSentence("sum unit sales in 2019", "", "the_year = 2019", "sum unit_sales"));
-    // assertEquals(4, checkSentence("sum unit sales for 2019", "", "the_year = 2019", "sum unit_sales"));
+    assertEquals(0, checkSentence("sum unit sales for year", "year", "", "sum unit_sales"));
+    assertEquals(0, checkSentence("sum unit sales by year", "year", "", "sum unit_sales"));
+    assertEquals(0, checkSentence("sum unit sales per year", "year", "", "sum unit_sales"));
+    // assertEquals(4, checkSentence("sum unit sales in 2019", "", "year = 2019", "sum unit_sales"));
+    // assertEquals(4, checkSentence("sum unit sales for 2019", "", "year = 2019", "sum unit_sales"));
   }
 
   @Test
@@ -168,7 +168,7 @@ public class TestValidator {
   public void testCorrectTree() throws Exception {
     assertEquals("GPSJ(MC(sum unitsales) GC(by gender))", Validator.getBest(cube, "gender", "", "sum unit_sales").toStringTree());
     // This is not GPSJ assertEquals("GPSJ(MC(count customerid) GC(by gender))", Validator.getBest("gender", "", "count customer_id").toStringTree());
-    // This is not GPSJ assertEquals("GPSJ(MC(count customerid) GC(by gender) SC(theyear e v2019))", Validator.getBest("gender", "the_year = 2019", "count customer_id").toStringTree());
+    // This is not GPSJ assertEquals("GPSJ(MC(count customerid) GC(by gender) SC(theyear e v2019))", Validator.getBest("gender", "year = 2019", "count customer_id").toStringTree());
   }
 
   @Test
@@ -189,7 +189,7 @@ public class TestValidator {
 
   @Test
   public void testNotAmbiguous() throws Exception {
-    assertEquals(0, checkSentence("unit sales by country by month by provice for Sheri Nowmer", "country, the_month, state_province", "fullname = Sheri Nowmer", "avg unit_sales")); // medium cost matches with store_cost
+    assertEquals(0, checkSentence("unit sales by country by month by provice for Sheri Nowmer", "country, month, state_province", "fullname = Sheri Nowmer", "avg unit_sales")); // medium cost matches with store_cost
   }
 
   @Test
@@ -200,7 +200,7 @@ public class TestValidator {
   @Test
   public void testNotAmbiguous3() throws Exception {
     // assertEquals(0, checkSentence("unit sales for country as USA", "", "country = USA", "avg unit_sales"));
-    assertEquals(0, checkSentence("by the_month, store_id the_year = 2010 and product_name = Atomic Mints unit_sales", "the_month, store_id", "the_year = 2010 and product_name = Atomic Mints", "avg unit_sales")); // medium cost matches with store_cost
+    assertEquals(0, checkSentence("by month, store_id year = 2010 and product_name = Atomic Mints unit_sales", "month, store_id", "year = 2010 and product_name = Atomic Mints", "avg unit_sales")); // medium cost matches with store_cost
     assertEquals(0, checkSentence("product_name = Club Chocolate Milk store_sales", "", "product_name = Club Chocolate Milk", "avg store_sales"));
   }
 }

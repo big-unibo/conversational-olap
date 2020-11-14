@@ -1,3 +1,4 @@
+the
 i
 me
 my
@@ -64,8 +65,6 @@ against
 through
 during
 from
-up
-down
 out
 off
 over

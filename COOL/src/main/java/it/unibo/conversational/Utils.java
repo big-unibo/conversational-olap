@@ -540,4 +540,21 @@ public final class Utils {
             // e.printStackTrace();
         }
     }
+
+    public static String ngram2string(final List<String> ngram) {
+        return String.join(" ", ngram).toLowerCase();
+    }
+
+    public static List<String> string2ngram(final String token) {
+        final List<String> res =
+                Arrays.stream(
+                    token
+                        .toLowerCase()
+                        .replace("the_", "")
+                        .split(" |_")
+                )
+                .filter(t -> !t.isEmpty())
+                .collect(Collectors.toList());
+        return res;
+    }
 }

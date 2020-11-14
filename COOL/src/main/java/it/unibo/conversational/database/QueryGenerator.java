@@ -9,10 +9,13 @@ import it.unibo.conversational.datatypes.Entity;
 import it.unibo.conversational.datatypes.Mapping;
 import it.unibo.conversational.olap.Operator;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.text.similarity.JaccardSimilarity;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import smile.math.distance.EditDistance;
+import smile.math.distance.JaccardDistance;
+import smile.math.distance.Metric;
 import smile.neighbor.BKTree;
 import smile.neighbor.Neighbor;
 
@@ -27,6 +30,8 @@ import java.util.*;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
+import static it.unibo.conversational.Utils.ngram2string;
+import static it.unibo.conversational.Utils.string2ngram;
 import static it.unibo.conversational.database.DBmanager.*;
 
 /**
@@ -120,6 +125,8 @@ public final class QueryGenerator {
      * @return Synonyms for the given cube
      */
     public static BKTree<String> bktree(final Cube cube) {
+        // final JaccardSimilarity j = new JaccardSimilarity();
+        // return bktrees.computeIfAbsent(cube, k -> new BKTree<>(j::apply)); // EditDistance()
         return bktrees.computeIfAbsent(cube, k -> new BKTree<>(new EditDistance()));
     }
 
@@ -442,7 +449,7 @@ public final class QueryGenerator {
                             if (syns.size() > limit && !mustInKb.contains(term.toLowerCase())) {
                                 continue;
                             }
-                            final List<String> synonym = Arrays.stream(term.replace("_", " ").split(" ")).filter(t -> !t.isEmpty()).collect(Collectors.toList());
+                            final List<String> synonym = string2ngram(term);
                             if (table.equals(tabLEVEL)) {
                                 syns.computeIfAbsent(synonym, k -> Lists.newArrayList()).add(getLevel(cube, res.getString(name(table))));
                             } else if (table.equals(tabMEMBER)) {
@@ -450,7 +457,7 @@ public final class QueryGenerator {
                             } else {
                                 syns.computeIfAbsent(synonym, k -> Lists.newArrayList()).add(new Entity(res.getString(id(table)), res.getString(name(table)), table));
                             }
-                            bktree(cube).add(term);
+                            bktree(cube).add(ngram2string(synonym));
                         }
                     });
         });

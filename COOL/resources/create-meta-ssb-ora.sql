@@ -594,5 +594,5 @@ commit;
 -- select * from "TABLE";
 -- select * from "LEVEL";
 INSERT INTO groupbyoperator_of_measure select groupbyoperator_id, measure_id from measure, groupbyoperator;
-INSERT INTO "SYNONYM"(synonym_id, table_name, reference_id, term) VALUES ("FACT", (select fact_id from fact where fact_name = "LINEORDER2"), "sales");
+INSERT INTO "SYNONYM"(synonym_id, table_name, reference_id, term) VALUES ('-2', 'FACT', (select fact_id from fact where fact_name = 'LINEORDER2'), 'sales');
 commit;

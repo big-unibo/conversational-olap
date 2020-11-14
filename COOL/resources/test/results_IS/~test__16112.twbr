@@ -574,7 +574,7 @@
       <column-instance column='[parsing_time]' derivation='Avg' name='[avg:parsing_time:qk]' pivot='key' type='quantitative' />
       <column-instance column='[sentence_time]' derivation='Avg' name='[avg:sentence_time:qk]' pivot='key' type='quantitative' />
       <column-instance column='[total_time]' derivation='Avg' name='[avg:total_time:qk]' pivot='key' type='quantitative' />
-      <layout dim-ordering='alphabetic' dim-percentage='0.548507' measure-ordering='alphabetic' measure-percentage='0.451493' show-structure='true' />
+      <layout dim-ordering='alphabetic' dim-percentage='0.518207' measure-ordering='alphabetic' measure-percentage='0.481793' show-structure='true' />
       <style>
         <style-rule element='mark'>
           <encoding attr='color' field='[:Measure Names]' type='palette'>
@@ -902,7 +902,7 @@
         </view>
         <style>
           <style-rule element='cell'>
-            <format attr='width' field='[federated.171mvrl0ccmi3u12b75yv1mx2iik].[:Measure Names]' value='162' />
+            <format attr='width' field='[federated.171mvrl0ccmi3u12b75yv1mx2iik].[:Measure Names]' value='78' />
           </style-rule>
         </style>
         <panes>
@@ -931,25 +931,141 @@
       </table>
       <simple-id uuid='{5E61F2AA-8068-4CDC-A9BB-741CD0BBCA3D}' />
     </worksheet>
+    <worksheet name='Time vs id (2)'>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption='test' name='federated.171mvrl0ccmi3u12b75yv1mx2iik' />
+          </datasources>
+          <datasource-dependencies datasource='federated.171mvrl0ccmi3u12b75yv1mx2iik'>
+            <column aggregation='Sum' caption='%Missing' datatype='real' name='[%missing]' role='dimension' type='ordinal' />
+            <column-instance column='[lemmatization_time]' derivation='Avg' name='[avg:lemmatization_time:qk]' pivot='key' type='quantitative' />
+            <column-instance column='[mapping_time]' derivation='Avg' name='[avg:mapping_time:qk]' pivot='key' type='quantitative' />
+            <column-instance column='[parsing_time]' derivation='Avg' name='[avg:parsing_time:qk]' pivot='key' type='quantitative' />
+            <column-instance column='[sentence_time]' derivation='Avg' name='[avg:sentence_time:qk]' pivot='key' type='quantitative' />
+            <column caption='Dataset' datatype='string' name='[dataset]' role='dimension' type='nominal' />
+            <column aggregation='Sum' caption='Disambiguation Step' datatype='integer' name='[disambiguationStep]' role='dimension' type='ordinal' />
+            <column caption='Id' datatype='integer' name='[id]' role='dimension' type='ordinal' />
+            <column aggregation='Sum' caption='K' datatype='integer' name='[k]' role='dimension' type='ordinal' />
+            <column aggregation='Sum' datatype='integer' name='[kbsize]' role='dimension' type='ordinal' />
+            <column caption='Lemmatization Time' datatype='integer' name='[lemmatization_time]' role='measure' type='quantitative' />
+            <column caption='Mapping Time' datatype='integer' name='[mapping_time]' role='measure' type='quantitative' />
+            <column aggregation='Sum' caption='Ngram Size' datatype='integer' name='[ngramSize]' role='dimension' type='ordinal' />
+            <column-instance column='[%missing]' derivation='None' name='[none:%missing:ok]' pivot='key' type='ordinal' />
+            <column-instance column='[dataset]' derivation='None' name='[none:dataset:nk]' pivot='key' type='nominal' />
+            <column-instance column='[disambiguationStep]' derivation='None' name='[none:disambiguationStep:ok]' pivot='key' type='ordinal' />
+            <column-instance column='[id]' derivation='None' name='[none:id:ok]' pivot='key' type='ordinal' />
+            <column-instance column='[k]' derivation='None' name='[none:k:ok]' pivot='key' type='ordinal' />
+            <column-instance column='[kbsize]' derivation='None' name='[none:kbsize:ok]' pivot='key' type='ordinal' />
+            <column-instance column='[ngramSize]' derivation='None' name='[none:ngramSize:ok]' pivot='key' type='ordinal' />
+            <column-instance column='[simMember]' derivation='None' name='[none:simMember:ok]' pivot='key' type='ordinal' />
+            <column-instance column='[simMeta]' derivation='None' name='[none:simMeta:ok]' pivot='key' type='ordinal' />
+            <column-instance column='[synMember]' derivation='None' name='[none:synMember:ok]' pivot='key' type='ordinal' />
+            <column-instance column='[synMeta]' derivation='None' name='[none:synMeta:ok]' pivot='key' type='ordinal' />
+            <column caption='Parsing Time' datatype='integer' name='[parsing_time]' role='measure' type='quantitative' />
+            <column caption='Sentence Time' datatype='integer' name='[sentence_time]' role='measure' type='quantitative' />
+            <column aggregation='Sum' caption='Sim Member' datatype='real' name='[simMember]' role='dimension' type='ordinal' />
+            <column aggregation='Sum' caption='Sim Meta' datatype='real' name='[simMeta]' role='dimension' type='ordinal' />
+            <column aggregation='Sum' caption='Syn Member' datatype='integer' name='[synMember]' role='dimension' type='ordinal' />
+            <column aggregation='Sum' caption='Syn Meta' datatype='integer' name='[synMeta]' role='dimension' type='ordinal' />
+          </datasource-dependencies>
+          <filter class='categorical' column='[federated.171mvrl0ccmi3u12b75yv1mx2iik].[:Measure Names]'>
+            <groupfilter function='union' user:op='manual'>
+              <groupfilter function='member' level='[:Measure Names]' member='&quot;[federated.171mvrl0ccmi3u12b75yv1mx2iik].[avg:lemmatization_time:qk]&quot;' />
+              <groupfilter function='member' level='[:Measure Names]' member='&quot;[federated.171mvrl0ccmi3u12b75yv1mx2iik].[avg:mapping_time:qk]&quot;' />
+              <groupfilter function='member' level='[:Measure Names]' member='&quot;[federated.171mvrl0ccmi3u12b75yv1mx2iik].[avg:parsing_time:qk]&quot;' />
+              <groupfilter function='member' level='[:Measure Names]' member='&quot;[federated.171mvrl0ccmi3u12b75yv1mx2iik].[avg:sentence_time:qk]&quot;' />
+            </groupfilter>
+          </filter>
+          <filter class='categorical' column='[federated.171mvrl0ccmi3u12b75yv1mx2iik].[none:dataset:nk]'>
+            <groupfilter function='member' level='[none:dataset:nk]' member='&quot;dataset_patrick_ssb&quot;' user:ui-domain='relevant' user:ui-enumeration='inclusive' user:ui-marker='enumerate' />
+          </filter>
+          <filter class='categorical' column='[federated.171mvrl0ccmi3u12b75yv1mx2iik].[none:disambiguationStep:ok]'>
+            <groupfilter function='member' level='[none:disambiguationStep:ok]' member='0' user:ui-domain='relevant' user:ui-enumeration='inclusive' user:ui-marker='enumerate' />
+          </filter>
+          <filter class='categorical' column='[federated.171mvrl0ccmi3u12b75yv1mx2iik].[none:k:ok]'>
+            <groupfilter function='union' user:ui-domain='relevant' user:ui-enumeration='inclusive' user:ui-marker='enumerate'>
+              <groupfilter function='member' level='[none:k:ok]' member='1' />
+              <groupfilter function='member' level='[none:k:ok]' member='2' />
+              <groupfilter function='member' level='[none:k:ok]' member='3' />
+              <groupfilter function='member' level='[none:k:ok]' member='4' />
+              <groupfilter function='member' level='[none:k:ok]' member='5' />
+            </groupfilter>
+          </filter>
+          <filter class='categorical' column='[federated.171mvrl0ccmi3u12b75yv1mx2iik].[none:simMember:ok]'>
+            <groupfilter function='member' level='[none:simMember:ok]' member='0.80000000000000004' user:ui-domain='relevant' user:ui-enumeration='inclusive' user:ui-marker='enumerate' />
+          </filter>
+          <filter class='categorical' column='[federated.171mvrl0ccmi3u12b75yv1mx2iik].[none:simMeta:ok]'>
+            <groupfilter function='member' level='[none:simMeta:ok]' member='0.5' user:ui-domain='relevant' user:ui-enumeration='inclusive' user:ui-marker='enumerate' />
+          </filter>
+          <filter class='categorical' column='[federated.171mvrl0ccmi3u12b75yv1mx2iik].[none:synMember:ok]'>
+            <groupfilter function='member' level='[none:synMember:ok]' member='1' user:ui-domain='relevant' user:ui-enumeration='inclusive' user:ui-marker='enumerate' />
+          </filter>
+          <filter class='categorical' column='[federated.171mvrl0ccmi3u12b75yv1mx2iik].[none:synMeta:ok]'>
+            <groupfilter function='member' level='[none:synMeta:ok]' member='5' user:ui-domain='relevant' user:ui-enumeration='inclusive' user:ui-marker='enumerate' />
+          </filter>
+          <slices>
+            <column>[federated.171mvrl0ccmi3u12b75yv1mx2iik].[none:dataset:nk]</column>
+            <column>[federated.171mvrl0ccmi3u12b75yv1mx2iik].[none:disambiguationStep:ok]</column>
+            <column>[federated.171mvrl0ccmi3u12b75yv1mx2iik].[none:k:ok]</column>
+            <column>[federated.171mvrl0ccmi3u12b75yv1mx2iik].[:Measure Names]</column>
+            <column>[federated.171mvrl0ccmi3u12b75yv1mx2iik].[none:simMember:ok]</column>
+            <column>[federated.171mvrl0ccmi3u12b75yv1mx2iik].[none:simMeta:ok]</column>
+            <column>[federated.171mvrl0ccmi3u12b75yv1mx2iik].[none:synMember:ok]</column>
+            <column>[federated.171mvrl0ccmi3u12b75yv1mx2iik].[none:synMeta:ok]</column>
+          </slices>
+          <aggregation value='true' />
+        </view>
+        <style>
+          <style-rule element='cell'>
+            <format attr='width' field='[federated.171mvrl0ccmi3u12b75yv1mx2iik].[:Measure Names]' value='162' />
+          </style-rule>
+        </style>
+        <panes>
+          <pane id='3' selection-relaxation-option='selection-relaxation-allow'>
+            <view>
+              <breakdown value='auto' />
+            </view>
+            <mark class='Automatic' />
+            <encodings>
+              <color column='[federated.171mvrl0ccmi3u12b75yv1mx2iik].[:Measure Names]' />
+            </encodings>
+            <style>
+              <style-rule element='mark'>
+                <format attr='mark-labels-cull' value='true' />
+                <format attr='mark-labels-show' value='false' />
+              </style-rule>
+              <style-rule element='pane'>
+                <format attr='minwidth' value='-1' />
+                <format attr='maxwidth' value='-1' />
+              </style-rule>
+            </style>
+          </pane>
+        </panes>
+        <rows>([federated.171mvrl0ccmi3u12b75yv1mx2iik].[none:id:ok] * [federated.171mvrl0ccmi3u12b75yv1mx2iik].[Multiple Values])</rows>
+        <cols>([federated.171mvrl0ccmi3u12b75yv1mx2iik].[none:%missing:ok] / ([federated.171mvrl0ccmi3u12b75yv1mx2iik].[none:ngramSize:ok] / ([federated.171mvrl0ccmi3u12b75yv1mx2iik].[none:disambiguationStep:ok] / ([federated.171mvrl0ccmi3u12b75yv1mx2iik].[none:kbsize:ok] / [federated.171mvrl0ccmi3u12b75yv1mx2iik].[:Measure Names]))))</cols>
+      </table>
+      <simple-id uuid='{9AAE6C62-1CF3-4C2A-9CCE-9284B253F74B}' />
+    </worksheet>
   </worksheets>
-  <windows source-height='30'>
+  <windows source-height='59'>
     <window class='worksheet' maximized='true' name='Count queries'>
       <cards>
         <edge name='left'>
-          <strip size='160'>
+          <strip size='133'>
             <card type='pages' />
             <card type='filters' />
             <card type='marks' />
           </strip>
         </edge>
         <edge name='top'>
-          <strip size='2147483647'>
+          <strip size='45'>
             <card type='columns' />
           </strip>
-          <strip size='2147483647'>
+          <strip size='45'>
             <card type='rows' />
           </strip>
-          <strip size='31'>
+          <strip size='20'>
             <card type='title' />
           </strip>
         </edge>
@@ -959,20 +1075,20 @@
     <window class='worksheet' name='Sim vs top-k'>
       <cards>
         <edge name='left'>
-          <strip size='160'>
+          <strip size='133'>
             <card type='pages' />
             <card type='filters' />
             <card type='marks' />
           </strip>
         </edge>
         <edge name='top'>
-          <strip size='2147483647'>
+          <strip size='45'>
             <card type='columns' />
           </strip>
-          <strip size='2147483647'>
+          <strip size='123'>
             <card type='rows' />
           </strip>
-          <strip size='31'>
+          <strip size='20'>
             <card type='title' />
           </strip>
         </edge>
@@ -982,7 +1098,7 @@
     <window class='worksheet' name='Sim vs disambiguation'>
       <cards>
         <edge name='left'>
-          <strip size='160'>
+          <strip size='106'>
             <card type='pages' />
             <card type='filters' />
             <card type='marks' />
@@ -995,7 +1111,7 @@
           <strip size='2147483647'>
             <card type='rows' />
           </strip>
-          <strip size='31'>
+          <strip size='20'>
             <card type='title' />
           </strip>
         </edge>
@@ -1005,7 +1121,7 @@
     <window class='worksheet' name='Time vs id'>
       <cards>
         <edge name='left'>
-          <strip size='160'>
+          <strip size='133'>
             <card type='pages' />
             <card type='filters' />
             <card type='marks' />
@@ -1013,28 +1129,57 @@
           </strip>
         </edge>
         <edge name='top'>
-          <strip size='2147483647'>
+          <strip size='131'>
             <card type='columns' />
           </strip>
-          <strip size='2147483647'>
+          <strip size='102'>
             <card type='rows' />
           </strip>
-          <strip size='31'>
+          <strip size='20'>
             <card type='title' />
           </strip>
         </edge>
         <edge name='right'>
-          <strip size='160'>
+          <strip size='133'>
             <card pane-specification-id='3' param='[federated.171mvrl0ccmi3u12b75yv1mx2iik].[:Measure Names]' type='color' />
           </strip>
         </edge>
       </cards>
       <simple-id uuid='{A9DD1622-B212-4230-82AC-CA9556753E1A}' />
     </window>
+    <window class='worksheet' name='Time vs id (2)'>
+      <cards>
+        <edge name='left'>
+          <strip size='132'>
+            <card type='pages' />
+            <card type='filters' />
+            <card type='marks' />
+            <card type='measures' />
+          </strip>
+        </edge>
+        <edge name='top'>
+          <strip size='202'>
+            <card type='columns' />
+          </strip>
+          <strip size='102'>
+            <card type='rows' />
+          </strip>
+          <strip size='20'>
+            <card type='title' />
+          </strip>
+        </edge>
+        <edge name='right'>
+          <strip size='132'>
+            <card pane-specification-id='3' param='[federated.171mvrl0ccmi3u12b75yv1mx2iik].[:Measure Names]' type='color' />
+          </strip>
+        </edge>
+      </cards>
+      <simple-id uuid='{47FD9DAC-696D-43DA-A299-5AB46FB442C0}' />
+    </window>
     <window class='worksheet' name='Foglio 5'>
       <cards>
         <edge name='left'>
-          <strip size='160'>
+          <strip size='106'>
             <card type='pages' />
             <card type='filters' />
             <card type='marks' />
@@ -1047,7 +1192,7 @@
           <strip size='2147483647'>
             <card type='rows' />
           </strip>
-          <strip size='31'>
+          <strip size='20'>
             <card type='title' />
           </strip>
         </edge>

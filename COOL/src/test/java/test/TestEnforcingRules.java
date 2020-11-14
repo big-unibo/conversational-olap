@@ -300,6 +300,8 @@ public class TestEnforcingRules {
    */
   @Test
   public void testTokenSimilarity() {
+    assertEquals(3, StringUtils.levenshteinDistance("unit sales", "unit sold"));
+    assertEquals(3, new EditDistance().d("unit sales", "unit sold"));
     assertEquals(0, StringUtils.levenshteinDistance("customer", "customer"));
     assertEquals(1, StringUtils.levenshteinDistance("cutomer", "customer"));
     assertEquals(3, StringUtils.levenshteinDistance("cost", "Robust"));
@@ -316,7 +318,7 @@ public class TestEnforcingRules {
     assertEquals(0.636, Utils.tokenSimilarity("media based", "media type"), PRECISION);
     assertEquals(0.09, Utils.tokenSimilarity("based media", "media type"), PRECISION);
     assertEquals(1, Utils.tokenSimilarity("media type", "media type"), PRECISION);
-    assertEquals(0.5, Utils.tokenSimilarity("year", "the_year"), PRECISION);
+    assertEquals(0.5, Utils.tokenSimilarity("the_year", "year"), PRECISION);
     assertEquals(0.428, Utils.tokenSimilarity("greater", "year"), PRECISION);
     assertEquals(0.4, Utils.tokenSimilarity("cost", "store cost"), PRECISION);
     assertEquals(0.199, Utils.tokenSimilarity("store cost", "cost by"), PRECISION);
@@ -358,7 +360,7 @@ public class TestEnforcingRules {
         new Ngram("sales", Type.MEA, new Entity("unit_sales"), 0.9, Pair.of(1, 1)), //
         new Ngram("by", Type.BY, new Entity("by"), 0.8, Pair.of(2, 2)), //
         new Ngram("customer", Type.ATTR, new Entity("customer_id"), 0.7, Pair.of(3, 3)), //
-        new Ngram("year", Type.ATTR, new Entity("the_year"), 0.4, Pair.of(4, 4)), //
+        new Ngram("year", Type.ATTR, new Entity("year"), 0.4, Pair.of(4, 4)), //
         new Ngram(">=", Type.COP, new Entity(">="), 1.0, Pair.of(5, 5)), //
         new Ngram("2018", Type.VAL, new Entity("2018"), 0.8, Pair.of(6, 6)) //
     );
@@ -370,7 +372,7 @@ public class TestEnforcingRules {
     assertEquals(s0.ngrams.size(), parsed.getNMatched());
 
     final Mapping s1 = new Mapping(cube, //
-        new Ngram("year", Type.ATTR, new Entity("the_year"), Pair.of(4, 4)), //
+        new Ngram("year", Type.ATTR, new Entity("year"), Pair.of(4, 4)), //
         new Ngram(">=", Type.COP, new Entity(">="), Pair.of(5, 5)), //
         new Ngram("2018", Type.VAL, new Entity("2018"), Pair.of(6, 6)), //
         new Ngram("sales", Type.MEA, new Entity("unit_sales"), Pair.of(1, 1)), //

@@ -181,7 +181,8 @@ public final class Parser {
         } else {
           if (from.getAnnotations().values().stream().noneMatch(p -> p.getKey().equals(AnnotationType.ENE))
               && to.getAnnotations().values().stream().noneMatch(p -> p.getKey().equals(AnnotationType.EAE))
-              && (c.type.equals(Type.DRILL) && lca.equalsIgnoreCase(from.mde().nameInTable()) || c.type.equals(Type.ROLLUP) && lca.equalsIgnoreCase(to.mde().nameInTable()))) {
+              && (c.type.equals(Type.DRILL) && lca.equalsIgnoreCase(from.mde().nameInTable())
+                  || c.type.equals(Type.ROLLUP) && lca.equalsIgnoreCase(to.mde().nameInTable()))) {
             c.annotate(incTypeCheckId(), AnnotationType.GSA, Sets.newHashSet(from.mde(), to.mde()));
           }
         }
@@ -398,7 +399,7 @@ public final class Parser {
                 Ngram.addNode(c, coarser.get(0), 0);
               } else { // If more than one coarser attributes exist, don't know from where to drill down
                 // GC = {month, quarter} + drill down to date = Ambiguity
-                c.annotate(incInferId(), AnnotationType.CA, ImmutableSet.copyOf(coarser.stream().map(nn -> nn.mde()).collect(Collectors.toSet())));
+                c.annotate(incInferId(), AnnotationType.CA, ImmutableSet.copyOf(coarser.stream().map(Ngram::mde).collect(Collectors.toSet())));
               }
             }
             attr.setNotRequiresExistence();

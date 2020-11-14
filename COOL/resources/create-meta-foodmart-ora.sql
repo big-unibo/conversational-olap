@@ -180,8 +180,8 @@ INSERT INTO language_predicate VALUES (13,'count','[number, amount, how many, ho
 -- INSERT INTO language_predicate VALUES (14,'distinct',NULL,'COUNTOPERATOR');
 
 
-INSERT INTO language_operator VALUES (15,'drill','[drill down,specialize]','drill');
-INSERT INTO language_operator VALUES (16,'rollup','[roll up,generalize]','rollup');
+INSERT INTO language_operator VALUES (15,'drill','[drill down to,drill down,specialize]','drill');
+INSERT INTO language_operator VALUES (16,'rollup','[roll up to,roll up,generalize]','rollup');
 INSERT INTO language_operator VALUES (17,'replace','[substitute]','replace');
 INSERT INTO language_operator VALUES (18,'add',NULL,'add');
 INSERT INTO language_operator VALUES (19,'drop','[remove]','drop');
@@ -207,19 +207,9 @@ commit;
 -- select * from groupbyoperator;
 -- select * from "TABLE";
 -- select * from "LEVEL";
-INSERT INTO groupbyoperator_of_measure VALUES ('1','STORE_SALES');
-INSERT INTO groupbyoperator_of_measure VALUES ('2','STORE_SALES');
-INSERT INTO groupbyoperator_of_measure VALUES ('3','STORE_SALES');
-INSERT INTO groupbyoperator_of_measure VALUES ('4','STORE_SALES');
-INSERT INTO groupbyoperator_of_measure VALUES ('5','STORE_SALES');
-INSERT INTO groupbyoperator_of_measure VALUES ('1','UNIT_SALES');
-INSERT INTO groupbyoperator_of_measure VALUES ('2','UNIT_SALES');
-INSERT INTO groupbyoperator_of_measure VALUES ('3','UNIT_SALES');
-INSERT INTO groupbyoperator_of_measure VALUES ('4','UNIT_SALES');
-INSERT INTO groupbyoperator_of_measure VALUES ('5','UNIT_SALES');
-INSERT INTO groupbyoperator_of_measure VALUES ('1','STORE_COST');
-INSERT INTO groupbyoperator_of_measure VALUES ('2','STORE_COST');
-INSERT INTO groupbyoperator_of_measure VALUES ('3','STORE_COST');
-INSERT INTO groupbyoperator_of_measure VALUES ('4','STORE_COST');
-INSERT INTO groupbyoperator_of_measure VALUES ('5','STORE_COST');
+INSERT INTO groupbyoperator_of_measure select groupbyoperator_id, measure_id from measure, groupbyoperator;
+INSERT INTO "SYNONYM"(synonym_id, table_name, reference_id, term) VALUES ('-2', 'FACT', (select fact_id from fact where lower(fact_name) = lower('sales_fact_1997')), 'sales');
+INSERT INTO "SYNONYM"(synonym_id, table_name, reference_id, term) VALUES ('-3', 'LEVEL', (select level_id from level where lower(level_name) = lower('product_category')), 'category');
+INSERT INTO "SYNONYM"(synonym_id, table_name, reference_id, term) VALUES ('-4', 'LEVEL', (select level_id from level where lower(level_name) = lower('product_subcategory')), 'subcategory');
+INSERT INTO "SYNONYM"(synonym_id, table_name, reference_id, term) VALUES ('-5', 'LEVEL', (select level_id from "LEVEL" where lower(level_name) = lower('product_family')), 'family');
 commit;
