@@ -127,7 +127,7 @@ public class Validator {
             return Pair.of(distance, 1.0 - 1.0 * distance / Math.max(parsings.get(0).getLeft().countNodes(), correctSentence.countNodes()));
         } else { // no mappings
             write(dataset, id, query, gbset, measures, predicate, thrSimilarityMember, thrSimilarityMetadata, synMember, synMeta, percMissingPhrase, maxDistInPhrase, nTopInterpretation, ngramSize, stats, correctSentence, null, 1, 0, 0, run, QueryGenerator.syns(cube).size());
-            return null;
+            throw new IllegalArgumentException("No mappings found for " + id + ": " + query);
         }
     }
 

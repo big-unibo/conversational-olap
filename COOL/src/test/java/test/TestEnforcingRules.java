@@ -25,12 +25,16 @@ import smile.neighbor.Neighbor;
 import zhsh.Tree;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.nio.charset.Charset;
+import java.util.*;
+import java.util.concurrent.atomic.LongAccumulator;
+import java.util.concurrent.atomic.LongAdder;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
+import static it.unibo.conversational.database.QueryGenerator.jacc;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -295,11 +299,52 @@ public class TestEnforcingRules {
     assertEquals(1.8, m.getScoreM(), PRECISION);
   }
 
+  private Set<String> randomStrings(int card) {
+    final Random r = new Random(3);
+    return IntStream.range(0, card).mapToObj(u ->
+            r.ints(48, 122 + 1)
+                    .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
+                    .limit(10)
+                    .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                    .toString()
+    ).collect(Collectors.toSet());
+  }
+
+  public static void checkMetric(final Set<String> strings, BiFunction<String, String, Double> f) {
+    checkMetric(strings, f, a -> true, a -> true);
+  }
+
+  public static void checkMetric(final Set<String> strings, BiFunction<String, String, Double> f, Function<String, Boolean> filterFirst, Function<String, Boolean> filterOther) {
+    final Set<String> as = strings.stream().filter(filterFirst::apply).collect(Collectors.toSet());
+    final Set<String> others = strings.stream().filter(filterOther::apply).collect(Collectors.toSet());
+    final long todo = (long) as.size() * (long) others.size() * (long) others.size();
+    final LongAdder acc = new LongAdder();
+    as.forEach(a -> {
+      assertEquals(0, f.apply(a, a), 0.001, "Identity not satisfied for " + a);
+      others.forEach(b -> {
+        final double d = f.apply(a, b);
+        assertEquals(d, f.apply(b, a), 0.001, "Symmetry not satisfied for " + a + " " + b);
+        if (!a.equalsIgnoreCase(b) && d < 0.001) {
+          throw new IllegalArgumentException("String differs but distance is 0 " + a + " " + b);
+        }
+        others.forEach(c -> {
+          assertTrue(d <= f.apply(a, c) + f.apply(c, b), "Triangle inequality not satisfied for " + a + " " + b + " " + c);
+          acc.add(1);
+        });
+      });
+    });
+  }
+
   /**
    * Test work similarity.
    */
   @Test
   public void testTokenSimilarity() {
+    checkMetric(randomStrings(100), jacc::d);
+    assertEquals(0, jacc.d("hello world", "world hello"));
+    assertEquals(4, jacc.d("unit sales", "unit sold"));
+    assertEquals(0, jacc.d("sole ", "oles oles"));
+    assertEquals(0, jacc.d("hello world", "wrd helo"));
     assertEquals(3, StringUtils.levenshteinDistance("unit sales", "unit sold"));
     assertEquals(3, new EditDistance().d("unit sales", "unit sold"));
     assertEquals(0, StringUtils.levenshteinDistance("customer", "customer"));

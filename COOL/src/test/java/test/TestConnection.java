@@ -2,6 +2,7 @@ package test;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import it.unibo.conversational.Utils;
 import it.unibo.conversational.database.*;
 import it.unibo.conversational.datatypes.Entity;
 import it.unibo.conversational.datatypes.Ngram;
@@ -10,10 +11,15 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import static it.unibo.conversational.Utils.ngram2string;
 import static it.unibo.conversational.Utils.string2ngram;
 import static it.unibo.conversational.database.DBmanager.*;
+import static it.unibo.conversational.database.QueryGenerator.jacc;
+import static it.unibo.conversational.database.QueryGenerator.syns;
 import static org.junit.jupiter.api.Assertions.*;
+import static test.TestEnforcingRules.checkMetric;
 
 /**
  * Test database connection.
@@ -41,7 +47,8 @@ public class TestConnection {
     public void testFunctions() {
         try {
             for (final Cube cube: Config.getCubes()) {
-                assertTrue(QueryGenerator.syns(cube).containsKey(Lists.newArrayList("sum")));
+                // checkMetric(syns(cube).keySet().stream().map(Utils::ngram2string).collect(Collectors.toSet()), jacc::d, a -> a.equalsIgnoreCase("atomic mints"), a -> a.toLowerCase().contains("a") && a.toLowerCase().contains("t") && a.toLowerCase().contains("o"));
+                assertTrue(syns(cube).containsKey(Lists.newArrayList("sum")));
                 // Set<Triple<Entity, Double, String>> resBK = Sets.newLinkedHashSet(DBsynonyms.searchBKtree(cube, Lists.newArrayList("sum"), 0.6));
                 // Set<Triple<Entity, Double, String>> resSeq = Sets.newLinkedHashSet(DBsynonyms.searchSequential(cube, Lists.newArrayList("sum"), 0.6));
                 // assertEquals(resSeq.size(), resBK.size(), "Results mismatch");
@@ -59,10 +66,12 @@ public class TestConnection {
                 assertFalse(QueryGenerator.getYearLevels(cube).isEmpty());
                 assertFalse(QueryGenerator.getLevels(cube).isEmpty());
                 if (cube.getFactTable().equalsIgnoreCase("sales_fact_1997")) {
+                    assertFalse(DBsynonyms.searchSequential(cube, string2ngram("atomic mints"), 1).isEmpty());
+                    assertFalse(DBsynonyms.searchBKtree(cube, string2ngram("atomic mints"), 1).isEmpty());
                     assertFalse(DBsynonyms.searchBKtree(cube, string2ngram("unit sold"), 0.6).isEmpty());
-                    assertFalse(DBsynonyms.searchBKtree(cube, string2ngram("UNIT_SALES"), 0.6).isEmpty());
-                    assertFalse(DBsynonyms.searchBKtree(cube, string2ngram("unit_sales"), 0.6).isEmpty());
-                    assertFalse(DBsynonyms.searchBKtree(cube, string2ngram("unit sales"), 0.6).isEmpty());
+                    assertFalse(DBsynonyms.searchBKtree(cube, string2ngram("UNIT_SALES"), 1).isEmpty());
+                    assertFalse(DBsynonyms.searchBKtree(cube, string2ngram("unit_sales"), 1).isEmpty());
+                    assertFalse(DBsynonyms.searchBKtree(cube, string2ngram("unit sales"), 1).isEmpty());
                     assertFalse(QueryGenerator.describeLevel(cube, "product_family", 5).isEmpty());
                     assertFalse(QueryGenerator.describeLevel(cube, "product_id", 5).isEmpty());
                     assertFalse(QueryGenerator.getTable(cube, "product_subcategory", "product_category").isEmpty());

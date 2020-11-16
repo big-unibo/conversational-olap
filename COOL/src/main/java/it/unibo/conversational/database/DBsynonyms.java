@@ -7,6 +7,7 @@ import it.unibo.conversational.Utils;
 import it.unibo.conversational.datatypes.Entity;
 import it.unibo.conversational.datatypes.Ngram;
 import it.unibo.conversational.olap.Operator;
+import it.unibo.smile.neighborg.MyBKTree;
 import org.apache.commons.lang3.tuple.Triple;
 import org.jetbrains.annotations.NotNull;
 import smile.neighbor.BKTree;
@@ -94,7 +95,7 @@ public final class DBsynonyms {
         syns.forEach((synonym, referredEntities) -> {
             final double sim = Utils.tokenSimilarity(tokens, synonym); // estimate the similarity
             if (sim >= thr) {
-                referredEntities.forEach(e -> acc.add(Triple.of(e, sim, String.join(" ", synonym))));
+                referredEntities.forEach(e -> acc.add(Triple.of(e, sim, ngram2string(synonym))));
             }
         });
         return acc;
@@ -109,17 +110,28 @@ public final class DBsynonyms {
      */
     @NotNull
     public static List<Triple<Entity, Double, String>> searchBKtree(final Cube cube, final List<String> tokens, final double thr) {
-        final BKTree<String> syns = QueryGenerator.bktree(cube);
+        final MyBKTree<String> syns = QueryGenerator.bktree(cube);
         final List<Neighbor<String, String>> res = Lists.newArrayList();
-        final double sum = tokens.stream().mapToDouble(String::length).sum();
-        if (sum == 1) {
+        final double length = tokens.stream().mapToDouble(String::length).sum();
+        if (length == 1) {
             QueryGenerator.syns(cube).get(string2ngram(tokens.get(0)));
         }
-        syns.range(ngram2string(tokens), Math.max(sum - 2, 1), res); // (int) Math.ceil(tokens.size() * 0.5)
-        return res
+//        syns.range(ngram2string(tokens), Math.max(length - 2, 1), res);
+//        return res
+//                .stream()
+//                .flatMap(n -> QueryGenerator.syns(cube).get(string2ngram(n.value)).stream().map(e -> Triple.of(e, 1 - (1.0 * n.distance / Math.max(n.key.length(), n.value.length())), n.value)))
+//                .filter(t -> t.getMiddle() >= thr)
+//                .collect(Collectors.toList());
+//        syns.range(ngram2string(tokens), Math.max(length - 2, 1), res);
+        syns.range(ngram2string(tokens), (int) Math.ceil(length * 0.55), res);
+        final List<Triple<Entity, Double, String>> newres = res
                 .stream()
-                .flatMap(n -> QueryGenerator.syns(cube).get(string2ngram(n.value)).stream().map(e -> Triple.of(e, 1 - (1.0 * n.distance / Math.max(n.key.length(), n.value.length())), n.value)))
+                .flatMap(n -> {
+                    final List<String> syn = string2ngram(n.value);
+                    return QueryGenerator.syns(cube).get(syn).stream().map(e -> Triple.of(e, Utils.tokenSimilarity(syn, tokens), n.value));
+                })
                 .filter(t -> t.getMiddle() >= thr)
                 .collect(Collectors.toList());
+        return newres;
     }
 }

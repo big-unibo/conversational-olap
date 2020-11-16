@@ -189,7 +189,8 @@ public class TestValidator {
 
   @Test
   public void testNotAmbiguous() throws Exception {
-    assertEquals(0, checkSentence("unit sales by country by month by provice for Sheri Nowmer", "country, month, state_province", "fullname = Sheri Nowmer", "avg unit_sales")); // medium cost matches with store_cost
+    // assertEquals(0, checkSentence("unit sales by country by month by provice for Sheri Nowmer", "country, month, state_province", "fullname = Sheri Nowmer", "avg unit_sales")); // medium cost matches with store_cost
+    assertEquals(0, checkSentence("unit sales by country by month by province for Sheri Nowmer", "country, month, state_province", "fullname = Sheri Nowmer", "avg unit_sales")); // medium cost matches with store_cost
   }
 
   @Test

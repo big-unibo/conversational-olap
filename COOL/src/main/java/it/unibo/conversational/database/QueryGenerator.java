@@ -8,6 +8,7 @@ import it.unibo.conversational.Validator;
 import it.unibo.conversational.datatypes.Entity;
 import it.unibo.conversational.datatypes.Mapping;
 import it.unibo.conversational.olap.Operator;
+import it.unibo.smile.neighborg.MyBKTree;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.text.similarity.JaccardSimilarity;
 import org.json.JSONObject;
@@ -71,7 +72,7 @@ public final class QueryGenerator {
     /**
      * Synonyms
      */
-    private static Map<Cube, BKTree<String>> bktrees = Maps.newHashMap();
+    private static Map<Cube, MyBKTree<String>> bktrees = Maps.newHashMap();
     /**
      * @param cube cube
      * @return Aggregation operator for each measure of the given cube
@@ -124,11 +125,31 @@ public final class QueryGenerator {
      * @param cube cube
      * @return Synonyms for the given cube
      */
-    public static BKTree<String> bktree(final Cube cube) {
-        // final JaccardSimilarity j = new JaccardSimilarity();
-        // return bktrees.computeIfAbsent(cube, k -> new BKTree<>(j::apply)); // EditDistance()
-        return bktrees.computeIfAbsent(cube, k -> new BKTree<>(new EditDistance()));
+    public static MyBKTree<String> bktree(final Cube cube) {
+//        return bktrees.computeIfAbsent(cube, k -> new BKTree<>(new EditDistance()));
+        return bktrees.computeIfAbsent(cube, k -> new MyBKTree<>(jacc));
     }
+
+    public static final Metric<String> jacc = (Metric<String>) (x, y) -> {
+        final Set<Character> intersection = Sets.newHashSetWithExpectedSize(Math.max(x.length(), y.length()));
+        final Set<Character> union = Sets.newHashSetWithExpectedSize(x.length() + y.length());
+        for (char c : x.toCharArray()) {
+            intersection.add(c);
+        }
+        for (char c : y.toCharArray()) {
+            union.add(c);
+        }
+        final boolean completelyOverlaps = !intersection.retainAll(union);
+        for (char c : x.toCharArray()) {
+            union.add(c);
+        }
+        final int distance = union.size() - intersection.size();
+        if (distance >= 0) {
+            return distance;
+        } else {
+            throw new IllegalArgumentException("Distance cannot be negative " + x + " " + y);
+        }
+    };
 
     // Initialize the metra structure at the beginning, this could be done by need
     static {
