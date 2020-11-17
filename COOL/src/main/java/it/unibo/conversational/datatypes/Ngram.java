@@ -706,7 +706,7 @@ public class Ngram implements Serializable {
       return -1;
     });
     if (adder.intValue() == 0) {
-      throw new IllegalArgumentException("Cannot find annotation with id: " + annotationId);
+      throw new IllegalArgumentException("Cannot find annotation with id: " + annotationId + ", available annotations are: " + getAnnotations().entrySet().stream().collect(Collectors.toList()));
     }
   }
 
