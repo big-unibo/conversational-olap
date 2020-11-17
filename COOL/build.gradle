@@ -86,12 +86,12 @@ compileTestKotlin {
 }
 
 test {
+    useJUnitPlatform()
     testLogging {
         exceptionFormat = 'full'
     }
-    // maxHeapSize = "1024m"
+    maxParallelForks = 1
     jvmArgs "-Xmx4g"
-    useJUnitPlatform()
 }
 
 
