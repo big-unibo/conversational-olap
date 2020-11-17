@@ -62,7 +62,7 @@ public class Validator {
      * @param nGramSimThr           ngram similarity threshold
      */
     public void validateAll(final Cube cube, final String dataset, final double thrSimilarityMember, final double thrSimilarityMetadata, final int synMember, final int synMeta,
-                            final double percMissingPhrase, final int maxDistInPhrase, final int nTopInterpretation, final int ngramSize, final double nGramSimThr, final int run, final int kblimit) {
+                            final double percMissingPhrase, final int maxDistInPhrase, final int nTopInterpretation, final int ngramSize, final double nGramSimThr, final int run, final int kblimit, final String search) {
         DBmanager.executeMetaQuery(cube, "SELECT * FROM " + dataset + " WHERE `" + DBmanager.colQueryGPSJ + "` = \"y\" ORDER BY length(" + DBmanager.colQueryText + ") desc", res -> {
             while (res.next()) {
                 final int id = res.getInt(DBmanager.colQueryID);
@@ -73,7 +73,7 @@ public class Validator {
                 String predicate = res.getString(DBmanager.colQuerySelClause);
                 predicate = predicate == null ? "" : predicate;
                 try {
-                    validate(cube, dataset, id, query, gbset, measures, predicate, thrSimilarityMember, thrSimilarityMetadata, synMember, synMeta, percMissingPhrase, maxDistInPhrase, nTopInterpretation, ngramSize, nGramSimThr, run, kblimit);
+                    validate(cube, dataset, id, query, gbset, measures, predicate, thrSimilarityMember, thrSimilarityMetadata, synMember, synMeta, percMissingPhrase, maxDistInPhrase, nTopInterpretation, ngramSize, nGramSimThr, run, kblimit, search);
                 } catch (final Exception e) {
                     e.printStackTrace();
                 }
@@ -104,7 +104,7 @@ public class Validator {
      */
     public Pair<Integer, Double> validate(final Cube cube, final String dataset, final int id, final String query, final String gbset, final String measures,
                                           final String predicate, final double thrSimilarityMember, final double thrSimilarityMetadata, final int synMember, final int synMeta,
-                                          final double percMissingPhrase, final int maxDistInPhrase, final int nTopInterpretation, final int ngramSize, final double nGramSimThr, final int run, final int kblimit) throws Exception {
+                                          final double percMissingPhrase, final int maxDistInPhrase, final int nTopInterpretation, final int ngramSize, final double nGramSimThr, final int run, final int kblimit, final String search) throws Exception {
         L.warn(id +": " + query);
         final Map<String, Object> stats = Maps.newLinkedHashMap();
         final Mapping correctSentence = getBest(cube, gbset, predicate, measures);
@@ -117,7 +117,7 @@ public class Validator {
                     }
                     final int distance = Tree.ZhangShasha(correctSentence.toStringTree(), parsings.get(k).getLeft().toStringTree());
                     final double sim = 1.0 - 1.0 * distance / Math.max(parsings.get(k).getLeft().countNodes(), correctSentence.countNodes());
-                    write(dataset, id, query, gbset, measures, predicate, thrSimilarityMember, thrSimilarityMetadata, synMember, synMeta, percMissingPhrase, maxDistInPhrase, nTopInterpretation, ngramSize, stats, correctSentence, parsings.get(k), parsings.size() - k, d, sim, run, QueryGenerator.syns(cube).size());
+                    write(dataset, id, query, gbset, measures, predicate, thrSimilarityMember, thrSimilarityMetadata, synMember, synMeta, percMissingPhrase, maxDistInPhrase, nTopInterpretation, ngramSize, stats, correctSentence, parsings.get(k), parsings.size() - k, d, sim, run, QueryGenerator.syns(cube).size(), search);
                 }
                 L.debug("ngrams: " + parsings.get(k).getRight());
                 L.debug("top  " + k + ": " + parsings.get(k).getLeft());
@@ -126,7 +126,7 @@ public class Validator {
             final int distance = Tree.ZhangShasha(correctSentence.toStringTree(), parsings.get(0).getLeft().toStringTree());
             return Pair.of(distance, 1.0 - 1.0 * distance / Math.max(parsings.get(0).getLeft().countNodes(), correctSentence.countNodes()));
         } else { // no mappings
-            write(dataset, id, query, gbset, measures, predicate, thrSimilarityMember, thrSimilarityMetadata, synMember, synMeta, percMissingPhrase, maxDistInPhrase, nTopInterpretation, ngramSize, stats, correctSentence, null, 1, 0, 0, run, QueryGenerator.syns(cube).size());
+            write(dataset, id, query, gbset, measures, predicate, thrSimilarityMember, thrSimilarityMetadata, synMember, synMeta, percMissingPhrase, maxDistInPhrase, nTopInterpretation, ngramSize, stats, correctSentence, null, 1, 0, 0, run, QueryGenerator.syns(cube).size(), search);
             throw new IllegalArgumentException("No mappings found for " + id + ": " + query);
         }
     }
@@ -143,7 +143,7 @@ public class Validator {
     private void write(final String dataset, final int id, final String query, final String gbset, final String measures, final String predicate, final double thrSimilarityMember,
                        final double thrSimilarityMetadata, final int synMember, final int synMeta, final double percMissingPhrase, final int maxDistInPhrase,
                        final int nTopInterpretation, final int ngramSize, final Map<String, Object> stats, final Mapping correctSentence,
-                       final Pair<Mapping, Mapping> parsing, final int k, final int disambiguationStep, final double sim, final int run, final int kbsize) throws IOException {
+                       final Pair<Mapping, Mapping> parsing, final int k, final int disambiguationStep, final double sim, final int run, final int kbsize, final String search) throws IOException {
         if (id >= 0) {
             final List<Object> toWrite = Lists.newArrayList(
                     thrSimilarityMember, thrSimilarityMetadata, synMember, synMeta, percMissingPhrase, maxDistInPhrase, ngramSize,
@@ -155,7 +155,7 @@ public class Validator {
                     parsing == null ? "" : parsing.getLeft(), parsing == null ? 0 : parsing.getRight().ngrams.size(),
                     stats.get("lemmatization_time"), stats.get("lemmatization_sentence"), stats.get("match_time"), stats.get("match_count"), stats.get("match_confident_count"), stats.get("sentence_time"), stats.get("sentence_count"), stats.get("sentence_count_pruned"), stats.get("pruned"), stats.get("mapping_time"), stats.get("parsing_time"), stats.get("total_time"),
                     parsing != null && parsing.getLeft().getMatched().stream().map(Ngram::mde).collect(Collectors.toSet()).containsAll(parsing.getRight().ngrams.stream().map(Ngram::mde).collect(Collectors.toSet())),
-                    parsing == null ? -1 : parsing.getLeft().getAnnotatedNgrams().size(), run, kbsize);
+                    parsing == null ? -1 : parsing.getLeft().getAnnotatedNgrams().size(), run, kbsize, search);
             csvWriterTest.write(toWrite.stream().map(Object::toString).reduce((a, b) -> a + ";" + b).get() + "\n");
             csvWriterTest.flush();
         }
@@ -295,7 +295,8 @@ public class Validator {
         stats.put("parsing_time", System.currentTimeMillis() - parsingTime);
         L.debug("Pruned: " + stats.get("pruned") + "/" + stats.get("sentence_count_pruned") + "/" + stats.get("sentence_count"));
         final List<Pair<Mapping, Mapping>> parsings =
-                topKtranslations.keySet().stream()
+                topKtranslations
+                        .keySet().stream()
                         .sorted(Mapping::compareMappings)
                         .map(m -> {
                             final Mapping mapping = topKtranslations.get(m);
@@ -319,12 +320,13 @@ public class Validator {
      */
     public static List<Mapping> compactMappings(final List<Mapping> orig) {
         return orig.stream() //
-                .collect(Collectors.groupingBy(x -> x.ngrams.stream().map(n -> n.mde()).collect(Collectors.toList()))).values().stream()
-                // the same mapping can be generated in multiple ways (e.g., through different tokens)
-                .map(equalMappings -> equalMappings.stream().max(Comparator.comparingDouble(Mapping::getScoreM).thenComparing(Mapping::toString))) // keep only the one with the highest score
-                .map(java.util.Optional::get).collect(Collectors.toList());
+                .collect(Collectors.groupingBy(x -> x.ngrams.stream().map(Ngram::mde).collect(Collectors.toList()))).values().stream()
+                // the same mapping can be generated in multiple ways (e.g., through different tokens/entities)
+                .map(equalMappings -> equalMappings.stream().max(Comparator.comparingDouble(Mapping::getScoreM).thenComparing(Mapping::toString)))
+                // keep only the one with the highest score
+                .map(java.util.Optional::get)
+                .collect(Collectors.toList());
     }
-
 
     /**
      * Default TAU.
@@ -397,22 +399,25 @@ public class Validator {
                         "measures", "predicate", "gbset", "nl_query", "ngrams", "sentence_parsed",
                         "ngrams_count", "lemmatization_time", "lemmatization_sentence", "match_time", "match_count", "match_confident_count",
                         "sentence_time", "sentence_count", "sentence_count_pruned", "sentence_pruned", "mapping_time", "parsing_time", "total_time",
-                        "isFullyParsed", "countAnnotations", "run", "kbsize");
+                        "isFullyParsed", "countAnnotations", "run", "kbsize", "search");
                 csvWriterTest.write(toWrite.stream().map(Object::toString).reduce((a, b) -> a + ";" + b).get() + "\n");
                 csvWriterTest.flush();
+                if (args.length > 0) {
+                    QueryGenerator.setSearch(args[0]);
+                }
                 for (final int kblimit : KB_LIMITS) {
                     QueryGenerator.initSyns(cube, kblimit);
                     for (int r = 0; r < N_RUNS; r++) {
                         for (double thrMemb : THR_MEMBERS) {
                             for (double thrMeta : THR_METAS) {
                                 for (int synMeta : N_SYNMETAS) {
-                                    new Validator(csvWriterTest).validateAll(cube, dataset, thrMemb, thrMeta, N_SYNMEMBER, synMeta, THR_COVERAGE, THR_NGRAMDIST, K, NGRAM_SIZE, NGRAMSYNTHR, r, kblimit);
+                                    L.warn(String.format("run: %d, search: %s, kblimit: %d, thrmem = %f, thrmeta = %f, synmeta = %d", r, QueryGenerator.search, kblimit, thrMemb, thrMeta, synMeta));
+                                    new Validator(csvWriterTest).validateAll(cube, dataset, thrMemb, thrMeta, N_SYNMEMBER, synMeta, THR_COVERAGE, THR_NGRAMDIST, K, NGRAM_SIZE, NGRAMSYNTHR, r, kblimit, search);
                                 }
                             }
                         }
                     }
                 }
-
             } catch (final Exception e1) {
                 e1.printStackTrace();
             }

@@ -240,11 +240,11 @@ public final class Mapping implements Serializable {
         return -1;
       });
     }
-    List<Ngram> ngramsCopy = Lists.newLinkedList(ngrams.stream().filter(n -> !n.children.isEmpty()).collect(Collectors.toList()));
+    List<Ngram> ngramsCopy = ngrams.stream().filter(n -> !n.children.isEmpty()).collect(Collectors.toList());
     toRemove.forEach(ngramsCopy::remove);
     ngrams = ImmutableList.copyOf(ngramsCopy);
     if (adder.intValue() == 0) {
-      throw new IllegalArgumentException("Cannot find annotation with id: " + annotationId);
+      throw new IllegalArgumentException("Cannot find annotation with id: " + annotationId + ", available annotations are: " + getAnnotatedNgrams().stream().map(Ngram::getAnnotations).collect(Collectors.toList()));
     }
   }
 

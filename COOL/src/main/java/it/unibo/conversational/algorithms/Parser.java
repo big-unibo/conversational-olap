@@ -27,11 +27,8 @@ import org.jgrapht.graph.DefaultEdge;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -500,7 +497,6 @@ public final class Parser {
   }
 
   public static void automaticDisambiguate(final Mapping ambiguousMapping, final List<Triple<AnnotationType, Ngram, Ngram>> log) {
-    // try {
     final List<Ngram> annotatedNgrams = ambiguousMapping.getAnnotatedNgrams();
     if (!annotatedNgrams.isEmpty()) {
       final Ngram n = annotatedNgrams.get(0);
@@ -511,9 +507,8 @@ public final class Parser {
         } else {
           if (annotation.getValue().getKey().equals(AnnotationType.AVM) && annotation.getValue().getValue().isEmpty()) {
             ambiguousMapping.disambiguate(annotation.getKey(), "-1");
-          }
-          else {
-            final Entity value = annotation.getValue().getRight().stream().sorted((n1, n2) -> n1.nameInTable().compareTo(n2.nameInTable())).findFirst().get();
+          } else {
+            final Entity value = annotation.getValue().getRight().stream().min(Comparator.comparing(Entity::nameInTable)).get();
             ambiguousMapping.disambiguate(annotation.getKey(), value.nameInTable(), log);
           }
         }

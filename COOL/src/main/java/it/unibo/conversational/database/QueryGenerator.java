@@ -140,14 +140,15 @@ public final class QueryGenerator {
     public static final Metric<String> jacc = (Metric<String>) (x, y) -> {
         final Set<Character> intersection = Sets.newHashSetWithExpectedSize(Math.max(x.length(), y.length()));
         final Set<Character> union = Sets.newHashSetWithExpectedSize(x.length() + y.length());
-        for (char c : x.toCharArray()) {
+        final char[] xx = x.replace(" |_", "").toCharArray();
+        for (char c : xx) {
             intersection.add(c);
         }
-        for (char c : y.toCharArray()) {
+        for (char c : y.replace(" |_", "").toCharArray()) {
             union.add(c);
         }
         final boolean completelyOverlaps = !intersection.retainAll(union);
-        for (char c : x.toCharArray()) {
+        for (char c : xx) {
             union.add(c);
         }
         final int distance = union.size() - intersection.size();
@@ -715,5 +716,10 @@ public final class QueryGenerator {
             }
         });
         return statistics;
+    }
+
+    public static String search = "bktree";
+    public static void setSearch(String arg) {
+        search = arg;
     }
 }

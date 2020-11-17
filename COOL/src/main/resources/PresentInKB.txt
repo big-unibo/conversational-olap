@@ -21,6 +21,7 @@ revenue
 supplycost
 avg
 extendedprice
+customer
 A Catskill Eagle
 by
 in

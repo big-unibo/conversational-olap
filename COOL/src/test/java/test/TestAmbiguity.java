@@ -43,7 +43,7 @@ public class TestAmbiguity {
 
   private void checkEquals(final Cube cube, final Mapping ambiguousMapping, final Mapping correctSentence, final boolean checkEquals) throws IOException {
     assertEquals(1, ambiguousMapping.ngrams.size());
-    assertEquals(correctSentence.bestNgram.countNode(), ambiguousMapping.bestNgram.countNode());
+    assertEquals(correctSentence.bestNgram.countNode(), ambiguousMapping.bestNgram.countNode(), correctSentence.bestNgram.toStringTree() + "\n" + ambiguousMapping.bestNgram.toStringTree());
     if (checkEquals) {
       assertEquals(1.0, correctSentence.similarity(ambiguousMapping), 0.001, correctSentence.toString() + "\n" + ambiguousMapping.toString());
     } else {
@@ -111,13 +111,13 @@ public class TestAmbiguity {
 
   private void test(final Cube cube, final String nl, final String gc, final String sc, final String mc, final int expectedAnnotations) throws Exception {
     final Mapping ambiguousMapping = Validator.parseAndTranslate(cube, nl);
-    new JSONObject(ambiguousMapping.toJSON(cube, nl));
+    // uncomment this to execute SQL as well new JSONObject(ambiguousMapping.toJSON(cube, nl));
     assertEquals(ambiguousMapping.getAnnotatedNgrams().size(), expectedAnnotations, ambiguitiesToString(ambiguousMapping));
     final Mapping correctSentence = Validator.getBest(cube, gc, sc, mc);
-    new JSONObject(correctSentence.toJSON(cube));
+    // uncomment this to execute SQL as well new JSONObject(correctSentence.toJSON(cube));
     for (int i = 0; i < 4; i++) {
       Parser.automaticDisambiguate(ambiguousMapping);
-      new JSONObject(ambiguousMapping.toJSON(cube, nl));
+      // uncomment this to execute SQL as well new JSONObject(ambiguousMapping.toJSON(cube, nl));
     }
     checkEquals(cube, ambiguousMapping, correctSentence, true);
   }
@@ -370,8 +370,23 @@ public class TestAmbiguity {
   }
 
   @Test
+  public void ssbTest25() throws Exception {
+    test(ssb(), "reven by nation for 2015 as year", "nation", "year = 2015", "avg revenue", 1);
+  }
+
+  @Test
   public void ssbTest58() throws Exception {
     test(ssb(), "sum revenue for mint milk chocolate as product name", "", "product = mint milk chocolate", "sum revenue", 0);
+  }
+
+//  @Test
+//  public void ssbTest96() throws Exception {
+//    test(ssb(), "sum supp cost by category for Apolonia Car as customer", "category", "customer = Apolonia Carroll", "sum supplycost", 0);
+//  }
+
+  @Test
+  public void ssbTest98() throws Exception {
+    test(ssb(), "sum reve by product for Apolonia Carroll as customer", "product", "customer = Apolonia Carroll", "sum revenue", 0);
   }
 
   @Test

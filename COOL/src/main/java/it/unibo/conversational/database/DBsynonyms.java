@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 import static it.unibo.conversational.Utils.ngram2string;
 import static it.unibo.conversational.Utils.string2ngram;
 import static it.unibo.conversational.database.DBmanager.*;
+import static it.unibo.conversational.database.QueryGenerator.search;
 
 /**
  * Handle synonyms in the database.
@@ -51,8 +52,10 @@ public final class DBsynonyms {
     public static List<Triple<Entity, Double, String>> getEntities(final Cube cube, final Class toParse, final List<String> tokens, final double thrSimilarityMember, final double thrSimilarityMetadata, final int synMember, final int synMeta) {
         final Object[] lookup = new Object[]{tokens, thrSimilarityMember, thrSimilarityMetadata, synMember, synMeta};
         return cache.computeIfAbsent(lookup, k -> {
-//             final List<Triple<Entity, Double, String>> acc = searchSequential(cube, tokens, Math.min(thrSimilarityMember, thrSimilarityMetadata));
-            final List<Triple<Entity, Double, String>> acc = searchBKtree(cube, tokens, Math.min(thrSimilarityMember, thrSimilarityMetadata));
+            final List<Triple<Entity, Double, String>> acc =
+                    search.equals("bktree")
+                        ? searchBKtree(cube, tokens, Math.min(thrSimilarityMember, thrSimilarityMetadata))
+                        : searchSequential(cube, tokens, Math.min(thrSimilarityMember, thrSimilarityMetadata));
             final LongAdder memberCount = new LongAdder();
             final LongAdder metaCount = new LongAdder();
             final Set<Triple<Entity, Double, String>> res = Sets.newHashSet();

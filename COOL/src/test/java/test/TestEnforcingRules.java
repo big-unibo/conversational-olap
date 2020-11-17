@@ -143,9 +143,11 @@ public class TestEnforcingRules {
     final Mapping m4 = new Mapping(cube, n3, n4);
 
     final List<Mapping> interpretationSentence = 
-        Lists.newArrayList(m3, m4).stream().collect(Collectors.groupingBy(x -> x)).values().stream() // the same mapping can be generated in multiple ways (e.g., through different tokens)
-          .map(equalMappings -> equalMappings.stream().max((m1, m2) -> Double.compare(m1.getScoreM(), m2.getScoreM())).get()) // keep only the one with the highest score
-          .collect(Collectors.toList());
+        Lists.newArrayList(m3, m4).stream()
+                .collect(Collectors.groupingBy(x -> x))
+                .values().stream() // the same mapping can be generated in multiple ways (e.g., through different tokens)
+                .map(equalMappings -> equalMappings.stream().max(Comparator.comparingDouble(Mapping::getScoreM)).get()) // keep only the one with the highest score
+                .collect(Collectors.toList());
 
     assertFalse(m3.equals(m4));
     assertFalse(m3.hashCode() == m4.hashCode());
