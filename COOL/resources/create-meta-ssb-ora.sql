@@ -589,7 +589,7 @@ commit;
 --   (OP_ID, MEA_ID),             OP_ID from groupbyoperator table, MEA_ID from measure table
 --   (OP_ID, MEA_ID);
 -- ... Or populate it with all the operators
--- select * from "MEASURE";
+-- select * from "MEASURE";q
 -- select * from groupbyoperator;
 -- select * from "TABLE";
 -- select * from "LEVEL";

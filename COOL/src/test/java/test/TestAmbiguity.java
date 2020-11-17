@@ -358,8 +358,8 @@ public class TestAmbiguity {
 
   @Test
   public void ssbTest02() throws Exception {
-    test(ssb(), "count sales", "", "", "count lineorder2", 0);
     test(ssb(), "count sales for catskill eagle", "", "product = A Catskill Eagle", "count lineorder2", 0);
+    test(ssb(), "count sales", "", "", "count lineorder2", 0);
   }
 
   @Test

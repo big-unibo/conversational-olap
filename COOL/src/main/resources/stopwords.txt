@@ -51,7 +51,6 @@ do
 does
 did
 doing
-a
 an
 the
 but
@@ -92,8 +91,6 @@ same
 so
 too
 very
-s
-t
 can
 will
 just

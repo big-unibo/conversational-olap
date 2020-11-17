@@ -9,6 +9,7 @@ import it.unibo.conversational.algorithms.Parser;
 import it.unibo.conversational.algorithms.Parser.Type;
 import it.unibo.conversational.database.Config;
 import it.unibo.conversational.database.Cube;
+import it.unibo.conversational.database.QueryGenerator;
 import it.unibo.conversational.datatypes.Entity;
 import it.unibo.conversational.datatypes.Mapping;
 import it.unibo.conversational.datatypes.Ngram;
@@ -28,7 +29,7 @@ public class TestValidator {
   private int checkSentence(final String query, final String gbset, final String predicate, final String measures, // query
       final double thrSimilarityMember, final double thrSimilarityMetadata, final int synMember, final int synMeta, // effectiveness
       final double percPhrase, final int maxDist, final int ngramSize, final double nGramSimThr, final int kblimit) throws Exception { // pruning
-    return new Validator().validate(cube, "test_java", -1, query, gbset, measures, predicate, thrSimilarityMember, thrSimilarityMetadata, synMember, synMeta, percPhrase, maxDist, 1, ngramSize, nGramSimThr, -1, kblimit).getLeft();
+    return new Validator().validate(cube, "test_java", -1, query, gbset, measures, predicate, thrSimilarityMember, thrSimilarityMetadata, synMember, synMeta, percPhrase, maxDist, 1, ngramSize, nGramSimThr, -1, kblimit, QueryGenerator.search).getLeft();
   }
 
   /**

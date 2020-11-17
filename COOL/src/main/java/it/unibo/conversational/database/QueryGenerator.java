@@ -161,6 +161,7 @@ public final class QueryGenerator {
 
     // Initialize the metra structure at the beginning, this could be done by need
     static {
+        readElementsInKB();
         for (final Cube cube : Config.getCubes()) {
             L.debug("Loading meta-data from: " + cube.getFactTable());
             operatorOfMeasure.put(cube, getOperatorOfMeasure(cube));
@@ -451,8 +452,11 @@ public final class QueryGenerator {
      */
     private static Set<String> readElementsInKB() {
         try {
-            final String data = new String(Files.readAllBytes(Paths.get(Objects.requireNonNull(QueryGenerator.class.getClassLoader().getResource("PresentInKB.txt")).toURI())));
-            return Arrays.stream(data.split("\n")).map(String::toLowerCase).collect(Collectors.toSet());
+            final String data = new String(Files.readAllBytes(Paths.get(Objects.requireNonNull(QueryGenerator.class.getClassLoader().getResource("PresentInKB.csv")).toURI())));
+            if (data.isEmpty()) {
+                throw new IllegalArgumentException("Without setting entities in `src/main/resources/PresentInKB.csv`, KB could possibly not contain the entities needed for the tests.");
+            }
+            return Arrays.stream(data.replace("\r", "").split("\n")).map(String::toLowerCase).collect(Collectors.toSet());
         } catch (final Exception e) {
             return Sets.newHashSet();
         }
