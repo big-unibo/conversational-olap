@@ -24,10 +24,7 @@ import org.junit.jupiter.api.Test;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -517,7 +514,7 @@ public class TestOLAP {
     final ObjectInputStream objectInput = new ObjectInputStream(new ByteArrayInputStream(baos.toByteArray()));
     final Mapping deserialized = (Mapping) objectInput.readObject();
 
-    assertTrue(!deserialized.toJSON(cube).isEmpty());
+    assertFalse(deserialized.toJSON(cube).isEmpty());
     assertEquals(prev, deserialized);
   }
 
@@ -538,7 +535,7 @@ public class TestOLAP {
     final ObjectInputStream objectInput = new ObjectInputStream(new ByteArrayInputStream(baos.toByteArray()));
     final Operator deserialized = (Operator) objectInput.readObject();
 
-    assertTrue(!deserialized.toJSON(cube).isEmpty());
+    assertFalse(deserialized.toJSON(cube).isEmpty());
     assertEquals(op1, deserialized);
   }
 
@@ -600,7 +597,7 @@ public class TestOLAP {
    */
   @Test
   public void testSessionSerializationAndEvaluation01() throws Exception {
-    final String sessionid = "foo1";
+    final String sessionid = "foo1-" + UUID.randomUUID().toString();
     QueryGenerator.dropSession(cube, sessionid);
 
     QueryGenerator.saveSession(cube, sessionid, null, "read", null, null, null, null);
@@ -626,7 +623,7 @@ public class TestOLAP {
    */
   @Test
   public void testSessionSerializationAndEvaluation02() throws Exception {
-    final String sessionid = "foo2";
+    final String sessionid = "foo-" + UUID.randomUUID().toString();
     QueryGenerator.dropSession(cube, sessionid);
 
     QueryGenerator.saveSession(cube, sessionid, null, "read", null, null, null, null);
