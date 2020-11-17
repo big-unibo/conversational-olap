@@ -412,7 +412,7 @@ public class Validator {
                             for (double thrMeta : THR_METAS) {
                                 for (int synMeta : N_SYNMETAS) {
                                     L.warn(String.format("run: %d, search: %s, kblimit: %d, thrmem = %f, thrmeta = %f, synmeta = %d", r, QueryGenerator.search, kblimit, thrMemb, thrMeta, synMeta));
-                                    new Validator(csvWriterTest).validateAll(cube, dataset, thrMemb, thrMeta, N_SYNMEMBER, synMeta, THR_COVERAGE, THR_NGRAMDIST, K, NGRAM_SIZE, NGRAMSYNTHR, r, kblimit, search);
+                                    new Validator(csvWriterTest).validateAll(cube, dataset, thrMemb, thrMeta, N_SYNMEMBER, synMeta, THR_COVERAGE, THR_NGRAMDIST, K, NGRAM_SIZE, NGRAMSYNTHR, r, kblimit, QueryGenerator.search);
                                 }
                             }
                         }
