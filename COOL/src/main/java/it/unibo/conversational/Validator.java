@@ -388,7 +388,7 @@ public class Validator {
      */
     public static void main(final String[] args) {
         for (final String dataset : Lists.newArrayList("dataset_patrick_ssb", "dataset_patrick")) {
-            final String path = "resources\\test\\results_IS\\";
+            final String path = "resources/test/results_IS/";
             final String file = "test_" + dataset + ".csv";
             final Cube cube = Config.getCube(dataset.equals("dataset_patrick_ssb") ? "lineorder2" : "sales_fact_1997");
             try (FileWriter csvWriterTest = new FileWriter(path + file)) {
