@@ -128,6 +128,10 @@ public final class DBsynonyms {
                 .stream()
                 .flatMap(n -> {
                     final List<String> syn = string2ngram(n.value);
+                    final List<Entity> partialRes = QueryGenerator.syns(cube).get(syn);
+                    if (partialRes == null) {
+                        throw new IllegalArgumentException("No synonym found for " + syn);
+                    }
                     return QueryGenerator.syns(cube).get(syn).stream().map(e -> Triple.of(e, Utils.tokenSimilarity(syn, tokens), n.value));
                 })
                 .filter(t -> t.getMiddle() >= thr)

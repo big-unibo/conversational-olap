@@ -131,17 +131,29 @@ public class Validator {
         }
     }
 
+    private double round(final double value) {
+        return round(value, 2);
+    }
+
+    private double round(final double value, final int places) {
+        double scale = Math.pow(10, places);
+        return Math.round(value * scale) / scale;
+    }
+
     private void write(final String dataset, final int id, final String query, final String gbset, final String measures, final String predicate, final double thrSimilarityMember,
                        final double thrSimilarityMetadata, final int synMember, final int synMeta, final double percMissingPhrase, final int maxDistInPhrase,
                        final int nTopInterpretation, final int ngramSize, final Map<String, Object> stats, final Mapping correctSentence,
                        final Pair<Mapping, Mapping> parsing, final int k, final int disambiguationStep, final double sim, final int run, final int kbsize) throws IOException {
         if (id >= 0) {
-            final List<Object> toWrite = Lists.newArrayList(thrSimilarityMember, thrSimilarityMetadata, synMember, synMeta, percMissingPhrase, maxDistInPhrase, ngramSize,
-                    id, k, disambiguationStep, parsing == null ? 0 : parsing.getLeft().getScorePFM(), parsing == null ? 0 : parsing.getLeft().getScoreM(), dataset, sim, correctSentence, measures,
-                    predicate, gbset, query, parsing == null ? "" : parsing.getRight(), parsing == null ? "" : parsing.getLeft(),
-                    parsing == null ? 0 : parsing.getRight().ngrams.size(),
-                    stats.get("lemmatization_time"), stats.get("lemmatization_sentence"), stats.get("match_time"), stats.get("match_count"), stats.get("match_confident_count"), stats.get("sentence_time"), stats.get("sentence_count"), stats.get("sentence_count_pruned"), stats.get("pruned"),
-                    stats.get("mapping_time"), stats.get("parsing_time"), stats.get("total_time"),
+            final List<Object> toWrite = Lists.newArrayList(
+                    thrSimilarityMember, thrSimilarityMetadata, synMember, synMeta, percMissingPhrase, maxDistInPhrase, ngramSize,
+                    id, k, disambiguationStep, parsing == null ? 0 : round(parsing.getLeft().getScorePFM()), parsing == null ? 0 : round(parsing.getLeft().getScoreM()),
+                    dataset, round(sim),
+                    "", // correctSentence,
+                    measures, predicate, gbset, query,
+                    "", // parsing == null ? "" : parsing.getRight(),
+                    parsing == null ? "" : parsing.getLeft(), parsing == null ? 0 : parsing.getRight().ngrams.size(),
+                    stats.get("lemmatization_time"), stats.get("lemmatization_sentence"), stats.get("match_time"), stats.get("match_count"), stats.get("match_confident_count"), stats.get("sentence_time"), stats.get("sentence_count"), stats.get("sentence_count_pruned"), stats.get("pruned"), stats.get("mapping_time"), stats.get("parsing_time"), stats.get("total_time"),
                     parsing != null && parsing.getLeft().getMatched().stream().map(Ngram::mde).collect(Collectors.toSet()).containsAll(parsing.getRight().ngrams.stream().map(Ngram::mde).collect(Collectors.toSet())),
                     parsing == null ? -1 : parsing.getLeft().getAnnotatedNgrams().size(), run, kbsize);
             csvWriterTest.write(toWrite.stream().map(Object::toString).reduce((a, b) -> a + ";" + b).get() + "\n");
@@ -389,7 +401,7 @@ public class Validator {
                 csvWriterTest.write(toWrite.stream().map(Object::toString).reduce((a, b) -> a + ";" + b).get() + "\n");
                 csvWriterTest.flush();
                 for (final int kblimit : KB_LIMITS) {
-                    QueryGenerator.syns.compute(cube, (k, v) -> QueryGenerator.initSynonyms(cube, kblimit));
+                    QueryGenerator.initSyns(cube, kblimit);
                     for (int r = 0; r < N_RUNS; r++) {
                         for (double thrMemb : THR_MEMBERS) {
                             for (double thrMeta : THR_METAS) {

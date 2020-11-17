@@ -10,15 +10,10 @@ import it.unibo.conversational.datatypes.Mapping;
 import it.unibo.conversational.olap.Operator;
 import it.unibo.smile.neighborg.MyBKTree;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.text.similarity.JaccardSimilarity;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import smile.math.distance.EditDistance;
-import smile.math.distance.JaccardDistance;
 import smile.math.distance.Metric;
-import smile.neighbor.BKTree;
-import smile.neighbor.Neighbor;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -105,6 +100,11 @@ public final class QueryGenerator {
         return string2level.get(cube);
     }
 
+    public static void initSyns(final Cube cube, final int limit) {
+        bktrees.compute(cube, (k, v) -> new MyBKTree<>(jacc));
+        syns.compute(cube, (k, v) -> initSynonyms(cube, limit));
+    }
+
     /**
      * @param cube cube
      * @return Year levels of the given cube
@@ -118,7 +118,11 @@ public final class QueryGenerator {
      * @return Synonyms for the given cube
      */
     public static Map<List<String>, List<Entity>> syns(final Cube cube) {
-        return syns.computeIfAbsent(cube, k -> initSynonyms(cube, Validator.KB_LIMIT));
+        final Map<List<String>, List<Entity>> res = syns.get(cube);
+        if (res == null) {
+            initSyns(cube, Validator.KB_LIMIT);
+        }
+        return res;
     }
 
     /**
@@ -126,8 +130,11 @@ public final class QueryGenerator {
      * @return Synonyms for the given cube
      */
     public static MyBKTree<String> bktree(final Cube cube) {
-//        return bktrees.computeIfAbsent(cube, k -> new BKTree<>(new EditDistance()));
-        return bktrees.computeIfAbsent(cube, k -> new MyBKTree<>(jacc));
+        final MyBKTree<String> res = bktrees.get(cube);
+        if (res == null) {
+            initSyns(cube, Validator.KB_LIMIT);
+        }
+        return res;
     }
 
     public static final Metric<String> jacc = (Metric<String>) (x, y) -> {
@@ -457,7 +464,7 @@ public final class QueryGenerator {
      * @param limit limit the number of synonyms
      */
     public static Map<List<String>, List<Entity>> initSynonyms(final Cube cube, final int limit) {
-        final Set<String> mustInKb = readElementsInKB();
+        final Set<String> mustBeInKb = readElementsInKB();
         final Map<List<String>, List<Entity>> syns = Maps.newHashMap();
         final long startTime = System.currentTimeMillis();
         // Add others
@@ -467,7 +474,7 @@ public final class QueryGenerator {
                     res -> {
                         while (res.next()) {
                             final String term = res.getString(colSYNTERM);
-                            if (syns.size() > limit && !mustInKb.contains(term.toLowerCase())) {
+                            if (syns.size() > limit && !mustBeInKb.contains(term.toLowerCase())) {
                                 continue;
                             }
                             final List<String> synonym = string2ngram(term);
