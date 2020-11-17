@@ -95,13 +95,20 @@ test {
 task runDBreader(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     main = "it.unibo.conversational.database.DBreader"
-    args "-Xmx12g"
+    jvmArgs = ['-Xmx12g']
+}
+
+task runValidatorSequential(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    main = "it.unibo.conversational.Validator"
+    args = ["sequential"]
+    jvmArgs = ['-Xmx12g']
 }
 
 task runValidator(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     main = "it.unibo.conversational.Validator"
-    args "-Xmx12g"
+    jvmArgs = ['-Xmx12g']
 }
 
 defaultTasks 'clean', 'build', 'check', 'war'
