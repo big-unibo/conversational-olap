@@ -86,6 +86,9 @@ compileTestKotlin {
 }
 
 test {
+    testLogging {
+        exceptionFormat = 'full'
+    }
     // maxHeapSize = "1024m"
     jvmArgs "-Xmx4g"
     useJUnitPlatform()
