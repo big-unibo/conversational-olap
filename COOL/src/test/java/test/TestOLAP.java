@@ -45,6 +45,7 @@ public class TestOLAP {
 
   @BeforeEach
   public void before() {
+    Parser.resetIds();
     Parser.TEST = true;
     log = Lists.newArrayList();
   }
