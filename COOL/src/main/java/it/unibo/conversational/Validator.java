@@ -155,7 +155,7 @@ public class Validator {
                     parsing == null ? "" : parsing.getLeft(), parsing == null ? 0 : parsing.getRight().ngrams.size(),
                     stats.get("lemmatization_time"), stats.get("lemmatization_sentence"), stats.get("match_time"), stats.get("match_count"), stats.get("match_confident_count"), stats.get("sentence_time"), stats.get("sentence_count"), stats.get("sentence_count_pruned"), stats.get("pruned"), stats.get("mapping_time"), stats.get("parsing_time"), stats.get("total_time"),
                     parsing != null && parsing.getLeft().getMatched().stream().map(Ngram::mde).collect(Collectors.toSet()).containsAll(parsing.getRight().ngrams.stream().map(Ngram::mde).collect(Collectors.toSet())),
-                    parsing == null ? -1 : parsing.getLeft().getAnnotatedNgrams().size(), run, kbsize, search);
+                    parsing == null ? -1 : parsing.getLeft().getAnnotatedNgrams().size(), run, kbsize, search, QueryGenerator.distanceThreshold);
             csvWriterTest.write(toWrite.stream().map(Object::toString).reduce((a, b) -> a + ";" + b).get() + "\n");
             csvWriterTest.flush();
         }
@@ -387,9 +387,12 @@ public class Validator {
      * @throws Exception in case of error
      */
     public static void main(final String[] args) {
-        for (final String dataset : Lists.newArrayList("dataset_patrick_ssb", "dataset_patrick")) {
+        if (args.length > 0) {
+            QueryGenerator.setSearch(args[0]);
+        }
+        for (final String dataset : Lists.newArrayList("dataset_patrick", "dataset_patrick_ssb")) {
             final String path = "resources/test/results_IS/";
-            final String file = "test_" + dataset + ".csv";
+            final String file = String.format("test_%s_%s.csv", dataset, QueryGenerator.search);
             final Cube cube = Config.getCube(dataset.equals("dataset_patrick_ssb") ? "lineorder2" : "sales_fact_1997");
             try (FileWriter csvWriterTest = new FileWriter(path + file)) {
                 final List<Object> toWrite = Lists.newArrayList("simMember", "simMeta", "synMember", "synMeta", "%missing", "maxDistance", "ngramSize",
@@ -399,20 +402,31 @@ public class Validator {
                         "measures", "predicate", "gbset", "nl_query", "ngrams", "sentence_parsed",
                         "ngrams_count", "lemmatization_time", "lemmatization_sentence", "match_time", "match_count", "match_confident_count",
                         "sentence_time", "sentence_count", "sentence_count_pruned", "sentence_pruned", "mapping_time", "parsing_time", "total_time",
-                        "isFullyParsed", "countAnnotations", "run", "kbsize", "search");
+                        "isFullyParsed", "countAnnotations", "run", "kbsize", "search", "distanceThr");
                 csvWriterTest.write(toWrite.stream().map(Object::toString).reduce((a, b) -> a + ";" + b).get() + "\n");
                 csvWriterTest.flush();
-                if (args.length > 0) {
-                    QueryGenerator.setSearch(args[0]);
-                }
+                int prevkblimit = 0;
                 for (final int kblimit : KB_LIMITS) {
                     QueryGenerator.initSyns(cube, kblimit);
+                    if (QueryGenerator.syns(cube).size() < prevkblimit) {
+                        // If the entire KB was already included by the synonyms in the previous round, stop increasing the KB size.
+                        break;
+                    }
+                    prevkblimit = kblimit;
                     for (int r = 0; r < N_RUNS; r++) {
                         for (double thrMemb : THR_MEMBERS) {
                             for (double thrMeta : THR_METAS) {
                                 for (int synMeta : N_SYNMETAS) {
-                                    L.warn(String.format("dataset: %s, run: %d, search: %s, kblimit: %d, thrmem = %f, thrmeta = %f, synmeta = %d", dataset, r, QueryGenerator.search, kblimit, thrMemb, thrMeta, synMeta));
-                                    new Validator(csvWriterTest).validateAll(cube, dataset, thrMemb, thrMeta, N_SYNMEMBER, synMeta, THR_COVERAGE, THR_NGRAMDIST, K, NGRAM_SIZE, NGRAMSYNTHR, r, kblimit, QueryGenerator.search);
+                                    if (QueryGenerator.search.equals("bktree")) {
+                                        L.warn(String.format("dataset: %s, run: %d, search: %s, kblimit: %d, thrmem = %f, thrmeta = %f, synmeta = %d", dataset, r, QueryGenerator.search, kblimit, thrMemb, thrMeta, synMeta));
+                                        for (double d: new double[]{0.2, 0.4, 0.6}) {
+                                            QueryGenerator.distanceThreshold = d;
+                                            new Validator(csvWriterTest).validateAll(cube, dataset, thrMemb, thrMeta, N_SYNMEMBER, synMeta, THR_COVERAGE, THR_NGRAMDIST, K, NGRAM_SIZE, NGRAMSYNTHR, r, kblimit, QueryGenerator.search);
+                                        }
+                                    } else {
+                                        L.warn(String.format("dataset: %s, run: %d, search: %s, kblimit: %d, thrmem = %f, thrmeta = %f, synmeta = %d", dataset, r, QueryGenerator.search, kblimit, thrMemb, thrMeta, synMeta));
+                                        new Validator(csvWriterTest).validateAll(cube, dataset, thrMemb, thrMeta, N_SYNMEMBER, synMeta, THR_COVERAGE, THR_NGRAMDIST, K, NGRAM_SIZE, NGRAMSYNTHR, r, kblimit, QueryGenerator.search);
+                                    }
                                 }
                             }
                         }

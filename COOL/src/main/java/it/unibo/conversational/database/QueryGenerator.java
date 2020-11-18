@@ -723,6 +723,7 @@ public final class QueryGenerator {
     }
 
     public static String search = "bktree";
+    public static double distanceThreshold = 0.55;
     public static void setSearch(String arg) {
         search = arg;
     }

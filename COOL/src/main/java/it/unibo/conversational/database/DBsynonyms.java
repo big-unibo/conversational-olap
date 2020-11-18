@@ -126,7 +126,7 @@ public final class DBsynonyms {
 //                .filter(t -> t.getMiddle() >= thr)
 //                .collect(Collectors.toList());
 //        syns.range(ngram2string(tokens), Math.max(length - 2, 1), res);
-        syns.range(ngram2string(tokens), (int) Math.ceil(length * 0.55), res);
+        syns.range(ngram2string(tokens), (int) Math.ceil(length * QueryGenerator.distanceThreshold), res);
         final List<Triple<Entity, Double, String>> newres = res
                 .stream()
                 .flatMap(n -> {
