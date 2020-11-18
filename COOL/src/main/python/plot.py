@@ -10,9 +10,9 @@ import codecs
 import argparse
 
 parser = argparse.ArgumentParser(description='Plotting data.')
-parser.add_argument('dataset', type=str, help='dataset', default='test.csv')
-parser.add_argument('inpath', type=str, help='where the dataset is lcoated', default='../../../../resources/test/results_IS/')
-parser.add_argument('outpath', type=str, help='where to put the charts', default='../../../../resources/test/results_IS/')
+parser.add_argument('dataset', type=str, required=False, help='dataset', default='test.csv')
+parser.add_argument('inpath',  type=str, required=False, help='where the dataset is lcoated', default='../../../../resources/test/results_IS/')
+parser.add_argument('outpath', type=str, required=False, help='where to put the charts', default='../../../../resources/test/results_IS/')
 args = parser.parse_args()
 print(args.accumulate(args.integers))
 
