@@ -1,9 +1,5 @@
 #!/usr/bin/env python
 # coding: utf-8
-
-# In[1]:
-
-
 # -*- coding: utf-8 -*-
 import os
 import matplotlib.pyplot as plt
@@ -11,6 +7,14 @@ import matplotlib.font_manager as font_manager
 import pandas as pd
 import numpy as np
 import codecs
+import argparse
+
+parser = argparse.ArgumentParser(description='Plotting data.')
+parser.add_argument('dataset', type=str, help='dataset', default='test.csv')
+parser.add_argument('inpath', type=str, help='where the dataset is lcoated', default='../../../../resources/test/results_IS/')
+parser.add_argument('outpath', type=str, help='where to put the charts', default='../../../../resources/test/results_IS/')
+args = parser.parse_args()
+print(args.accumulate(args.integers))
 
 #==============================================================================
 # Chart variables
@@ -73,10 +77,10 @@ for i in range(len(tableau20)):
     tableau20[i] = (r / 255., g / 255., b / 255.)
 
 #==============================================================================
-path =    '../../../../resources/test/results_IS/'
-outpath = path
+path =    args.inpath
+outpath = args.outpath
 
-filename = "test.csv"
+filename = args.input
 simMember, simMeta, synMember, synMeta, nsize, covThr, distThr = 0.8, 0.4, 1, 5, 3, 0.7, 3
 
 def marker(filename):
