@@ -418,9 +418,9 @@ public class Validator {
                             for (double thrMeta : THR_METAS) {
                                 for (int synMeta : N_SYNMETAS) {
                                     if (QueryGenerator.search.equals("bktree")) {
-                                        L.warn(String.format("dataset: %s, run: %d, search: %s, kblimit: %d, thrmem = %f, thrmeta = %f, synmeta = %d", dataset, r, QueryGenerator.search, kblimit, thrMemb, thrMeta, synMeta));
                                         for (double d: new double[]{0.2, 0.4, 0.6}) {
                                             QueryGenerator.distanceThreshold = d;
+                                            L.warn(String.format("dataset: %s, run: %d, search: %s, kblimit: %d, thrmem = %f, thrmeta = %f, synmeta = %d", dataset, r, QueryGenerator.search + "-" + d, kblimit, thrMemb, thrMeta, synMeta));
                                             new Validator(csvWriterTest).validateAll(cube, dataset, thrMemb, thrMeta, N_SYNMEMBER, synMeta, THR_COVERAGE, THR_NGRAMDIST, K, NGRAM_SIZE, NGRAMSYNTHR, r, kblimit, QueryGenerator.search);
                                         }
                                     } else {

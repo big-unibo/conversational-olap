@@ -175,7 +175,7 @@ INSERT INTO dataset_patrick VALUES (1,'Sales Revenue by media for Spain as Count
 INSERT INTO dataset_patrick VALUES (2,'Sales Target Revenue by Gender','y','store sales by gender','avg store_sales','gender','','','AM','');
 INSERT INTO dataset_patrick VALUES (3,'Sales Revenue by media f spain','y','sum unit sales by media type for Sheri Nowmer','sum unit_sales','media_type','fullname = Sheri Nowmer','','','');
 INSERT INTO dataset_patrick VALUES (4,'sales revenue by country by month by region for decathlon','y','sum unit_sales by country by month by province for Sheri Nowmer','sum unit_sales','country, the_month, state_province','fullname = Sheri Nowmer','','AM','');
-INSERT INTO dataset_patrick VALUES (5,'sales revenue by month 2010 decathlon north america by retailer','y','store sales by month in 2010 for Atomic Mints USA by store','avg store_sales','the_month, store_id','the_year = 2010 and product_name = INSERT INTO dataset_patrick VALUES Atomic Mints','SCA ::= SCN SCA | SCN and SCA | SCN ','','');
+INSERT INTO dataset_patrick VALUES (5,'sales revenue by month 2010 decathlon north america by retailer','y','store sales by month in 2010 for Atomic Mints USA by store','avg store_sales','the_month, store_id','the_year = 2010 and product_name = Atomic Mints','SCA ::= SCN SCA | SCN and SCA | SCN ','','');
 INSERT INTO dataset_patrick VALUES (6,'Sales Revenue by Month for 2010 as Year','y','sum unit sales by month for 2010 as year','sum unit_sales','the_month','the_year = 2010','','','');
 INSERT INTO dataset_patrick VALUES (7,'Sales Revenue','y','sum unit sales','sum unit_sales','','','','','');
 INSERT INTO dataset_patrick VALUES (8,'Lower middle income as Country','n','','','','','','','');

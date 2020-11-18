@@ -468,7 +468,7 @@ public final class QueryGenerator {
      * @param cube cube
      * @param limit limit the number of synonyms
      */
-    public static Map<List<String>, List<Entity>> initSynonyms(final Cube cube, final int limit) {
+    private static Map<List<String>, List<Entity>> initSynonyms(final Cube cube, final int limit) {
         final Set<String> mustBeInKb = readElementsInKB();
         final Map<List<String>, List<Entity>> syns = Maps.newHashMap();
         final long startTime = System.currentTimeMillis();
