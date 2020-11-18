@@ -22,7 +22,16 @@ Running the validator with the sequential scan of synonyms
 Running the validator with the BKtree scan of synonyms
 
     git pull; ./gradlew runValidator
-    
+
+Plotting the charts
+
+    sudo apt-get install python3-venv
+    cd COOL/src/main/python
+    python3 -m venv venv
+    source venv/bin/activate
+    pip install -r requirements.txt
+    python3 plot.py --dataset test_dataset_patrick_ssb.csv
+
 ## Working on this project
 
 - This project is organized according to the [gitflow](http://nvie.com/posts/a-successful-git-branching-model/) model

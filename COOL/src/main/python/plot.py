@@ -10,11 +10,10 @@ import codecs
 import argparse
 
 parser = argparse.ArgumentParser(description='Plotting data.')
-parser.add_argument('dataset', type=str, required=False, help='dataset', default='test.csv')
-parser.add_argument('inpath',  type=str, required=False, help='where the dataset is lcoated', default='../../../../resources/test/results_IS/')
-parser.add_argument('outpath', type=str, required=False, help='where to put the charts', default='../../../../resources/test/results_IS/')
+parser.add_argument('--dataset', type=str, help='dataset', default='test.csv')
+parser.add_argument('--inpath',  type=str, help='where the dataset is lcoated', default='../../../resources/test/results_IS/')
+parser.add_argument('--outpath', type=str, help='where to put the charts', default='../../../resources/test/results_IS/')
 args = parser.parse_args()
-print(args.accumulate(args.integers))
 
 #==============================================================================
 # Chart variables
@@ -79,8 +78,8 @@ for i in range(len(tableau20)):
 #==============================================================================
 path =    args.inpath
 outpath = args.outpath
+filename = args.dataset
 
-filename = args.input
 simMember, simMeta, synMember, synMeta, nsize, covThr, distThr = 0.8, 0.4, 1, 5, 3, 0.7, 3
 
 def marker(filename):
