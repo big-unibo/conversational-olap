@@ -192,7 +192,7 @@ INSERT INTO language_predicate VALUES ( 1,'where','[filter, filter on, for, in, 
 INSERT INTO language_predicate VALUES ( 4,'by','[group by, grouped by, grouping by, for, for each, for every, per]','by');
 INSERT INTO language_predicate VALUES ( 5,'>=','[greater equal, greater equal than]','cop');
 INSERT INTO language_predicate VALUES ( 6,'<=','[lower equal, lower equal than]','cop');
-INSERT INTO language_predicate VALUES ( 7,'=','[equal, is]','cop');
+INSERT INTO language_predicate VALUES ( 7,'=','[equal, is, as]','cop');
 INSERT INTO language_predicate VALUES ( 8,'<','[lower than, below, less than, before, until]','cop');
 INSERT INTO language_predicate VALUES ( 9,'>','[greater than, above, more than, after, from]','cop');
 INSERT INTO language_predicate VALUES (10,'and',NULL,'and');
@@ -234,4 +234,7 @@ INSERT INTO groupbyoperator_of_measure select groupbyoperator_id, measure_id fro
 INSERT INTO "SYNONYM"(synonym_id, table_name, reference_id, term) VALUES ('-2', 'FACT', (select fact_id from fact where fact_name = 'LINEORDER2'), 'sales');
 INSERT INTO "SYNONYM"(synonym_id, table_name, reference_id, term) VALUES ('-3', 'MEASURE', (select measure_id from "MEASURE" where lower(measure_name) = lower('supplycost')), 'supply cost');
 INSERT INTO "SYNONYM"(synonym_id, table_name, reference_id, term) VALUES ('-4', 'MEASURE', (select measure_id from "MEASURE" where lower(measure_name) = lower('extendedprice')), 'extended price');
+DELETE FROM "SYNONYM" where term = 'a a';
+DELETE FROM "MEMBER" where member_name = 'a a';
+INSERT INTO "SYNONYM"(synonym_id, table_name, reference_id, term) VALUES ('-6', 'LANGUAGE_OPERATOR', (select language_operator_id from "LANGUAGE_OPERATOR" where lower(language_operator_name) = lower('=')), 'as');
 commit;

@@ -172,78 +172,82 @@ public final class Mapping implements Serializable {
   public void disambiguate(final String annotationId, final String approximateVal, final List<Triple<AnnotationType, Ngram, Ngram>> log) {
     final LongAdder adder = new LongAdder();
     final List<Ngram> toRemove = Lists.newArrayList();
-    for (final Ngram tree: ngrams) {
-      Ngram.traverse(tree, (n, acc) -> n.getAnnotations().containsKey(annotationId) || n.getHints().containsKey(annotationId), (n, ac) -> {
-        adder.add(1);
-        final Pair<AnnotationType, Set<Entity>> annotation = n.getAnnotations().getOrDefault(annotationId, n.getHints().get(annotationId));
-        Optional<Ngram> parent = Ngram.findParent(tree, n);
-        if ("drop".equals(approximateVal)) {
-          if (Ngram.findParent(tree, n).isPresent()) {
-            Ngram.removeNode(tree, n);
-          } else {
-            toRemove.add(n);
-          }
-        } else {
-          switch (annotation.getKey()) {
-          case UP:
-            // Get the GPSJ children
-            final List<Ngram> children = new ArrayList<>(bestNgram.children);
-            switch (n.type) {
-            case GC:
-              // Find the old group by clause
-              Ngram acc = children.stream().filter(nn -> nn.type.equals(Type.GC)).findAny().get();
-              // ... remove it
-              children.remove(acc);
-              // Create a new selection clause
-              Set<Ngram> attributes = Ngram.leaves(n).stream().filter(nn -> nn.type.equals(Type.ATTR)).collect(Collectors.toSet());
-              for (Ngram a : attributes) {
-                acc = new Ngram(Type.GC, ImmutableList.of(acc, a));
-              }
-              children.add(acc);
-              break;
-            case SC:
-              // Find the old selection clause SC = < Where, SC>
-              Ngram scInGpsj = children.stream().filter(nn -> nn.type.equals(Type.SC)).findAny().get();
-              // Get internal Where and SC
-              Ngram wh = scInGpsj.children.stream().filter(nn -> nn.type.equals(Type.WHERE)).findAny().get();
-              Ngram sc = scInGpsj.children.stream().filter(nn -> nn.type.equals(Type.SC)).findAny().get();
-              // ... remove it
-              children.remove(scInGpsj);
-              // Create a new selection clause
-              final Ngram newSc = new Ngram(Type.SC, Lists.newArrayList(wh, new Ngram(Type.SC, ImmutableList.of(sc, Ngram.DUMMY_AND, n))));
-              children.add(newSc);
-              break;
-            case MC:
-              // Find the old measure clause
-              final Ngram mc = children.stream().filter(nn -> nn.type.equals(Type.MC)).findAny().get();
-              // An MC clause alone will always be considered as another GPSJ query, so if I add this clause to the primary GPSJ, I need to remove the existing query
-              toRemove.add(parent.get()); // ngrams.remove(parent.get());
-              // Create a new measure clause
-              final Ngram newMc = new Ngram(Type.MC, ImmutableList.of(mc, n));
-              children.add(newMc);
-              // ... remove it
-              children.remove(mc);
-              break;
-            default:
-              throw new NotImplementedException("Unparsed clause not implemented for " + n.type);
-            }
-            bestNgram.setChildren(ImmutableList.copyOf(children));
-            toRemove.add(n); // the current ngram has been added to an existing close, remove it from the list of ngrams
-            // ngrams.remove(n);
-            break;
-          default:
-            n.disambiguate(annotation, approximateVal, log, n.getHints().containsKey(annotationId));
-          }
-        }
-        n.getAnnotations().remove(annotationId);
-        n.getHints().remove(annotationId);
-        return -1;
-      });
+    for (final Ngram tree : ngrams) {
+      Ngram.traverse(tree,
+              (n, acc) -> n.getAnnotations().containsKey(annotationId) || n.getHints().containsKey(annotationId),
+              (n, ac) -> {
+                adder.add(1);
+                final Pair<AnnotationType, Set<Entity>> annotation = n.getAnnotations().getOrDefault(annotationId, n.getHints().get(annotationId));
+                Optional<Ngram> parent = Ngram.findParent(tree, n);
+                if ("drop".equals(approximateVal)) {
+                  if (Ngram.findParent(tree, n).isPresent()) {
+                    Ngram.removeNode(tree, n);
+                  } else {
+                    toRemove.add(n);
+                  }
+                } else {
+                  switch (annotation.getKey()) {
+                    case UP:
+                      // Get the GPSJ children
+                      final List<Ngram> children = new ArrayList<>(bestNgram.children);
+                      switch (n.type) {
+                        case GC:
+                          // Find the old group by clause
+                          Ngram acc = children.stream().filter(nn -> nn.type.equals(Type.GC)).findAny().get();
+                          // ... remove it
+                          children.remove(acc);
+                          // Create a new selection clause
+                          Set<Ngram> attributes = Ngram.leaves(n).stream().filter(nn -> nn.type.equals(Type.ATTR)).collect(Collectors.toSet());
+                          for (Ngram a : attributes) {
+                            acc = new Ngram(Type.GC, ImmutableList.of(acc, a));
+                          }
+                          children.add(acc);
+                          break;
+                        case SC:
+                          // Find the old selection clause SC = < Where, SC>
+                          Ngram scInGpsj = children.stream().filter(nn -> nn.type.equals(Type.SC)).findAny().get();
+                          // Get internal Where and SC
+                          Ngram wh = scInGpsj.children.stream().filter(nn -> nn.type.equals(Type.WHERE)).findAny().get();
+                          Ngram sc = scInGpsj.children.stream().filter(nn -> nn.type.equals(Type.SC)).findAny().get();
+                          // ... remove it
+                          children.remove(scInGpsj);
+                          // Create a new selection clause
+                          final Ngram newSc = new Ngram(Type.SC, Lists.newArrayList(wh, new Ngram(Type.SC, ImmutableList.of(sc, Ngram.DUMMY_AND, n))));
+                          children.add(newSc);
+                          break;
+                        case MC:
+                          // Find the old measure clause
+                          final Ngram mc = children.stream().filter(nn -> nn.type.equals(Type.MC)).findAny().get();
+                          // An MC clause alone will always be considered as another GPSJ query, so if I add this clause to the primary GPSJ, I need to remove the existing query
+                          toRemove.add(parent.get()); // ngrams.remove(parent.get());
+                          // Create a new measure clause
+                          final Ngram newMc = new Ngram(Type.MC, ImmutableList.of(mc, n));
+                          children.add(newMc);
+                          // ... remove it
+                          children.remove(mc);
+                          break;
+                        default:
+                          throw new NotImplementedException("Unparsed clause not implemented for " + n.type);
+                      }
+                      bestNgram.setChildren(ImmutableList.copyOf(children));
+                      toRemove.add(n); // the current ngram has been added to an existing close, remove it from the list of ngrams
+                      // ngrams.remove(n);
+                      break;
+                    default:
+                      n.disambiguate(annotation, approximateVal, log, n.getHints().containsKey(annotationId));
+                  }
+                }
+                n.getAnnotations().remove(annotationId);
+                n.getHints().remove(annotationId);
+                return -1;
+              });
     }
     List<Ngram> ngramsCopy = ngrams.stream().filter(n -> !n.children.isEmpty()).collect(Collectors.toList());
     toRemove.forEach(ngramsCopy::remove);
     ngrams = ImmutableList.copyOf(ngramsCopy);
     if (adder.intValue() == 0) {
+      // Parser.automaticDisambiguate(this);
+      // disambiguate( annotationId, approximateVal, log);
       throw new IllegalArgumentException("Cannot find annotation with id: " + annotationId + ", available annotations are: " + getAnnotatedNgrams().stream().map(Ngram::getAnnotations).collect(Collectors.toList()));
     }
   }

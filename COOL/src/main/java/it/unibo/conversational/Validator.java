@@ -390,7 +390,7 @@ public class Validator {
         if (args.length > 0) {
             QueryGenerator.setSearch(args[0]);
         }
-        for (final String dataset : Lists.newArrayList("dataset_patrick", "dataset_patrick_ssb")) {
+        for (final String dataset : Lists.newArrayList("dataset_patrick_ssb", "dataset_patrick")) {
             final String path = "resources/test/results_IS/";
             final String file = String.format("test_%s_%s.csv", dataset, QueryGenerator.search);
             final Cube cube = Config.getCube(dataset.equals("dataset_patrick_ssb") ? "lineorder2" : "sales_fact_1997");

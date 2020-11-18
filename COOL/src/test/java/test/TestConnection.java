@@ -57,6 +57,7 @@ public class TestConnection {
                 assertFalse(getYearLevels(cube).isEmpty());
                 assertFalse(getLevels(cube).isEmpty());
                 assertFalse(searchBKtree(cube, string2ngram("drill down"), 0.4).isEmpty());
+                assertEquals(1, searchBKtree(cube, string2ngram("="), 1).size());
                 if (cube.getFactTable().equalsIgnoreCase("sales_fact_1997")) {
                     assertFalse(searchSequential(cube, string2ngram("atomic mints"), 1).isEmpty());
                     assertFalse(searchBKtree(cube, string2ngram("atomic mints"), 1).isEmpty());
@@ -75,7 +76,6 @@ public class TestConnection {
                     assertFalse(searchBKtree(cube, string2ngram("supp cost"), 0.6).isEmpty());
                     assertFalse(searchBKtree(cube, string2ngram("Apolonia Car"), 0.6).isEmpty());
                 }
-                getEntities(cube, Ngram.class, Lists.newLinkedList(), 1.0, 1.0, 1, 1);
             }
         } catch (final Exception e) {
             e.printStackTrace();

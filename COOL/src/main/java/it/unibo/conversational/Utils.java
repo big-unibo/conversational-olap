@@ -446,7 +446,7 @@ public final class Utils {
      * @return similarity score
      */
     public static double tokenSimilarity(final List<String> aTokens, final List<String> bTokens) {
-        //La similarità tra due termini viene calcolando sommando la similarità di ogni coppia di parole associate moltiplicata per la lunghezza massima delle due parole
+        // La similarità tra due termini viene calcolando sommando la similarità di ogni coppia di parole associate moltiplicata per la lunghezza massima delle due parole
         // tutto fratto la lunghezza totale delle parole non matchate più la somma delle lunghezze massime
         final Map<Integer, Integer> matching = MarriageProblem.getBestMatch(aTokens, bTokens);
         double weightedMatch = 0.0, sumLen = 0.0;

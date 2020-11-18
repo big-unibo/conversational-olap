@@ -184,7 +184,7 @@ INSERT INTO language_predicate VALUES ( 1,'where','[filter, filter on, for, in, 
 INSERT INTO language_predicate VALUES ( 4,'by','[group by, grouped by, grouping by, for, for each, for every, per]','by');
 INSERT INTO language_predicate VALUES ( 5,'>=','[greater equal, greater equal than]','cop');
 INSERT INTO language_predicate VALUES ( 6,'<=','[lower equal, lower equal than]','cop');
-INSERT INTO language_predicate VALUES ( 7,'=','[equal, is]','cop');
+INSERT INTO language_predicate VALUES ( 7,'=','[equal, is, as]','cop');
 INSERT INTO language_predicate VALUES ( 8,'<','[lower than, below, less than, before, until]','cop');
 INSERT INTO language_predicate VALUES ( 9,'>','[greater than, above, more than, after, from]','cop');
 INSERT INTO language_predicate VALUES (10,'and',NULL,'and');
@@ -227,4 +227,5 @@ INSERT INTO "SYNONYM"(synonym_id, table_name, reference_id, term) VALUES ('-2', 
 INSERT INTO "SYNONYM"(synonym_id, table_name, reference_id, term) VALUES ('-3', 'LEVEL', (select level_id from level where lower(level_name) = lower('product_category')), 'category');
 INSERT INTO "SYNONYM"(synonym_id, table_name, reference_id, term) VALUES ('-4', 'LEVEL', (select level_id from level where lower(level_name) = lower('product_subcategory')), 'subcategory');
 INSERT INTO "SYNONYM"(synonym_id, table_name, reference_id, term) VALUES ('-5', 'LEVEL', (select level_id from "LEVEL" where lower(level_name) = lower('product_family')), 'family');
+INSERT INTO "SYNONYM"(synonym_id, table_name, reference_id, term) VALUES ('-6', 'LANGUAGE_OPERATOR', (select language_operator_id from "LANGUAGE_OPERATOR" where lower(language_operator_name) = lower('=')), 'as');
 commit;

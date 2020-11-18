@@ -405,8 +405,8 @@ public final class Parser {
 
       Ngram.traverse(tree, (c, acc) -> {
         if (c.type.equals(Type.ATTR) || c.type.equals(Type.MC) || c.type.equals(Type.SC)) {
-          if (!Ngram.findParent(tree, c).get().getAnnotations().values().stream() // do not annotate a children with EAE or ENE if its parent is already annotated
-              .anyMatch(p -> p.getKey().equals(AnnotationType.ENE) || p.getKey().equals(AnnotationType.EAE)) //
+          if (Ngram.findParent(tree, c).get().getAnnotations().values().stream() // do not annotate a children with EAE or ENE if its parent is already annotated
+                  .noneMatch(p -> p.getKey().equals(AnnotationType.ENE) || p.getKey().equals(AnnotationType.EAE)) //
           ) {
             if (!Ngram.contains(prevTree, c, true) && c.requiresExistence()) {
               // all_products is never inside the previous query, do not tag it
