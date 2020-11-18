@@ -479,7 +479,7 @@ public final class Utils {
      */
     public static void writeMappings(final String folderName, final String fileName, final List<Ngram> ngrams) {
         try {
-            final String filePath = "resources\\test\\" + folderName + "\\" + fileName.replace("?", "") + ".csv";
+            final String filePath = "resources/test/" + folderName + "/" + fileName.replace("?", "") + ".csv";
             final FileWriter csvWriter = new FileWriter(filePath);
             csvWriter.append("N-gram");
             csvWriter.append(";");
@@ -520,7 +520,7 @@ public final class Utils {
         final DecimalFormat df = new DecimalFormat("#.########", otherSymbols);
         df.setRoundingMode(RoundingMode.HALF_DOWN);
         try {
-            final String filePath = "resources\\test\\" + folderName + "\\" + fileName.replace("?", "") + ".csv";
+            final String filePath = "resources/test/" + folderName + "/" + fileName.replace("?", "") + ".csv";
             final FileWriter csvWriter = new FileWriter(filePath);
             for (final Mapping set : sentences.stream().sorted((Mapping s1, Mapping s2) -> {
                 final int s1f = s1.ngrams.stream().anyMatch(n -> n.type.equals(Type.GPSJ)) ? 1 : 0;
