@@ -92,7 +92,7 @@ public final class DBsynonyms {
     public static List<Triple<Entity, Double, String>> searchSequential(final Cube cube, final List<String> tokens, final double thr) {
         Map<List<String>, List<Entity>> syns = Maps.newHashMap();
         final List<Triple<Entity, Double, String>> acc = Lists.newArrayList();
-        if (tokens.stream().mapToDouble(String::length).sum() == 1) {
+        if (tokens.stream().mapToDouble(String::length).sum() == 1 || thr == 0.1) {
             final List<Entity> res = QueryGenerator.syns(cube).get(string2ngram(tokens.get(0)));
             if (res != null) {
                 syns.put(tokens, res);
@@ -120,11 +120,11 @@ public final class DBsynonyms {
     public static List<Triple<Entity, Double, String>> searchBKtree(final Cube cube, final List<String> tokens, final double thr) {
         final MyBKTree<String> syns = QueryGenerator.bktree(cube);
         final double length = tokens.stream().mapToDouble(String::length).sum();
-        if (length == 1) {
+        if (length == 1 || thr == 1.0) {
             return searchSequential(cube, tokens, thr);
         }
         final List<Neighbor<String, String>> res = Lists.newArrayList();
-        syns.range(ngram2string(tokens), Math.min((int) Math.ceil(length * (1 - thr)), length - 1), res);
+        syns.range(ngram2string(tokens), Math.min((int) Math.ceil(length * (1.0 - thr)), length - 1), res);
         return res
                 .stream()
                 .flatMap(n -> {
