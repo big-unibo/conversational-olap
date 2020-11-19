@@ -378,7 +378,7 @@ public class Validator {
     private static final int[] KB_LIMITS_FOODMART = new int[]{1000, 7000, 100000};
     private static final int[] KB_LIMITS_SSB = new int[]{3000, 30000, 1000000};
     private static final int[] N_SYNMETAS = new int[]{5, 3, 1};
-    private static final double[] THR_METAS = new double[]{0.4, 0.5, 0.6, 0.8};
+    private static final double[] THR_METAS = new double[]{0.4, 0.5, 0.6, 0.7};
     private static final double[] THR_MEMBERS = new double[]{0.8, 0.9};
 
     /**
