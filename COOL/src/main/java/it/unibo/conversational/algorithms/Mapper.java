@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static it.unibo.conversational.Utils.ngram2string;
+import static it.unibo.conversational.algorithms.Parser.TEST;
 
 /** Prepare the mappings for the parsing. */
 public final class Mapper {
@@ -269,8 +270,9 @@ public final class Mapper {
     stats.put("match_time", System.currentTimeMillis() - startTime);
     stats.put("match_confident_count", validMatch.size());
     L.debug("--- n matches: " + validMatch.size());
-    Utils.writeMappings("result_interpretation", "M_" + nlQuery + "_" + thrSimilarityMember + "_" + thrSimilarityMetadata + "_" + synMember + "_" + synMeta + "_" + percPhrase + "_" + maxDist + "_" + ngramSize, validMatch);
-
+    if (TEST) {
+      Utils.writeMappings("result_interpretation", "M_" + nlQuery + "_" + thrSimilarityMember + "_" + thrSimilarityMetadata + "_" + synMember + "_" + synMeta + "_" + percPhrase + "_" + maxDist + "_" + ngramSize, validMatch);
+    }
     // create all possible interpretations from ngrams
     startTime = System.currentTimeMillis();
     final double threshold = tokens.size() * percPhrase;
@@ -278,7 +280,9 @@ public final class Mapper {
     stats.put("sentence_time", System.currentTimeMillis() - startTime);
     stats.put("sentence_count", interpretationsSentence.size());
     L.debug("--- n sentences: " + interpretationsSentence.size());
-    Utils.writeParsing("result_interpretation", "I_" + nlQuery + "_" + thrSimilarityMember + "_" + thrSimilarityMetadata + "_" + synMember + "_" + synMeta + "_" + percPhrase + "_" + maxDist + "_" + ngramSize, interpretationsSentence);
+    if (TEST) {
+      Utils.writeParsing("result_interpretation", "I_" + nlQuery + "_" + thrSimilarityMember + "_" + thrSimilarityMetadata + "_" + synMember + "_" + synMeta + "_" + percPhrase + "_" + maxDist + "_" + ngramSize, interpretationsSentence);
+    }
     return interpretationsSentence;
   }
 }

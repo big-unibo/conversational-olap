@@ -387,6 +387,7 @@ public class Validator {
      * @throws Exception in case of error
      */
     public static void main(final String[] args) {
+        Parser.TEST = false;
         if (args.length > 0) {
             QueryGenerator.setSearch(args[0]);
         }
