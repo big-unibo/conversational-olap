@@ -155,7 +155,7 @@ public class Validator {
                     parsing == null ? "" : parsing.getLeft(), parsing == null ? 0 : parsing.getRight().ngrams.size(),
                     stats.get("lemmatization_time"), stats.get("lemmatization_sentence"), stats.get("match_time"), stats.get("match_count"), stats.get("match_confident_count"), stats.get("sentence_time"), stats.get("sentence_count"), stats.get("sentence_count_pruned"), stats.get("pruned"), stats.get("mapping_time"), stats.get("parsing_time"), stats.get("total_time"),
                     parsing != null && parsing.getLeft().getMatched().stream().map(Ngram::mde).collect(Collectors.toSet()).containsAll(parsing.getRight().ngrams.stream().map(Ngram::mde).collect(Collectors.toSet())),
-                    parsing == null ? -1 : parsing.getLeft().getAnnotatedNgrams().size(), run, kbsize, search, QueryGenerator.distanceThreshold);
+                    parsing == null ? -1 : parsing.getLeft().getAnnotatedNgrams().size(), run, kbsize, search, 1 - (QueryGenerator.search.equals("bktree") ? Math.min(thrSimilarityMetadata, thrSimilarityMember) : 0));
             csvWriterTest.write(toWrite.stream().map(Object::toString).reduce((a, b) -> a + ";" + b).get() + "\n");
             csvWriterTest.flush();
         }
@@ -378,7 +378,7 @@ public class Validator {
     private static final int[] KB_LIMITS_FOODMART = new int[]{1000, 7000, 100000};
     private static final int[] KB_LIMITS_SSB = new int[]{3000, 30000, 1000000};
     private static final int[] N_SYNMETAS = new int[]{5, 3, 1};
-    private static final double[] THR_METAS = new double[]{0.4, 0.5, 0.6};
+    private static final double[] THR_METAS = new double[]{0.2, 0.4, 0.5, 0.6};
     private static final double[] THR_MEMBERS = new double[]{0.8, 0.9};
 
     /**
@@ -420,14 +420,10 @@ public class Validator {
                             for (double thrMeta : THR_METAS) {
                                 for (int synMeta : N_SYNMETAS) {
                                     if (QueryGenerator.search.equals("bktree")) {
-                                        for (double d: new double[]{0.2, 0.4, 0.6}) {
-                                            QueryGenerator.distanceThreshold = d;
-                                            L.warn(String.format("dataset: %s, run: %d, search: %s, kblimit: %d, thrmem = %f, thrmeta = %f, synmeta = %d", dataset, r, QueryGenerator.search + "-" + d, kblimit, thrMemb, thrMeta, synMeta));
-                                            new Validator(csvWriterTest).validateAll(cube, dataset, thrMemb, thrMeta, N_SYNMEMBER, synMeta, THR_COVERAGE, THR_NGRAMDIST, K, NGRAM_SIZE, NGRAMSYNTHR, r, kblimit, QueryGenerator.search);
-                                        }
+                                        L.warn(String.format("dataset: %s, run: %d, search: %s, kblimit: %d, thrmem = %f, thrmeta = %f, synmeta = %d", dataset, r, QueryGenerator.search, kblimit, thrMemb, thrMeta, synMeta));
+                                        new Validator(csvWriterTest).validateAll(cube, dataset, thrMemb, thrMeta, N_SYNMEMBER, synMeta, THR_COVERAGE, THR_NGRAMDIST, K, NGRAM_SIZE, NGRAMSYNTHR, r, kblimit, QueryGenerator.search);
                                     } else {
                                         L.warn(String.format("dataset: %s, run: %d, search: %s, kblimit: %d, thrmem = %f, thrmeta = %f, synmeta = %d", dataset, r, QueryGenerator.search, kblimit, thrMemb, thrMeta, synMeta));
-                                        QueryGenerator.distanceThreshold = -1;
                                         new Validator(csvWriterTest).validateAll(cube, dataset, thrMemb, thrMeta, N_SYNMEMBER, synMeta, THR_COVERAGE, THR_NGRAMDIST, K, NGRAM_SIZE, NGRAMSYNTHR, r, kblimit, QueryGenerator.search);
                                     }
                                 }

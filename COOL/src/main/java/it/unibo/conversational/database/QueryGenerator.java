@@ -152,11 +152,7 @@ public final class QueryGenerator {
             union.add(c);
         }
         final int distance = union.size() - intersection.size();
-        if (distance >= 0) {
-            return distance;
-        } else {
-            throw new IllegalArgumentException("Distance cannot be negative " + x + " " + y);
-        }
+        return distance;
     };
 
     // Initialize the metra structure at the beginning, this could be done by need
@@ -723,7 +719,6 @@ public final class QueryGenerator {
     }
 
     public static String search = "bktree";
-    public static double distanceThreshold = 0.55;
     public static void setSearch(String arg) {
         search = arg;
     }

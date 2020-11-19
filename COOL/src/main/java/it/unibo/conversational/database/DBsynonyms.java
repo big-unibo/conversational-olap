@@ -123,15 +123,8 @@ public final class DBsynonyms {
         if (length == 1) {
             return searchSequential(cube, tokens, thr);
         }
-        // syns.range(ngram2string(tokens), Math.max(length - 2, 1), res);
-        // return res
-        //         .stream()
-        //         .flatMap(n -> QueryGenerator.syns(cube).get(string2ngram(n.value)).stream().map(e -> Triple.of(e, 1 - (1.0 * n.distance / Math.max(n.key.length(), n.value.length())), n.value)))
-        //         .filter(t -> t.getMiddle() >= thr)
-        //         .collect(Collectors.toList());
-        // syns.range(ngram2string(tokens), Math.max(length - 2, 1), res);
         final List<Neighbor<String, String>> res = Lists.newArrayList();
-        syns.range(ngram2string(tokens), Math.min((int) Math.ceil(length * QueryGenerator.distanceThreshold), length - 1), res);
+        syns.range(ngram2string(tokens), Math.min((int) Math.ceil(length * (1 - thr)), length - 1), res);
         return res
                 .stream()
                 .flatMap(n -> {
