@@ -419,13 +419,8 @@ public class Validator {
                         for (double thrMemb : THR_MEMBERS) {
                             for (double thrMeta : THR_METAS) {
                                 for (int synMeta : N_SYNMETAS) {
-                                    if (QueryGenerator.search.equals("bktree")) {
-                                        L.warn(String.format("dataset: %s, run: %d, search: %s, kblimit: %d, thrmem = %f, thrmeta = %f, synmeta = %d", dataset, r, QueryGenerator.search, kblimit, thrMemb, thrMeta, synMeta));
-                                        new Validator(csvWriterTest).validateAll(cube, dataset, thrMemb, thrMeta, N_SYNMEMBER, synMeta, THR_COVERAGE, THR_NGRAMDIST, K, NGRAM_SIZE, NGRAMSYNTHR, r, kblimit, QueryGenerator.search);
-                                    } else {
-                                        L.warn(String.format("dataset: %s, run: %d, search: %s, kblimit: %d, thrmem = %f, thrmeta = %f, synmeta = %d", dataset, r, QueryGenerator.search, kblimit, thrMemb, thrMeta, synMeta));
-                                        new Validator(csvWriterTest).validateAll(cube, dataset, thrMemb, thrMeta, N_SYNMEMBER, synMeta, THR_COVERAGE, THR_NGRAMDIST, K, NGRAM_SIZE, NGRAMSYNTHR, r, kblimit, QueryGenerator.search);
-                                    }
+                                    L.warn(String.format("dataset: %s, run: %d, search: %s, kblimit: %d, thrmem = %f, thrmeta = %f, synmeta = %d", dataset, r, QueryGenerator.search, kblimit, thrMemb, thrMeta, synMeta));
+                                    new Validator(csvWriterTest).validateAll(cube, dataset, thrMemb, thrMeta, N_SYNMEMBER, synMeta, THR_COVERAGE, THR_NGRAMDIST, K, NGRAM_SIZE, NGRAMSYNTHR, r, kblimit, QueryGenerator.search);
                                 }
                             }
                         }
