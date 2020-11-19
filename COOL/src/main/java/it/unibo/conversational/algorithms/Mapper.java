@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static it.unibo.conversational.Utils.ngram2string;
+import static it.unibo.conversational.Utils.string2ngram;
 import static it.unibo.conversational.algorithms.Parser.TEST;
 
 /** Prepare the mappings for the parsing. */
@@ -235,8 +236,8 @@ public final class Mapper {
       for (int j = ngramSize; j >= 1; j--) { // Creo tutti gli ngrammi possibili da ngramSize a 1
         int idxend = i + j;
         if (idxend <= tokens.size()) {
-          final List<String> ngrams = tokens.subList(i, idxend);
-          final String s = ngram2string(ngrams);
+          final String s = ngram2string(tokens.subList(i, idxend));
+          final List<String> ngrams = string2ngram(s);
           if (numericValues.containsKey(s)) { // Se l'ngramma è taggato lo aggiungo ai match
             final Ngram n = new Ngram(s, Type.VAL, new Entity(s, Utils.getDataType(numericValues.get(s))), Pair.of(i, (i + j - 1)));
             validMatch.add(n);

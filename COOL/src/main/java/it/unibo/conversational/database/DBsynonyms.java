@@ -93,7 +93,7 @@ public final class DBsynonyms {
         Map<List<String>, List<Entity>> syns = Maps.newHashMap();
         final List<Triple<Entity, Double, String>> acc = Lists.newArrayList();
         if (tokens.stream().mapToDouble(String::length).sum() == 1 || thr >= 0.99) {
-            final List<Entity> res = QueryGenerator.syns(cube).get(string2ngram(tokens.get(0)));
+            final List<Entity> res = QueryGenerator.syns(cube).get(tokens);
             if (res != null) {
                 syns.put(tokens, res);
             }
