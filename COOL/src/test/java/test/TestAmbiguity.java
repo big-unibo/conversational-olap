@@ -6,6 +6,7 @@ import it.unibo.conversational.algorithms.Parser;
 import it.unibo.conversational.database.Config;
 import it.unibo.conversational.database.Cube;
 import it.unibo.conversational.database.DBmanager;
+import it.unibo.conversational.database.QueryGenerator;
 import it.unibo.conversational.datatypes.Mapping;
 import it.unibo.conversational.datatypes.Ngram;
 import org.apache.commons.lang3.tuple.Pair;
@@ -379,10 +380,11 @@ public class TestAmbiguity {
     test(ssb(), "sum revenue for mint milk chocolate as product name", "", "product = mint milk chocolate", "sum revenue", 0);
   }
 
-//  @Test
-//  public void ssbTest96() throws Exception {
-//    test(ssb(), "sum supp cost by category for Apolonia Car as customer", "category", "customer = Apolonia Carroll", "sum supplycost", 0);
-//  }
+  @Test
+  public void ssbTest85() throws Exception {
+    test(ssb(), "extended price by month for mint milk chocolate as product", "month", "product = mint milk chocolate", "avg extendedprice", 1);
+    // test(ssb(), "extended price by month for mint chocol as product", "month", "product = mint milk chocolate", "avg extendedprice", 1);
+  }
 
   @Test
   public void ssbTest98() throws Exception {

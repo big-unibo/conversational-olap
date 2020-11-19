@@ -234,7 +234,10 @@ INSERT INTO groupbyoperator_of_measure select groupbyoperator_id, measure_id fro
 INSERT INTO "SYNONYM"(synonym_id, table_name, reference_id, term) VALUES ('-2', 'FACT', (select fact_id from fact where fact_name = 'LINEORDER2'), 'sales');
 INSERT INTO "SYNONYM"(synonym_id, table_name, reference_id, term) VALUES ('-3', 'MEASURE', (select measure_id from "MEASURE" where lower(measure_name) = lower('supplycost')), 'supply cost');
 INSERT INTO "SYNONYM"(synonym_id, table_name, reference_id, term) VALUES ('-4', 'MEASURE', (select measure_id from "MEASURE" where lower(measure_name) = lower('extendedprice')), 'extended price');
-DELETE FROM "SYNONYM" where term = 'a a';
-DELETE FROM "MEMBER" where member_name = 'a a';
+-- Need to remove members like 'Mint Mint' or 'a a', since similarity('= Mint', 'Mint Mint') = 1 (Why? Marriage problem does not allow repeated strings)
+DELETE FROM "MEMBER" where 1 = (case when regexp_substr(member_name, '[^ ]+', 1, 1) = regexp_substr(member_name, '[^ ]+$', 1, 1) then 1 else 0 end) and regexp_count(member_name, ' ') = 1;
+DELETE FROM "SYNONYM" where 1 = (case when regexp_substr(term, '[^ ]+', 1, 1) = regexp_substr(term, '[^ ]+$', 1, 1) then 1 else 0 end) and regexp_count(term, ' ') = 1;
 INSERT INTO "SYNONYM"(synonym_id, table_name, reference_id, term) VALUES ('-6', 'LANGUAGE_OPERATOR', (select language_operator_id from "LANGUAGE_OPERATOR" where lower(language_operator_name) = lower('=')), 'as');
+-- rollback;
 commit;
+

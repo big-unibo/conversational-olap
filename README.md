@@ -25,12 +25,12 @@ Running the validator with the BKtree scan of synonyms
 
 Plotting the charts
 
-    sudo apt-get install python3-venv
-    cd COOL/src/main/python
+    sudo apt-get install python3-venv (in linux)
+    cd COOL/src/main/python 
     python3 -m venv venv
-    source venv/bin/activate
+    source venv/bin/activate (in linux; in windows source venv/Scripts/activate)
     pip install -r requirements.txt
-    python3 plot.py --dataset test_dataset_patrick_ssb.csv
+    git pull; python3 plot.py --dataset test_dataset_patrick_ssb.csv
 
 ## Working on this project
 

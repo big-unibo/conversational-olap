@@ -371,7 +371,7 @@ public class Validator {
     /**
      * Limit of the knowledge base
      */
-    public static final int KB_LIMIT = 15000;
+    public static final int KB_LIMIT = 150000; // 1000000;
 
     // Test parameters
     private static final int N_RUNS = 2;
@@ -390,7 +390,7 @@ public class Validator {
         if (args.length > 0) {
             QueryGenerator.setSearch(args[0]);
         }
-        for (final String dataset : Lists.newArrayList("dataset_patrick_ssb", "dataset_patrick")) {
+        for (final String dataset : Lists.newArrayList("dataset_patrick", "dataset_patrick_ssb")) {
             final String path = "resources/test/results_IS/";
             final String file = String.format("test_%s_%s.csv", dataset, QueryGenerator.search);
             final Cube cube = Config.getCube(dataset.equals("dataset_patrick_ssb") ? "lineorder2" : "sales_fact_1997");
@@ -425,6 +425,7 @@ public class Validator {
                                         }
                                     } else {
                                         L.warn(String.format("dataset: %s, run: %d, search: %s, kblimit: %d, thrmem = %f, thrmeta = %f, synmeta = %d", dataset, r, QueryGenerator.search, kblimit, thrMemb, thrMeta, synMeta));
+                                        QueryGenerator.distanceThreshold = -1;
                                         new Validator(csvWriterTest).validateAll(cube, dataset, thrMemb, thrMeta, N_SYNMEMBER, synMeta, THR_COVERAGE, THR_NGRAMDIST, K, NGRAM_SIZE, NGRAMSYNTHR, r, kblimit, QueryGenerator.search);
                                     }
                                 }
