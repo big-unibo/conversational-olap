@@ -126,15 +126,15 @@ public final class Utils {
     public static JSONObject resultSet2Json(final ResultSet rs) throws SQLException {
         final ResultSetMetaData meta = rs.getMetaData();
         final int columns = meta.getColumnCount();
-        final List<String> columnNames = new ArrayList<String>();
+        final List<String> columnNames = new ArrayList<>();
         final JSONObject obj = new JSONObject();
         for (int i = 1; i <= columns; i++) {
-            columnNames.add(meta.getColumnName(i));
+            columnNames.add(meta.getColumnName(i).toLowerCase());
         }
         obj.put("schema", columnNames);
         final List<List<String>> records = new ArrayList<>();
         while (rs.next()) { // convert each object to an human readable JSON object
-            List<String> record = new ArrayList<String>();
+            List<String> record = new ArrayList<>();
             for (int i = 1; i <= columns; i++) {
                 // String key = columnNames.get(i - 1);
                 record.add(rs.getString(i));
