@@ -172,12 +172,19 @@ CREATE TABLE dataset_patrick (
   PRIMARY KEY (id)
 );
 
+DROP TABLE queries CASCADE CONSTRAINTS;
+CREATE TABLE queries (
+  `query` varchar2(1000),
+  `mc` varchar2(255) default null,
+  `gc` varchar2(255) default null,
+  `sc` varchar2(255) default null
+);
+
 INSERT INTO groupbyoperator VALUES (1, 'sum', '[total, number, amount, how much]');
 INSERT INTO groupbyoperator VALUES (2, 'avg', '[average, medium, mean]');
 INSERT INTO groupbyoperator VALUES (3, 'max', '[maximum, highest, top]');
 INSERT INTO groupbyoperator VALUES (4, 'min', '[minimum, lowest, bottom]');
 INSERT INTO groupbyoperator VALUES (5, 'stdev', '[deviation, standard deviation]');
-
 
 INSERT INTO language_predicate VALUES ( 1,'where','[filter, filter on, for, in, on]','where');
 -- INSERT INTO language_predicate VALUES ( 3,'select','[show, return, tell, find, get]','SELECT');

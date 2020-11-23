@@ -21,6 +21,7 @@ compileJava {
 repositories {
     jcenter()
     mavenCentral()
+    maven { url "https://kotlin.bintray.com/kotlinx" }
 }
 
 sourceSets {
@@ -38,6 +39,7 @@ dependencies {
     implementation 'javax:javaee-api:8.0.1'
     implementation 'io.ktor:ktor-server-servlet:1.4.0'
     // kotlin
+    implementation "org.jetbrains.kotlinx:kotlinx-cli:0.3"
     implementation 'de.mpicbg.scicomp:krangl:0.14'
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
     // java

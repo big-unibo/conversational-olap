@@ -1,14 +1,13 @@
 package test;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.opencsv.CSVWriter;
 import it.unibo.conversational.Validator;
 import it.unibo.conversational.algorithms.Parser;
 import it.unibo.conversational.algorithms.Parser.Type;
 import it.unibo.conversational.database.Config;
 import it.unibo.conversational.database.Cube;
+import it.unibo.conversational.database.DBmanager;
 import it.unibo.conversational.database.QueryGenerator;
 import it.unibo.conversational.datatypes.Entity;
 import it.unibo.conversational.datatypes.Mapping;
@@ -22,9 +21,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -540,58 +539,6 @@ public class TestOLAP {
   }
 
   /**
-   * Test session evaluation
-   * @throws Exception in case of error
-   */
-  @Test
-  public void testSessionSerializationAndEvaluation() throws Exception {
-    final Map<String, Mapping> lookup_fullqry = Maps.newHashMap();
-    final Map<String, Mapping> lookup_session = Maps.newHashMap();
-
-    lookup_fullqry.put("q1", Validator.parseAndTranslate(cube, "avg unit sales where year = 1997"));
-    lookup_session.put("q1", Validator.parseAndTranslate(cube, "avg unit sales where year = 1997 by category"));
-
-    lookup_fullqry.put("q2", Validator.parseAndTranslate(cube, "avg unit sales for category = beer and wine"));
-    lookup_session.put("q2", Validator.parseAndTranslate(cube, "max store sales"));
-
-    lookup_fullqry.put("q3", Validator.parseAndTranslate(cube, "sum store sales by month for category = beer and wine"));
-    lookup_session.put("q3", Validator.parseAndTranslate(cube, "sum store sales max store sales by year for category = beer and wine"));
-
-    System.out.println("Scanning session ids...");
-    try (
-        final Scanner s = new Scanner(new File("resources/test/results_IS/sessionids.txt"));
-        BufferedWriter buffWrit = Files.newBufferedWriter(Paths.get("resources/test/results_IS/sessionsim.csv"));
-        CSVWriter writer = new CSVWriter(buffWrit);
-    ) {
-      final String[] columns = new String[] {
-          "user", "session",
-          "fullquery_sim",  "fullquery_time", "fullquery_iterations", "fullquery_ambiguities",
-          "session_sim",    "operator_time",  "operator_iterations",  "operator_ambiguities",
-                            "session_time",   "session_iterations",   "session_ambiguities",
-          "fullquery", "fullquery_gt", "session", "session_gt"};
-      writer.writeNext(columns);
-      while (s.hasNextLine()) {
-        final String user = s.nextLine();
-        for (final String q : lookup_fullqry.keySet()) {
-          try {
-            final Map<String, Object> statistics = QueryGenerator.getSessionStatistics(cube, user + "_" + q, lookup_fullqry.get(q), lookup_session.get(q));
-            final String[] toWrite = new String[columns.length];
-            toWrite[0] = user;
-            toWrite[1] = q;
-            for (int i = 2; i < columns.length; i++) { 
-                toWrite[i] = "" + statistics.get(columns[i]);
-            }
-            writer.writeNext(toWrite);
-            System.out.println(Arrays.asList(toWrite));
-          } catch (IllegalArgumentException e) {
-            System.err.println(e.getMessage());
-          }
-        }
-      }
-    }
-  }
-
-  /**
    * Test serialization
    * @throws Exception in case of error
    */
@@ -615,6 +562,8 @@ public class TestOLAP {
     final Mapping true_fullquery = execute("avg unit sales on 1997", "", "avg unit sales where year = 1997");
     final Mapping true_session = execute("avg unit sales on 1997 and category is Beer and Wine", "", "avg unit sales where year = 1997 and product_category = Beer and Wine");
     checkSerializedSession(sessionid, true_fullquery, true_session, 2);
+
+    DBmanager.executeQuery(cube, "delete from OLAPsession where session_id = '" + sessionid + "'");
   }
 
   /**
@@ -641,5 +590,7 @@ public class TestOLAP {
     final Mapping true_fullquery = execute("avg unit sales on 1997", "", "avg unit sales where year = 1997");
     final Mapping true_session = execute("avg unit sales on 1997 by category", "", "avg unit sales where year = 1997 by product_category");
     checkSerializedSession(sessionid, true_fullquery, true_session, 2);
+
+    DBmanager.executeQuery(cube, "delete from OLAPsession where session_id = '" + sessionid + "'");
   }
 }

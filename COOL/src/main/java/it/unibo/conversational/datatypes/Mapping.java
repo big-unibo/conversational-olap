@@ -376,9 +376,17 @@ public final class Mapping implements Serializable {
     final JSONObject res = new JSONObject();
     if (!sql.isEmpty()) {
       final long startTime = System.currentTimeMillis();
-      DBmanager.executeDataQuery(cube, sql + (limit.isPresent() ? " limit " + limit.get() : ""), queryRes -> {
-        result.add(Utils.resultSet2Json(queryRes));
-      });
+      final String sqlwithlimit;
+      if (limit.isPresent()) {
+        if (cube.getDbms().equalsIgnoreCase("oracle")) {
+          sqlwithlimit = sql.replace("where", "where rownum <= " + limit.get());
+        } else {
+          sqlwithlimit = sql + " limit " + limit.get();
+        }
+      } else {
+        sqlwithlimit = sql;
+      }
+      DBmanager.executeDataQuery(cube, sqlwithlimit, queryRes -> result.add(Utils.resultSet2Json(queryRes)));
       res.put("execution_time", System.currentTimeMillis() - startTime);
     }
     ngrams.forEach(n -> {
