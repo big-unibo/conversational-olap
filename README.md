@@ -39,7 +39,7 @@ Enabling the web application
 3. Set `chmod 777 venv/` to make the directory accessible to anyone
     - In Windows: Properties -> Security -> Advanced -> Add -> Add `Everyone` user with `Read & Execute privileges`
 4.  Remove the previous `.war` files, deploy the new version
-    
+
     rm '/c/Program Files/Apache Software Foundation/Tomcat 9.0_Tomcat9-8083/webapps/COOL.war'
     rm -r '/c/Program Files/Apache Software Foundation/Tomcat 9.0_Tomcat9-8083/webapps/COOL'
     ./gradlew war
