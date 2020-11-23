@@ -416,6 +416,9 @@ public class Validator {
                     }
                     prevkblimit = kblimit;
                     for (int r = 0; r < N_RUNS; r++) {
+                        if (r > 0 && QueryGenerator.search.equals("sequential")) {
+                            break;
+                        }
                         for (double thrMemb : THR_MEMBERS) {
                             for (double thrMeta : THR_METAS) {
                                 for (int synMeta : N_SYNMETAS) {
