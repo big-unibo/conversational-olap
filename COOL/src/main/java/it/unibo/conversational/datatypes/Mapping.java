@@ -379,7 +379,7 @@ public final class Mapping implements Serializable {
       final String sqlwithlimit;
       if (limit.isPresent()) {
         if (cube.getDbms().equalsIgnoreCase("oracle")) {
-          sqlwithlimit = sql.replace("where", "where rownum <= " + limit.get());
+          sqlwithlimit = sql.replace("where", "where rownum <= " + limit.get() + " and ");
         } else {
           sqlwithlimit = sql + " limit " + limit.get();
         }

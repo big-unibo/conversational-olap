@@ -22,6 +22,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /** Test the validation accuracy. */
 public class TestValidator {
   private final Cube cube = Config.getCube("sales_fact_1997");
+
+  private int checkSentence(final String phrase, final String gbset, final String predicate, final String measures, final int N, final double alpha) throws Exception {
+    return checkSentence(phrase, gbset, predicate, measures, Validator.THR_MEMBER, alpha, Validator.N_SYNMEMBER, N, Validator.THR_COVERAGE, Validator.THR_NGRAMDIST, Validator.NGRAM_SIZE, Validator.NGRAMSYNTHR, Validator.KB_LIMIT);
+  }
+
   private int checkSentence(final String phrase, final String gbset, final String predicate, final String measures) throws Exception {
     return checkSentence(phrase, gbset, predicate, measures, Validator.THR_MEMBER, Validator.THR_META, Validator.N_SYNMEMBER, Validator.N_SYNMETA, Validator.THR_COVERAGE, Validator.THR_NGRAMDIST, Validator.NGRAM_SIZE, Validator.NGRAMSYNTHR, Validator.KB_LIMIT);
   }
@@ -205,4 +210,9 @@ public class TestValidator {
     assertEquals(0, checkSentence("by month, store_id year = 2010 and product_name = Atomic Mints unit_sales", "month, store_id", "year = 2010 and product_name = Atomic Mints", "avg unit_sales")); // medium cost matches with store_cost
     assertEquals(0, checkSentence("product_name = Club Chocolate Milk store_sales", "", "product_name = Club Chocolate Milk", "avg store_sales"));
   }
+
+//  @Test
+//  public void testBroken() throws Exception {
+//    assertEquals(0, checkSentence("store sales by month in 2010 for Atomic Mints and USA by store", "month, store_id", "year = 2010 and product_name = Atomic Mints and country = USA", "avg unit_sales", 5, 0.6)); // medium cost matches with store_cost
+//  }
 }
