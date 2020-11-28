@@ -475,6 +475,13 @@ public class TestOLAP {
     }
   }
 
+
+  /** Test all OLAP operator ambiguities */
+  @Test
+  public void test19() {
+    execute("select the subcategory with highest unit sales", "what about gender?", "max unit sales by product subcategory gender");
+  }
+
 //  /** TODO: Need to add type checking before computing scorePFM in parsing. In this way we can distinguish between mappings with(out) annotations */
 //  @Test
 //  public void test19() {

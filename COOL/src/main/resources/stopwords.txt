@@ -28,8 +28,6 @@ them
 their
 theirs
 themselves
-what
-which
 who
 whom
 this
@@ -59,7 +57,7 @@ because
 while
 of
 at
-about
+which
 against
 through
 during
