@@ -202,7 +202,7 @@ public final class QueryGenerator {
                 "where level_name in (" + Arrays.stream(attributes).map(a -> cube.getDbms().equals("mysql")? a : a.toUpperCase()).reduce((a, b) -> "'" + a + "','" + b + "'").get() + ")", res -> {
             while (res.next()) {
                 final String table = res.getString(name(tabTABLE));
-                if (!table.equals(cube.getFactTable())) {
+                if (!table.equalsIgnoreCase(cube.getFactTable())) {
                     acc.add(table);
                 }
             }

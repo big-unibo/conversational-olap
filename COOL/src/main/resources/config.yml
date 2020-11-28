@@ -2,6 +2,18 @@ python: "C:/Users/matteo.francia5/Documents/repos/experiments-assess/intentional
 webapp: sales_fact_1997
 cubes:
 #  - dataMart: research
+#    factTable: lineorder100
+#    synonyms:
+#      - SSBORA100
+#    metadata: research
+#    dbms: oracle
+#    ip: 137.204.74.10
+#    port: 1521
+#    create: true
+#    importmembers: false
+#    user: ssb100
+#    pwd: ssb100
+#  - dataMart: research
 #    factTable: lineorder10
 #    synonyms:
 #      - SSBORA10
@@ -21,7 +33,7 @@ cubes:
 #    dbms: oracle
 #    ip: 137.204.74.10
 #    port: 1521
-#    create: true
+#    create: false
 #    importmembers: true
 #    user: ssb_flight
 #    pwd: ssb_flight
@@ -37,18 +49,3 @@ cubes:
     importmembers: true
     user: foodmart
     pwd: foodmart
-#  - dataMart: foodmart
-#    synonyms:
-#      - SALES
-#    factTable: sales_fact_1997
-#    dbms: mysql
-#    metadata: meta-foodmart
-#    ip: 127.0.0.1
-#    port: 3306
-#    # metadata: conversational
-#    # ip: 137.204.74.2
-#    # port: 3307
-#    create: false
-#    importmembers: true
-#    user: mfrancia
-#    pwd: mfrancia
