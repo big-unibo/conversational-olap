@@ -10,7 +10,10 @@ import org.slf4j.LoggerFactory;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 
 import static it.unibo.conversational.database.DBmanager.*;
 

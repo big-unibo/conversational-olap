@@ -68,6 +68,7 @@ public final class QueryGenerator {
      * Synonyms
      */
     private static Map<Cube, MyBKTree<String>> bktrees = Maps.newHashMap();
+
     /**
      * @param cube cube
      * @return Aggregation operator for each measure of the given cube
@@ -199,7 +200,7 @@ public final class QueryGenerator {
         final List<String> acc = Lists.newArrayList();
         executeMetaQuery(cube, "select distinct table_name " +
                 "from `" + tabLEVEL + "` l join `" + tabCOLUMN + "` c on l.level_name = c.column_name join `" + tabTABLE + "` t on c.table_id = t.table_id " +
-                "where level_name in (" + Arrays.stream(attributes).map(a -> cube.getDbms().equals("mysql")? a : a.toUpperCase()).reduce((a, b) -> "'" + a + "','" + b + "'").get() + ")", res -> {
+                "where level_name in (" + Arrays.stream(attributes).map(a -> cube.getDbms().equals("mysql") ? a : a.toUpperCase()).reduce((a, b) -> "'" + a + "','" + b + "'").get() + ")", res -> {
             while (res.next()) {
                 final String table = res.getString(name(tabTABLE));
                 if (!table.equalsIgnoreCase(cube.getFactTable())) {
@@ -312,8 +313,8 @@ public final class QueryGenerator {
         DBmanager.executeMetaQuery(cube,
                 "select level_type, level_description, cardinality, min, max, avg, isDescriptive, mindate, maxdate, member_name "
                         + "from `" + tabLEVEL + "` l left join `" + tabMEMBER + "` m on (l.level_id = m.level_id) "
-                        + "where level_name = \"" + (cube.getDbms().equals("mysql") ? level : level.toUpperCase()) + "\" " + (cube.getDbms().equals("oracle")? " and ROWNUM <= " + topN + " " : "")
-                        + (cube.getDbms().equals("mysql")? "limit " + topN : ""),
+                        + "where level_name = \"" + (cube.getDbms().equals("mysql") ? level : level.toUpperCase()) + "\" " + (cube.getDbms().equals("oracle") ? " and ROWNUM <= " + topN + " " : "")
+                        + (cube.getDbms().equals("mysql") ? "limit " + topN : ""),
                 res -> {
                     final BiFunction<String, Set<Pair<String, Object>>, Object> get = (t, u) -> {
                         try {
@@ -385,8 +386,8 @@ public final class QueryGenerator {
         final Map<String, Set<Entity>> map = Maps.newHashMap();
         final String query =
                 "select gm." + id(tabGROUPBYOPERATOR) + ", gm." + id(tabMEASURE) + ", " + name(tabMEASURE) + ", " + name(tabGROUPBYOPERATOR) + " "
-                + "from `" + tabGRBYOPMEASURE + "` gm, `" + tabMEASURE + "` m, `" + tabGROUPBYOPERATOR + "` g "
-                + "where g." + id(tabGROUPBYOPERATOR) + " = gm." + id(tabGROUPBYOPERATOR) + " and gm." + id(tabMEASURE) + " = m." + id(tabMEASURE);
+                        + "from `" + tabGRBYOPMEASURE + "` gm, `" + tabMEASURE + "` m, `" + tabGROUPBYOPERATOR + "` g "
+                        + "where g." + id(tabGROUPBYOPERATOR) + " = gm." + id(tabGROUPBYOPERATOR) + " and gm." + id(tabMEASURE) + " = m." + id(tabMEASURE);
         DBmanager.executeMetaQuery(cube,
                 query,
                 res -> {
@@ -409,12 +410,12 @@ public final class QueryGenerator {
         final Map<String, List<Entity>> memberEntity = Maps.newHashMap();
         DBmanager.executeMetaQuery(cube,
                 "select m." + id(tabMEMBER) + ", m." + name(tabMEMBER)
-                                + ", l." + id(tabLEVEL) + ", l." + name(tabLEVEL) + ", l." + type(tabLEVEL)
-                                + ", t." + id(tabTABLE)  + ", t." + name(tabTABLE)
-                                + ", c." + name(tabCOLUMN) + " "
-                        + "from `" + tabLEVEL +"` l JOIN `" + tabCOLUMN + "` c ON(l." + id(tabCOLUMN) + " = c." + id(tabCOLUMN) + ") JOIN `"
-                            + tabTABLE + "` t ON(c." + id(tabTABLE) + " = t." + id(tabTABLE) + ") LEFT JOIN `"
-                            + tabMEMBER + "` m on (l." + id(tabLEVEL) + " = m." + id(tabLEVEL) + ")",
+                        + ", l." + id(tabLEVEL) + ", l." + name(tabLEVEL) + ", l." + type(tabLEVEL)
+                        + ", t." + id(tabTABLE) + ", t." + name(tabTABLE)
+                        + ", c." + name(tabCOLUMN) + " "
+                        + "from `" + tabLEVEL + "` l JOIN `" + tabCOLUMN + "` c ON(l." + id(tabCOLUMN) + " = c." + id(tabCOLUMN) + ") JOIN `"
+                        + tabTABLE + "` t ON(c." + id(tabTABLE) + " = t." + id(tabTABLE) + ") LEFT JOIN `"
+                        + tabMEMBER + "` m on (l." + id(tabLEVEL) + " = m." + id(tabLEVEL) + ")",
                 res -> {
                     final long startTime = System.currentTimeMillis();
                     while (res.next()) {
@@ -461,7 +462,7 @@ public final class QueryGenerator {
     /**
      * Load synonyms from the datawarehouse (for members: store reference to the corresponding level, for levels: store reference to the corresponding table).
      *
-     * @param cube cube
+     * @param cube  cube
      * @param limit limit the number of synonyms
      */
     private static Map<List<String>, List<Entity>> initSynonyms(final Cube cube, final int limit) {
@@ -496,7 +497,7 @@ public final class QueryGenerator {
     }
 
     /**
-     * @param cube cube
+     * @param cube   cube
      * @param member member
      * @return members of the current level
      */
@@ -622,13 +623,13 @@ public final class QueryGenerator {
     public static Map<String, Object> getSessionStatistics(final Cube cube, final String sessionid, final Mapping fullquery, final Mapping session) throws IOException {
         final String sql =
                 cube.getDbms().equalsIgnoreCase("mysql") ?
-                "select value_en, timestamp, fullquery_serialized, olapoperator_serialized "
-                        + "from OLAPsession where value_en in (\"read\", \"navigate\", \"reset\") and session_id = \"" + sessionid + "\" "
-                        + "and timestamp >= (select timestamp from OLAPsession where session_id = \"" + sessionid + "\" and value_en = \"read\" order by 1 desc limit 1)" :
-                "with timest as (select `TIMESTAMP` as timest from OLAPsession where session_id = \"" + sessionid + "\" and value_en = \"read\" and rownum <= 1 order by 1 desc) "
-                    + "select value_en, `TIMESTAMP`, fullquery_serialized, olapoperator_serialized "
-                    + "from OLAPsession, timest "
-                    + "where value_en in (\"read\", \"navigate\", \"reset\") and session_id = \"" + sessionid + "\" and `TIMESTAMP` >= timest.timest";
+                        "select value_en, timestamp, fullquery_serialized, olapoperator_serialized "
+                                + "from OLAPsession where value_en in (\"read\", \"navigate\", \"reset\") and session_id = \"" + sessionid + "\" "
+                                + "and timestamp >= (select timestamp from OLAPsession where session_id = \"" + sessionid + "\" and value_en = \"read\" order by 1 desc limit 1)" :
+                        "with timest as (select `TIMESTAMP` as timest from OLAPsession where session_id = \"" + sessionid + "\" and value_en = \"read\" and rownum <= 1 order by 1 desc) "
+                                + "select value_en, `TIMESTAMP`, fullquery_serialized, olapoperator_serialized "
+                                + "from OLAPsession, timest "
+                                + "where value_en in (\"read\", \"navigate\", \"reset\") and session_id = \"" + sessionid + "\" and `TIMESTAMP` >= timest.timest";
         final Map<String, Long> lookupTime = Maps.newHashMap();
         final Map<String, Mapping> lookupQuery = Maps.newHashMap();
         final Map<String, Operator> lookupOperator = Maps.newHashMap();
@@ -719,6 +720,7 @@ public final class QueryGenerator {
     }
 
     public static String search = "bktree";
+
     public static void setSearch(String arg) {
         search = arg;
     }

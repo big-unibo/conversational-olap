@@ -17,6 +17,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 import zhsh.Tree;
 
+import java.io.IOException;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
@@ -25,8 +27,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class TestValidator {
     private final Cube cube = Config.getCube("sales_fact_1997");
 
-    private int checkSentence(final String phrase, final String gbset, final String predicate, final String measures, final int N, final double alpha) throws Exception {
-        return checkSentence(phrase, gbset, predicate, measures, Validator.THR_MEMBER, alpha, Validator.N_SYNMEMBER, N, Validator.THR_COVERAGE, Validator.THR_NGRAMDIST, Validator.NGRAM_SIZE, Validator.NGRAMSYNTHR, Validator.KB_LIMIT);
+    private int checkSentence(final String phrase, final String gbset, final String predicate, final String measures, final int synMember, final int synMeta, final double alpha) throws Exception {
+        return checkSentence(phrase, gbset, predicate, measures, Validator.THR_MEMBER, alpha, synMember, synMeta, Validator.THR_COVERAGE, Validator.THR_NGRAMDIST, Validator.NGRAM_SIZE, Validator.NGRAMSYNTHR, Validator.KB_LIMIT);
     }
 
     private int checkSentence(final String phrase, final String gbset, final String predicate, final String measures) throws Exception {
@@ -45,7 +47,7 @@ public class TestValidator {
      * @throws Exception in case of error
      */
     @Test
-    public void test1() throws Exception {
+    public void test1() throws IOException {
         final Mapping s1 = Parser.parse(cube, //
                 new Mapping(cube, //
                         new Ngram("sum", Type.AGG, new Entity("sum"), Pair.of(2, 2)), // ;
@@ -69,7 +71,7 @@ public class TestValidator {
     }
 
     @Test
-    public void test10() throws Exception {
+    public void test10() {
         final Ngram n1 = new Ngram("Sheri Nowmer", Type.VAL, new Entity("Sheri Nowmer", DataType.STRING), Pair.of(0, 0));
         final Ngram m = new Ngram(Type.SC, Lists.newArrayList(n1));
         assertEquals(1, m.children.size());
@@ -78,7 +80,7 @@ public class TestValidator {
     }
 
     @Test
-    public void test11() throws Exception {
+    public void test11() {
         final Ngram n1 = new Ngram("Salem", Type.VAL, new Entity("Salem", DataType.STRING), Pair.of(0, 0));
         final Ngram m = new Ngram(Type.SC, Lists.newArrayList(n1));
         assertEquals(1, m.children.size());
@@ -160,7 +162,7 @@ public class TestValidator {
     }
 
     @Test
-    public void test9() throws Exception {
+    public void test9() {
         final Ngram n1 = new Ngram("2019", Type.VAL, new Entity("2019", DataType.NUMERIC), Pair.of(0, 0));
         final Ngram m = new Ngram(Type.SC, Lists.newArrayList(n1));
         assertEquals(1, m.children.size());
@@ -203,6 +205,11 @@ public class TestValidator {
     }
 
     @Test
+    public void test17() throws Exception {
+        assertEquals(0, checkSentence("estimate the average store sales for canada as store country", "", "store_country = Canada", "avg store sales", 2, 2, 0.5));
+    }
+
+    @Test
     public void testNotAmbiguous() throws Exception {
         // assertEquals(0, checkSentence("unit sales by country by month by provice for Sheri Nowmer", "country, month, state_province", "fullname = Sheri Nowmer", "avg unit_sales")); // medium cost matches with store_cost
         assertEquals(0, checkSentence("unit sales by country by month by province for Sheri Nowmer", "country, month, state_province", "fullname = Sheri Nowmer", "avg unit_sales")); // medium cost matches with store_cost
@@ -221,7 +228,7 @@ public class TestValidator {
     }
 
 //  @Test
-//  public void testBroken() throws Exception {
+//  public void testBroken() {
 //    assertEquals(0, checkSentence("store sales by month in 2010 for Atomic Mints and USA by store", "month, store_id", "year = 2010 and product_name = Atomic Mints and country = USA", "avg unit_sales", 5, 0.6)); // medium cost matches with store_cost
 //  }
 }

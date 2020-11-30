@@ -234,7 +234,8 @@ public final class Utils {
     }
 
     public static String quote(final String s, final boolean returnOriginal) {
-        if (returnOriginal) return s; else return quote(s);
+        if (returnOriginal) return s;
+        else return quote(s);
     }
 
     /**
@@ -254,7 +255,8 @@ public final class Utils {
     }
 
     public static String unquote(final String s, final boolean returnOriginal) {
-        if (returnOriginal) return s; else return unquote(s);
+        if (returnOriginal) return s;
+        else return unquote(s);
     }
 
     /**
@@ -302,7 +304,7 @@ public final class Utils {
         } else {
             s = unquote(mcClause.getString(quote(Type.MEA.toString(), ignoreQuotes)), ignoreQuotes);
         }
-        return s + (rename && mcClause.has(quote("AS", ignoreQuotes))? " as " + unquote(mcClause.getString(quote("AS", ignoreQuotes)), ignoreQuotes) : "");
+        return s + (rename && mcClause.has(quote("AS", ignoreQuotes)) ? " as " + unquote(mcClause.getString(quote("AS", ignoreQuotes)), ignoreQuotes) : "");
     }
 
     /**
@@ -420,7 +422,8 @@ public final class Utils {
 
     /**
      * Word similarity based on levhenstein distance.
-     * @param first a word
+     *
+     * @param first  a word
      * @param second another word
      * @return similarity
      */
@@ -431,6 +434,7 @@ public final class Utils {
 
     /**
      * Similarity between two lists of tokens.
+     *
      * @param aTokens a list
      * @param bTokens another list
      * @return similarity score
@@ -441,6 +445,7 @@ public final class Utils {
 
     /**
      * Similarity between two lists of tokens.
+     *
      * @param aTokens a list
      * @param bTokens another list
      * @return similarity score
@@ -473,9 +478,10 @@ public final class Utils {
 
     /**
      * Write ngrams and mappings on file.
+     *
      * @param folderName folder
-     * @param fileName file
-     * @param ngrams ngrams
+     * @param fileName   file
+     * @param ngrams     ngrams
      */
     public static void writeMappings(final String folderName, final String fileName, final List<Ngram> ngrams) {
         try {
@@ -509,9 +515,10 @@ public final class Utils {
 
     /**
      * Write sentence on file.
+     *
      * @param folderName folder
-     * @param fileName file
-     * @param sentences sentences
+     * @param fileName   file
+     * @param sentences  sentences
      */
     public static void writeParsing(final String folderName, final String fileName, final List<Mapping> sentences) {
         final Locale currentLocale = Locale.getDefault();
@@ -548,13 +555,13 @@ public final class Utils {
     public static List<String> string2ngram(final String token) {
         final List<String> res =
                 Arrays.stream(
-                    token
-                        .toLowerCase()
-                        .replace("the_", "")
-                        .split(" |_")
+                        token
+                                .toLowerCase()
+                                .replace("the_", "")
+                                .split(" |_")
                 )
-                .filter(t -> !t.isEmpty())
-                .collect(Collectors.toList());
+                        .filter(t -> !t.isEmpty())
+                        .collect(Collectors.toList());
         return res;
     }
 }

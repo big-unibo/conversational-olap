@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 public class Validator {
 
     private FileWriter csvWriterTest;
+
     /**
      * Initialize a validator.
      */
@@ -47,6 +48,7 @@ public class Validator {
     }
 
     private static final Logger L = Logger.getLogger(Validator.class);
+
     /**
      * Validate against dataset.
      *
@@ -105,7 +107,7 @@ public class Validator {
     public Pair<Integer, Double> validate(final Cube cube, final String dataset, final int id, final String query, final String gbset, final String measures,
                                           final String predicate, final double thrSimilarityMember, final double thrSimilarityMetadata, final int synMember, final int synMeta,
                                           final double percMissingPhrase, final int maxDistInPhrase, final int nTopInterpretation, final int ngramSize, final double nGramSimThr, final int run, final int kblimit, final String search) throws Exception {
-        L.warn(id +": " + query);
+        L.warn(id + ": " + query);
         final Map<String, Object> stats = Maps.newLinkedHashMap();
         final Mapping correctSentence = getBest(cube, gbset, predicate, measures);
         final List<Pair<Mapping, Mapping>> parsings = parseAndTranslate(cube, Ngram.class, null, 1, null, query, thrSimilarityMember, thrSimilarityMetadata, synMember, synMeta, percMissingPhrase, maxDistInPhrase, nTopInterpretation, ngramSize, nGramSimThr, stats, false);

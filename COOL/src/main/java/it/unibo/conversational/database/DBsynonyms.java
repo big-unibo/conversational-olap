@@ -10,16 +10,19 @@ import it.unibo.conversational.olap.Operator;
 import it.unibo.smile.neighborg.MyBKTree;
 import org.apache.commons.lang3.tuple.Triple;
 import org.jetbrains.annotations.NotNull;
-import smile.neighbor.BKTree;
 import smile.neighbor.Neighbor;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.LongAdder;
 import java.util.stream.Collectors;
 
 import static it.unibo.conversational.Utils.ngram2string;
 import static it.unibo.conversational.Utils.string2ngram;
-import static it.unibo.conversational.database.DBmanager.*;
+import static it.unibo.conversational.database.DBmanager.tabLANGUAGEOPERATOR;
+import static it.unibo.conversational.database.DBmanager.tabMEMBER;
 import static it.unibo.conversational.database.QueryGenerator.search;
 
 /**
@@ -54,8 +57,8 @@ public final class DBsynonyms {
         return cache.computeIfAbsent(lookup, k -> {
             final List<Triple<Entity, Double, String>> acc =
                     search.equals("bktree")
-                        ? searchBKtree(cube, tokens, Math.min(thrSimilarityMember, thrSimilarityMetadata))
-                        : searchSequential(cube, tokens, Math.min(thrSimilarityMember, thrSimilarityMetadata));
+                            ? searchBKtree(cube, tokens, Math.min(thrSimilarityMember, thrSimilarityMetadata))
+                            : searchSequential(cube, tokens, Math.min(thrSimilarityMember, thrSimilarityMetadata));
             final LongAdder memberCount = new LongAdder();
             final LongAdder metaCount = new LongAdder();
             final Set<Triple<Entity, Double, String>> res = Sets.newHashSet();

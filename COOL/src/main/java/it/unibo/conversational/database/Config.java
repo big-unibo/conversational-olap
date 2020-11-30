@@ -24,9 +24,11 @@ public final class Config {
     }
 
     private static String webapp;
+
     public static String getWebapp() {
         return webapp;
     }
+
     public void setWebapp(final String webapp) {
         Config.webapp = webapp;
     }
