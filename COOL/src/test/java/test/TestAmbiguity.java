@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -56,8 +57,8 @@ public class TestAmbiguity {
         final List<Ngram> ann = ambiguousMapping.getAnnotatedNgrams();
         assertTrue(ann.isEmpty(), ann.toString());
         try {
-            DBmanager.executeDataQuery(cube, Parser.getSQLQuery(cube, ambiguousMapping), res -> {
-            });
+            DBmanager.executeDataQuery(cube, Parser.getSQLQuery(cube, ambiguousMapping), res -> {});
+            ambiguousMapping.toJSON(cube, "", com.google.common.base.Optional.of(100L));
         } catch (final Exception e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -126,11 +127,11 @@ public class TestAmbiguity {
         checkEquals(cube, ambiguousMapping, correctSentence, true);
     }
 
-    // /** Test disambiguation. */
-    // @Test
-    // public void foodmartTest7() throws Exception {
-    //   test("unit sales by month in 2010 for Atomic Mints USA by store", "month, store_id", "year = 2010 and product_name = Atomic Mints and country = USA", "avg unit_sales");
-    // }
+     /** Test disambiguation. */
+     @Test
+     public void test01() throws Exception {
+         test(foodmart, "sum unit sales by product id in 1997", "product_id", "year = 1997", "sum unit_sales", 0);
+     }
 
     /**
      * Test disambiguation.

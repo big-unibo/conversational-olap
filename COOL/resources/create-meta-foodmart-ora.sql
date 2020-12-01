@@ -203,7 +203,7 @@ INSERT INTO language_predicate VALUES (13,'count','[number, amount, how many, ho
 
 
 INSERT INTO language_operator VALUES (15,'drill','[drill down to,drill down,specialize]','drill');
-INSERT INTO language_operator VALUES (16,'rollup','[roll up to,roll up,generalize]','rollup');
+INSERT INTO language_operator VALUES (16,'rollup','[roll up to,roll up,generalize,aggregate]','rollup');
 INSERT INTO language_operator VALUES (17,'replace','[substitute]','replace');
 INSERT INTO language_operator VALUES (18,'add','[what about]','add');
 INSERT INTO language_operator VALUES (19,'drop','[remove]','drop');
@@ -243,10 +243,17 @@ INSERT INTO "SYNONYM"(synonym_id, table_name, reference_id, term) VALUES ('-10',
 INSERT INTO "SYNONYM"(synonym_id, table_name, reference_id, term) VALUES ('-11', 'LANGUAGE_PREDICATE', (select language_predicate_id from "LANGUAGE_PREDICATE" where lower(language_predicate_name) = lower('by')), 'show');
 -- INSERT INTO "SYNONYM"(synonym_id, table_name, reference_id, term) VALUES ('-12', 'LANGUAGE_PREDICATE', (select language_predicate_id from "LANGUAGE_PREDICATE" where lower(language_predicate_name) = lower('by')), 'which');
 INSERT INTO "SYNONYM"(synonym_id, table_name, reference_id, term) VALUES ('-13', 'LANGUAGE_OPERATOR',  (select LANGUAGE_OPERATOR_id from "LANGUAGE_OPERATOR" where lower(LANGUAGE_OPERATOR_name) = lower('add')), 'what about');
--- INSERT INTO "SYNONYM"(synonym_id, table_name, reference_id, term) VALUES ('-14', 'MEMBER',             (select member_id from "MEMBER" where lower(level_id) = lower('customer_country') and lower(member_name) = lower('canada')), 'canadian customer');
--- INSERT INTO "SYNONYM"(synonym_id, table_name, reference_id, term) VALUES ('-15', 'MEMBER',             (select member_id from "MEMBER" where lower(level_id) = lower('customer_country') and lower(member_name) = lower('usa')), 'american customer');
--- INSERT INTO "SYNONYM"(synonym_id, table_name, reference_id, term) VALUES ('-16', 'MEMBER',             (select member_id from "MEMBER" where lower(level_id) = lower('customer_country') and lower(member_name) = lower('mexico')), 'mexican customer');
+INSERT INTO "SYNONYM"(synonym_id, table_name, reference_id, term) VALUES ('-14', 'MEMBER',             (select member_id from "MEMBER" where lower(level_id) = lower('customer_country') and lower(member_name) = lower('canada')), 'canadian customer');
+INSERT INTO "SYNONYM"(synonym_id, table_name, reference_id, term) VALUES ('-15', 'MEMBER',             (select member_id from "MEMBER" where lower(level_id) = lower('customer_country') and lower(member_name) = lower('usa')), 'american customer');
+INSERT INTO "SYNONYM"(synonym_id, table_name, reference_id, term) VALUES ('-16', 'MEMBER',             (select member_id from "MEMBER" where lower(level_id) = lower('customer_country') and lower(member_name) = lower('mexico')), 'mexican customer');
 -- INSERT INTO "SYNONYM"(synonym_id, table_name, reference_id, term) VALUES ('-17', 'MEMBER',             (select member_id from "MEMBER" where lower(level_id) = lower('store_store_country') and lower(member_name) = lower('canada')), 'canadian store');
 -- INSERT INTO "SYNONYM"(synonym_id, table_name, reference_id, term) VALUES ('-18', 'MEMBER',             (select member_id from "MEMBER" where lower(level_id) = lower('store_store_country') and lower(member_name) = lower('usa')), 'american store');
 -- INSERT INTO "SYNONYM"(synonym_id, table_name, reference_id, term) VALUES ('-19', 'MEMBER',             (select member_id from "MEMBER" where lower(level_id) = lower('store_store_country') and lower(member_name) = lower('mexico')), 'mexican store');
+-- select * from customer;
+insert into sales_fact_1997 values (1, 369, (select customer_id from customer where country = 'Canada' and rownum <= 1),  501,  7, 11.4, 3.99, 4);
+insert into sales_fact_1997 values (1, 377, (select customer_id from customer where country = 'Canada' and rownum <= 1), 1547, 13, 8.55, 4.01, 3);
+insert into sales_fact_1997 values (1, 414, (select customer_id from customer where country = 'Canada' and rownum <= 1),   34, 17, 8.55, 4.10, 3);
+insert into sales_fact_1997 values (1, 369, 4728,  501, (select store_id from store where store_country = 'Canada' and rownum <= 1), 11.4, 3.99, 4);
+insert into sales_fact_1997 values (1, 377, 9788, 1547, (select store_id from store where store_country = 'Canada' and rownum <= 1), 8.55, 4.01, 3);
+insert into sales_fact_1997 values (1, 414, 6666,   34, (select store_id from store where store_country = 'Canada' and rownum <= 1), 8.55, 4.10, 3);
 commit;

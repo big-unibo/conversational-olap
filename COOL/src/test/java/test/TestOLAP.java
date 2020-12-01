@@ -629,4 +629,11 @@ public class TestOLAP {
 
         DBmanager.executeQuery(cube, "delete from OLAPsession where session_id = '" + sessionid + "'");
     }
+
+    @Test
+    public void testSessionSerializationAndEvaluation03() throws Exception {
+        final Mapping true_fullquery = execute("avg unit sales on 1997", "", "avg unit sales where year = 1997");
+        final Mapping true_session = execute("avg unit sales on 1997 by category", "", "avg unit sales where year = 1997 by product_category");
+        checkSerializedSession("test123@test.test_q1", true_fullquery, true_session, 3);
+    }
 }

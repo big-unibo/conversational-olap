@@ -205,8 +205,8 @@ public class TestValidator {
     }
 
     @Test
-    public void test17() throws Exception {
-        assertEquals(0, checkSentence("estimate the average store sales for canada as store country", "", "store_country = Canada", "avg store sales", 2, 2, 0.5));
+    public void test18() throws Exception {
+        assertEquals(0, checkSentence("sum unit sales by product in 1997", "product_id", "year = 1997", "sum unit sales"));
     }
 
     @Test
