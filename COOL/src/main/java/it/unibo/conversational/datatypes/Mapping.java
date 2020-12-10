@@ -437,9 +437,13 @@ public final class Mapping implements Serializable {
         return res;
     }
 
-    public double similarity(final Mapping anotherMapping) throws IOException {
-        final int distance = Tree.ZhangShasha(toStringTree(), anotherMapping.toStringTree());
-        return 1.0 - 1.0 * distance / Math.max(countNodes(), anotherMapping.countNodes());
+    public double similarity(final Mapping anotherMapping) {
+        try {
+            final int distance = Tree.ZhangShasha(toStringTree(), anotherMapping.toStringTree());
+            return 1.0 - 1.0 * distance / Math.max(countNodes(), anotherMapping.countNodes());
+        } catch (final Exception e) {
+            throw new IllegalArgumentException(e.getMessage());
+        }
     }
 
     public String toJSON(final Cube cube) throws Exception {

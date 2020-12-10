@@ -257,3 +257,17 @@ insert into sales_fact_1997 values (1, 369, 4728,  501, (select store_id from st
 insert into sales_fact_1997 values (1, 377, 9788, 1547, (select store_id from store where store_country = 'Canada' and rownum <= 1), 8.55, 4.01, 3);
 insert into sales_fact_1997 values (1, 414, 6666,   34, (select store_id from store where store_country = 'Canada' and rownum <= 1), 8.55, 4.10, 3);
 commit;
+
+-- Debuggin user sessions
+select * from OLAPsession where session_id like 'j.giovanelli@unibo.it_q4' order by 1 desc; -- 
+
+with timest as (select * from (select "TIMESTAMP" as timest from OLAPsession where session_id = 'antonio.rotundo2@studio.unibo.it_q6' and value_en = 'read' order by 1 desc) where rownum <= 1)
+    select value_en, "TIMESTAMP", fullquery_serialized, olapoperator_serialized from OLAPsession, timest where value_en in ('read', 'navigate', 'reset') and session_id = 'antonio.rotundo2@studio.unibo.it_q6' and "TIMESTAMP" >= timest.timest;
+
+insert into OLAPsession(timestamp, session_id, value_en) values (1606926889144,	'nicolo.didomenico@studio.unibo.it_q4', 'read');
+delete from OLAPsession where session_id = 'giulia.brugnatti@studio.unibo.it_q4';	
+delete from OLAPsession where session_id = 'giulia.brugnatti@studio.unibo.it_q5';
+delete from OLAPsession where session_id = 'giulia.brugnatti@studio.unibo.it_q6';	
+delete from OLAPsession where session_id = 'giulia.brugnatti@studio.unibo.it_q7';	
+
+commit;

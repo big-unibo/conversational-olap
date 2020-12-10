@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static it.unibo.conversational.Validator.parseAndTranslate;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestOLAP {
@@ -47,7 +48,7 @@ public class TestOLAP {
     }
 
     private void checkSerializedSession(final String sessionid, final Mapping fullquery, final Mapping session, int steps) throws IOException {
-        final Map<String, Object> statistics = QueryGenerator.getSessionStatistics(cube, sessionid, fullquery, session);
+        final Map<String, Object> statistics = QueryGenerator.getSessionStatistics(cube, sessionid, List.of(fullquery), List.of(session));
         assertTrue((long) statistics.get("fullquery_time") >= 0);
         assertTrue((long) statistics.get("session_time") >= 0);
         assertEquals(1.0, (double) statistics.get("fullquery_sim"), 0.001);
@@ -80,7 +81,7 @@ public class TestOLAP {
 
     private Mapping execute(final Mapping prevTree, final String operator, final List<AnnotationType> annotations) {
         try {
-            final Operator op = (Operator) Validator.parseAndTranslate(cube, Operator.class, prevTree, tau, log, operator).getNgrams().get(0);
+            final Operator op = (Operator) parseAndTranslate(cube, Operator.class, prevTree, tau, log, operator).getNgrams().get(0);
             assertEquals(Sets.newLinkedHashSet(annotations), op.getAnnotationsInTree().stream().map(e -> e.getValue().getKey()).collect(Collectors.toSet()));
             assertEquals(annotations.size(), op.countAnnotationsInTree(), op.getAnnotationsInTree().toString());
             return prevTree;
@@ -93,7 +94,7 @@ public class TestOLAP {
 
     private Mapping execute(final Mapping prevTree, final String operator, final List<AnnotationType> annotations, final List<Pair<String, String>> disambiguations, final String expectedForest) {
         try {
-            final Operator op = (Operator) Validator.parseAndTranslate(cube, Operator.class, prevTree, tau, log, operator).getNgrams().get(0);
+            final Operator op = (Operator) parseAndTranslate(cube, Operator.class, prevTree, tau, log, operator).getNgrams().get(0);
             assertEquals(annotations.size(), op.countAnnotationsInTree(), op.getAnnotationsInTree().toString());
             assertEquals(Sets.newLinkedHashSet(annotations), op.getAnnotationsInTree().stream().map(e -> e.getValue().getKey()).collect(Collectors.toSet()));
             for (final Pair<String, String> p : disambiguations) {
@@ -110,7 +111,7 @@ public class TestOLAP {
     private Mapping execute(final Mapping prevTree, final String operator, final String expectedForest) {
         try {
             if (!operator.isEmpty()) {
-                final Operator op = (Operator) Validator.parseAndTranslate(cube, Operator.class, prevTree, tau, log, operator).getNgrams().get(0);
+                final Operator op = (Operator) parseAndTranslate(cube, Operator.class, prevTree, tau, log, operator).getNgrams().get(0);
                 return execute(prevTree, op, expectedForest);
             } else {
                 return execute(prevTree, (Operator) null, expectedForest);
@@ -124,7 +125,7 @@ public class TestOLAP {
 
     private Mapping execute(final String prevForest, final String operator, final List<AnnotationType> annotations) {
         try {
-            final Mapping prevTree = Validator.parseAndTranslate(cube, prevForest);
+            final Mapping prevTree = parseAndTranslate(cube, prevForest);
             return execute(prevTree, operator, annotations);
         } catch (final Exception e) {
             e.printStackTrace();
@@ -135,7 +136,7 @@ public class TestOLAP {
 
     private Mapping execute(final String prevForest, final String operator, final List<AnnotationType> annotations, final List<Pair<String, String>> disambiguations, final String expectedForest) {
         try {
-            final Mapping prevTree = Validator.parseAndTranslate(cube, prevForest);
+            final Mapping prevTree = parseAndTranslate(cube, prevForest);
             return execute(prevTree, operator, annotations, disambiguations, expectedForest);
         } catch (final Exception e) {
             e.printStackTrace();
@@ -146,7 +147,7 @@ public class TestOLAP {
 
     private Mapping execute(final String prevForest, final String operator, final String expectedForest) {
         try {
-            final Mapping prevTree = Validator.parseAndTranslate(cube, prevForest);
+            final Mapping prevTree = parseAndTranslate(cube, prevForest);
             return execute(prevTree, operator, expectedForest);
         } catch (final Exception e) {
             e.printStackTrace();
@@ -164,7 +165,7 @@ public class TestOLAP {
     public void populateLog(final String source) throws Exception {
         int l = log.size();
         for (int i = l; i < l + 2; i++) {
-            Mapping prevTree = Validator.parseAndTranslate(cube, source, tau, log);
+            Mapping prevTree = parseAndTranslate(cube, source, tau, log);
             Parser.automaticDisambiguate(prevTree, log);
         }
     }
@@ -180,8 +181,8 @@ public class TestOLAP {
     public void populateLog(final String source, final String operator, final String value) throws Exception {
         int l = log.size();
         for (int i = l; i < l + 2; i++) {
-            Mapping prevTree = Validator.parseAndTranslate(cube, source, tau, log);
-            Operator op = (Operator) Validator.parseAndTranslate(cube, Operator.class, prevTree, tau, log, "rollup product id").getNgrams().get(0);
+            Mapping prevTree = parseAndTranslate(cube, source, tau, log);
+            Operator op = (Operator) parseAndTranslate(cube, Operator.class, prevTree, tau, log, "rollup product id").getNgrams().get(0);
             op.disambiguate("i" + i, value, log);
         }
     }
@@ -270,24 +271,24 @@ public class TestOLAP {
     public void test05() throws Exception {
         populateLog("store cost");
 
-        Mapping prevTree = Validator.parseAndTranslate(cube, "store cost", tau, log);
-        assertEquals(Validator.parseAndTranslate(cube, "avg store cost").toStringTree(), prevTree.toStringTree());
+        Mapping prevTree = parseAndTranslate(cube, "store cost", tau, log);
+        assertEquals(parseAndTranslate(cube, "avg store cost").toStringTree(), prevTree.toStringTree());
         prevTree.disambiguate("i2", "stdev", log);
-        assertEquals(Validator.parseAndTranslate(cube, "stdev store cost").toStringTree(), prevTree.toStringTree());
+        assertEquals(parseAndTranslate(cube, "stdev store cost").toStringTree(), prevTree.toStringTree());
 
         populateLog("sum store cost for USA");
 
-        prevTree = Validator.parseAndTranslate(cube, "sum store cost for USA", tau, log);
-        assertEquals(Validator.parseAndTranslate(cube, "sum store cost for country = USA").toStringTree(), prevTree.toStringTree());
+        prevTree = parseAndTranslate(cube, "sum store cost for USA", tau, log);
+        assertEquals(parseAndTranslate(cube, "sum store cost for country = USA").toStringTree(), prevTree.toStringTree());
         prevTree.disambiguate("i5", "store_country", log);
-        assertEquals(Validator.parseAndTranslate(cube, "sum store cost for store country = USA").toStringTree(), prevTree.toStringTree());
+        assertEquals(parseAndTranslate(cube, "sum store cost for store country = USA").toStringTree(), prevTree.toStringTree());
 
         populateLog("sum store cost for product subcategory USA");
 
-        prevTree = Validator.parseAndTranslate(cube, "sum store cost for product subcategory USA", tau, log);
-        assertEquals(Validator.parseAndTranslate(cube, "sum store cost for product subcategory = Acetominifen").toStringTree(), prevTree.toStringTree());
+        prevTree = parseAndTranslate(cube, "sum store cost for product subcategory USA", tau, log);
+        assertEquals(parseAndTranslate(cube, "sum store cost for product subcategory = Acetominifen").toStringTree(), prevTree.toStringTree());
         prevTree.disambiguate("t3", "Beer", log);
-        assertEquals(Validator.parseAndTranslate(cube, "sum store cost for product subcategory = Beer").toStringTree(), prevTree.toStringTree());
+        assertEquals(parseAndTranslate(cube, "sum store cost for product subcategory = Beer").toStringTree(), prevTree.toStringTree());
     }
 
     /**
@@ -434,11 +435,11 @@ public class TestOLAP {
     @Test
     public void test13() {
         try {
-            Validator.parseAndTranslate(cube, "avg unit sales category = Beer and Wine");
-            Validator.parseAndTranslate(cube, "return sum of store sales for each month where category is beer and wine");
-            Validator.parseAndTranslate(cube, "return sum of store sales by month where category is beer and wine");
-            Validator.parseAndTranslate(cube, "return sum of store sales by month for category beer and wine");
-            Validator.parseAndTranslate(cube, "return sum of store sales by month for beer and wine");
+            parseAndTranslate(cube, "avg unit sales category = Beer and Wine");
+            parseAndTranslate(cube, "return sum of store sales for each month where category is beer and wine");
+            parseAndTranslate(cube, "return sum of store sales by month where category is beer and wine");
+            parseAndTranslate(cube, "return sum of store sales by month for category beer and wine");
+            parseAndTranslate(cube, "return sum of store sales by month for beer and wine");
         } catch (Exception e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -451,7 +452,7 @@ public class TestOLAP {
     @Test
     public void test14() {
         try {
-            Validator.parseAndTranslate(cube, "stdev store sales").toJSON(cube);
+            parseAndTranslate(cube, "stdev store sales").toJSON(cube);
         } catch (Exception e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -489,9 +490,9 @@ public class TestOLAP {
     @Test
     public void test18() {
         try {
-            Validator.parseAndTranslate(cube, "select average unit sales for products of category \"Beer and Wine\"").toJSON(cube);
-            Validator.parseAndTranslate(cube, "select average unit sales for products of category 'Beer and Wine'").toJSON(cube);
-            Validator.parseAndTranslate(cube, "select average unit sales for products of category Beer and Wine\"").toJSON(cube);
+            parseAndTranslate(cube, "select average unit sales for products of category \"Beer and Wine\"").toJSON(cube);
+            parseAndTranslate(cube, "select average unit sales for products of category 'Beer and Wine'").toJSON(cube);
+            parseAndTranslate(cube, "select average unit sales for products of category Beer and Wine\"").toJSON(cube);
         } catch (final Exception e) {
             e.printStackTrace();
             fail(e.getMessage());
@@ -558,7 +559,7 @@ public class TestOLAP {
     @Test
     public void testOperatorSerialization() throws Exception {
         final Mapping prev = execute("return average unit sales on 1997", "", "average unit sales where year = 1997");
-        final Operator op1 = (Operator) Validator.parseAndTranslate(cube, Operator.class, prev, 0.5, Lists.newArrayList(), "add store sales").getBest();
+        final Operator op1 = (Operator) parseAndTranslate(cube, Operator.class, prev, 0.5, Lists.newArrayList(), "add store sales").getBest();
 
         // write mapping to Byte stream
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -588,7 +589,7 @@ public class TestOLAP {
         QueryGenerator.saveSession(cube, sessionid, null, "avg unit sales on 1997", "media delle unità vendute nel 1997", "100", session, null);
         QueryGenerator.saveSession(cube, sessionid, null, "navigate", null, null, session, null);
 
-        final Operator op2 = (Operator) Validator.parseAndTranslate(cube, Operator.class, session, 0.5, Lists.newArrayList(), "slice on beer and wine").getBest();
+        final Operator op2 = (Operator) parseAndTranslate(cube, Operator.class, session, 0.5, Lists.newArrayList(), "slice on beer and wine").getBest();
         op2.apply(session.bestNgram);
         QueryGenerator.saveSession(cube, sessionid, null, "slice on beer and wine", "selezione birra e vino", null, session, op2);
 
@@ -617,7 +618,7 @@ public class TestOLAP {
         QueryGenerator.saveSession(cube, sessionid, null, "avg unit sales on 1997", "media delle unità vendute nel 1997", "100", session, null);
         QueryGenerator.saveSession(cube, sessionid, null, "navigate", null, null, session, null);
 
-        final Operator op2 = (Operator) Validator.parseAndTranslate(cube, Operator.class, session, 0.5, Lists.newArrayList(), "add category").getBest();
+        final Operator op2 = (Operator) parseAndTranslate(cube, Operator.class, session, 0.5, Lists.newArrayList(), "add category").getBest();
         op2.apply(session.bestNgram);
         QueryGenerator.saveSession(cube, sessionid, null, "add category", "aggiungi categoria", null, session, op2);
 
