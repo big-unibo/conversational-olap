@@ -21,13 +21,13 @@ fun main(args: Array<String>) {
     val oport by parser.option(ArgType.Int, shortName = "oport").default(1521)
     val idbms by parser.option(ArgType.String, shortName = "idbms").default("mysql")
     val odbms by parser.option(ArgType.String, shortName = "odbms").default("oracle")
-    val idb by parser.option(ArgType.String, shortName = "idb").default("conversational")
+    val idb by parser.option(ArgType.String, shortName = "idb").default("covid-mart")
     val odb by parser.option(ArgType.String, shortName = "odb").default("research")
     val iuser by parser.option(ArgType.String, shortName = "iuser").default("mfrancia")
-    val ouser by parser.option(ArgType.String, shortName = "ouser").default("foodmart")
+    val ouser by parser.option(ArgType.String, shortName = "ouser").default("covid")
     val ipwd by parser.option(ArgType.String, shortName = "ipwd").default("mfrancia")
-    val opwd by parser.option(ArgType.String, shortName = "opwd").default("foodmart")
-    var tables by parser.argument(ArgType.String, description = "tables").vararg()
+    val opwd by parser.option(ArgType.String, shortName = "opwd").default("covid")
+    val tables by parser.argument(ArgType.String, description = "tables").vararg()
     parser.parse(args)
 
     // Check that all the drivers exist
