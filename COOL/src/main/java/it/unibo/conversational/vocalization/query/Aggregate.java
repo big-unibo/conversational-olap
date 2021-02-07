@@ -13,11 +13,9 @@ public class Aggregate {
 	}
 
 	public String getText() {
-		return switch (this.function) {
-			case AVG -> "Average " + this.measure.spokenName;
-			case SUM -> "Sum of " + this.measure.spokenName;
-			case COUNT -> "Number of entries";
-		};
+		if (this.function == Function.SUM) return "Sum of " + this.measure.spokenName;
+		else if (this.function == Function.COUNT) return "Number of entries";
+		else return "Average " + this.measure.spokenName;
 	}
 
 	public enum Function {

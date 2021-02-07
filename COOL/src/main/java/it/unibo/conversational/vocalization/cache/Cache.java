@@ -61,11 +61,9 @@ public class Cache {
     }
 
     private double getAggregateValue(Function function, double sum, int count) {
-        return switch (function) {
-            case SUM -> sum;
-            case COUNT -> count;
-            default -> sum / count;
-        };
+        if (function == Function.SUM) return sum;
+        else if (function == Function.COUNT) return count;
+        else return sum / count;
     }
 
     public Map<Dimension, Set<Member>> getAvailableMembers() {

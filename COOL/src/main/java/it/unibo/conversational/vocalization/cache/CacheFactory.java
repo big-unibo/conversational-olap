@@ -1,12 +1,12 @@
 package it.unibo.conversational.vocalization.cache;
 
+import it.unibo.conversational.database.Cube;
+import it.unibo.conversational.database.DBmanager;
 import it.unibo.conversational.vocalization.data.Dimension;
 import it.unibo.conversational.vocalization.data.Measure;
 import it.unibo.conversational.vocalization.data.Member;
 import it.unibo.conversational.vocalization.query.Aggregate;
 import it.unibo.conversational.vocalization.query.Query;
-import it.unibo.conversational.vocalization.utils.OracleDatabase;
-import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -24,25 +24,26 @@ public class CacheFactory {
 		this.cachedEntries = Collections.unmodifiableList(cachedEntries);
 	}
 
-	public static CacheFactory getCache(OracleDatabase oracleDb, String factDbName, List<Dimension> dimensions, List<Measure> measures) throws Exception {
+	public static CacheFactory getCache(Cube cube, String factDbName, List<Dimension> dimensions, List<Measure> measures) throws Exception {
 		List<DataCube> cachedEntries = new ArrayList<>();
 		String dNames = dimensions.stream().map(d -> d.levelDbNames.get(d.levelDbNames.size() - 1)).collect(Collectors.joining(","));
 		String mNames = measures.stream().map(m -> m.dbName).collect(Collectors.joining(","));
-		ResultSet result = oracleDb.query("select " + dNames + "," + mNames + " from " + factDbName);
-		while (result.next()) {
-			Map<Dimension, Member> coordinates = new HashMap<>();
-			for (int i = 0; i < dimensions.size(); i++) {
-				Dimension dimension = dimensions.get(i);
-				String memberName = result.getString(i + 1);
-				Member member = dimension.membersByLevelAndName.get(dimension.levelDbNames.size()).get(memberName);
-				coordinates.put(dimension, member);
+		DBmanager.executeDataQuery(cube, "select " + dNames + "," + mNames + " from " + factDbName, result -> {
+			while (result.next()) {
+				Map<Dimension, Member> coordinates = new HashMap<>();
+				for (int i = 0; i < dimensions.size(); i++) {
+					Dimension dimension = dimensions.get(i);
+					String memberName = result.getString(i + 1);
+					Member member = dimension.membersByLevelAndName.get(dimension.levelDbNames.size()).get(memberName);
+					coordinates.put(dimension, member);
+				}
+				for (int j = 0; j < measures.size(); j++) {
+					Measure measure = measures.get(j);
+					double value = result.getDouble(dimensions.size() + j + 1);
+					cachedEntries.add(new DataCube(coordinates, measure, value, 1));
+				}
 			}
-			for (int j = 0; j < measures.size(); j++) {
-				Measure measure = measures.get(j);
-				double value = result.getDouble(dimensions.size() + j + 1);
-				cachedEntries.add(new DataCube(coordinates, measure, value, 1));
-			}
-		}
+		});
 		return new CacheFactory(cachedEntries);
 	}
 

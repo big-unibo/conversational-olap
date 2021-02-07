@@ -3,7 +3,7 @@ package it.unibo.conversational.vocalization.speech;
 import it.unibo.conversational.vocalization.data.Dimension;
 import it.unibo.conversational.vocalization.data.Member;
 import java.util.Map;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class Dummy extends Speech {
 

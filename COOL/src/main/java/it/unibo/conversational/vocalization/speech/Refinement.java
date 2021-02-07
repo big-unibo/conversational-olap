@@ -85,7 +85,7 @@ public class Refinement extends Speech {
 
 	@Override
 	public String getFullDescription() {
-		return this.prefix.getFullDescription() + ".\n" + this.getDescription();
+		return this.prefix.getFullDescription() + "\n" + this.getDescription();
 	}
 
 }

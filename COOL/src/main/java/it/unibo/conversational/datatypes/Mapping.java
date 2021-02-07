@@ -12,6 +12,7 @@ import it.unibo.conversational.algorithms.Parser.Type;
 import it.unibo.conversational.database.Cube;
 import it.unibo.conversational.database.DBmanager;
 import it.unibo.conversational.datatypes.Ngram.AnnotationType;
+import it.unibo.conversational.vocalization.main.VolapSession;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
@@ -406,6 +407,7 @@ public final class Mapping implements Serializable {
         final String sql = getAnnotatedNgrams().isEmpty() ? Parser.getSQLQuery(cube, this) : "";
         final List<JSONObject> result = Lists.newLinkedList();
         final JSONObject res = new JSONObject();
+        final JSONObject vocalization = new JSONObject();
         if (!sql.isEmpty()) {
             final long startTime = System.currentTimeMillis();
             final String sqlwithlimit;
@@ -430,6 +432,15 @@ public final class Mapping implements Serializable {
         if (!sql.isEmpty()) {
             res.put("sql", sql);
             res.put("result", result.remove(0));
+            try {
+                Pair<String, Pair<Double, Double>> voc = VolapSession.getInstance().executeQuery(sql, false);
+                vocalization.put("description", voc.getLeft());
+                vocalization.put("error", voc.getRight().getLeft());
+                vocalization.put("quality", voc.getRight().getRight());
+            } catch (Exception e) {
+                vocalization.put("message", e.getMessage());
+            }
+            res.put("vocalization", vocalization);
         }
         if (nlp != null) {
             res.put("tree_csv", toCsv(this, nlp));

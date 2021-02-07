@@ -1,5 +1,7 @@
 package it.unibo.conversational.vocalization.main;
 
+import it.unibo.conversational.database.Config;
+import it.unibo.conversational.database.Cube;
 import it.unibo.conversational.vocalization.cache.Cache;
 import it.unibo.conversational.vocalization.cache.CacheFactory;
 import it.unibo.conversational.vocalization.data.Dimension;
@@ -10,7 +12,6 @@ import it.unibo.conversational.vocalization.speech.Dummy;
 import it.unibo.conversational.vocalization.speech.Speech;
 import it.unibo.conversational.vocalization.uct.TreeFactory;
 import it.unibo.conversational.vocalization.uct.UctNode;
-import it.unibo.conversational.vocalization.utils.OracleDatabase;
 import it.unibo.conversational.vocalization.utils.XmlParser;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,9 +20,12 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class VolapSession {
 
+    private volatile static VolapSession instance = null;
     private static final String INPUT_ERROR = "Input query is not supported by the vocalization system.";
     private static final String NO_ENTRY_ERROR = "Input query doesn't match any database record";
     private static final String TOO_FINE_ERROR = "Aggregation level is too fine for the vocalization system, go up to a coarser level.";
@@ -29,25 +33,30 @@ public class VolapSession {
     private final List<Dimension> dimensions;
     private final List<Measure> measures;
 
-    public VolapSession(CacheFactory cacheFactory, List<Dimension> dimensions, List<Measure> measures) {
+    private VolapSession(CacheFactory cacheFactory, List<Dimension> dimensions, List<Measure> measures) {
         this.cacheFactory = cacheFactory;
         this.dimensions = Collections.unmodifiableList(dimensions);
         this.measures = Collections.unmodifiableList(measures);
     }
 
-    public static VolapSession initialize(String dbHost, String dbPort, String dbSid, String dbUser, String dbPw) throws Exception {
-        OracleDatabase oracleDb = OracleDatabase.connect(dbHost, dbPort, dbSid, dbUser, dbPw);
-        String xmlPath = Objects.requireNonNull(VolapSession.class.getClassLoader().getResource(Configuration.XML_DATA_MART)).getPath();
-        XmlParser xmlParser = XmlParser.initialize(xmlPath);
-        List<Dimension> dimensions = new ArrayList<>();
-        for (int i = 0; i < xmlParser.countDimensions(); i++) {
-            List<String> dim = xmlParser.parseDimension(i);
-            List<List<String>> lev = xmlParser.parseLevels(i);
-            dimensions.add(Dimension.initialize(oracleDb, dim.get(0), dim.get(1), lev.get(0), lev.get(1), lev.get(2)));
+    public synchronized static VolapSession getInstance() throws Exception {
+        if (instance == null) {
+            Cube cube = Config.getCube("sales_fact_1997");
+            Logger logger = LoggerFactory.getLogger(VolapSession.class);
+            String xmlPath = Objects.requireNonNull(VolapSession.class.getClassLoader().getResource(Configuration.XML_DATA_MART)).getPath();
+            XmlParser xmlParser = XmlParser.initialize(xmlPath);
+            List<Dimension> dimensions = new ArrayList<>();
+            for (int i = 0; i < xmlParser.countDimensions(); i++) {
+                List<String> dim = xmlParser.parseDimension(i);
+                List<List<String>> lev = xmlParser.parseLevels(i);
+                dimensions.add(Dimension.initialize(cube, dim.get(0), dim.get(1), lev.get(0), lev.get(1), lev.get(2)));
+            }
+            List<Measure> measures = xmlParser.parseMeasures(0).stream().map(m -> new Measure(m.get(0), m.get(1))).collect(Collectors.toList());
+            CacheFactory cacheFactory = CacheFactory.getCache(cube, xmlParser.parseFact(0).get(0), dimensions, measures);
+            logger.debug("Completely initialized cache for vocalization session");
+            instance = new VolapSession(cacheFactory, dimensions, measures);
         }
-        List<Measure> measures = xmlParser.parseMeasures(0).stream().map(m -> new Measure(m.get(0), m.get(1))).collect(Collectors.toList());
-        CacheFactory cacheFactory = CacheFactory.getCache(oracleDb, xmlParser.parseFact(0).get(0), dimensions, measures);
-        return new VolapSession(cacheFactory, dimensions, measures);
+        return instance;
     }
 
     public Pair<String, Pair<Double, Double>> executeQuery(String input, boolean printSpeech) throws IllegalArgumentException {
