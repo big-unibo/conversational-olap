@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data_mart>
+    <fact_table>
+        <db_name>(select ft.*, dt.the_date from sales_fact_1997 ft join time_by_day dt on ft.time_id = dt.time_id)</db_name>
+        <spoken_name>sales in 1997</spoken_name>
+        <measure>
+            <db_name>store_cost</db_name>
+            <spoken_name>store cost</spoken_name>
+        </measure>
+        <measure>
+            <db_name>store_sales</db_name>
+            <spoken_name>store sales</spoken_name>
+        </measure>
+        <measure>
+            <db_name>unit_sales</db_name>
+            <spoken_name>unit sales</spoken_name>
+        </measure>
+    </fact_table>
+    <dimension_table>
+        <db_name>customer</db_name>
+        <spoken_name>customer</spoken_name>
+        <level>
+            <db_name>country</db_name>
+            <spoken_name>customer country</spoken_name>
+            <introduction>customers from</introduction>
+        </level>
+        <level>
+            <db_name>city</db_name>
+            <spoken_name>customer city</spoken_name>
+            <introduction>customers from</introduction>
+        </level>
+        <level>
+            <db_name>customer_id</db_name>
+            <spoken_name>customer</spoken_name>
+            <introduction>customer</introduction>
+        </level>
+    </dimension_table>
+    <dimension_table>
+        <db_name>product</db_name>
+        <spoken_name>product</spoken_name>
+        <level>
+            <db_name>product_category</db_name>
+            <spoken_name>product category</spoken_name>
+            <introduction>products of category</introduction>
+        </level>
+        <level>
+            <db_name>product_subcategory</db_name>
+            <spoken_name>product subcategory</spoken_name>
+            <introduction>products of subcategory</introduction>
+        </level>
+        <level>
+            <db_name>product_id</db_name>
+            <spoken_name>product</spoken_name>
+            <introduction>product</introduction>
+        </level>
+    </dimension_table>
+    <dimension_table>
+        <db_name>store</db_name>
+        <spoken_name>store</spoken_name>
+        <level>
+            <db_name>store_country</db_name>
+            <spoken_name>store country</spoken_name>
+            <introduction>stores in</introduction>
+        </level>
+        <level>
+            <db_name>store_city</db_name>
+            <spoken_name>store city</spoken_name>
+            <introduction>stores in</introduction>
+        </level>
+        <level>
+            <db_name>store_id</db_name>
+            <spoken_name>store</spoken_name>
+            <introduction>store</introduction>
+        </level>
+    </dimension_table>
+    <dimension_table>
+        <db_name>time_by_day</db_name>
+        <spoken_name>date</spoken_name>
+        <level>
+            <db_name>quarter</db_name>
+            <spoken_name>quarter</spoken_name>
+            <introduction>dates of</introduction>
+        </level>
+        <level>
+            <db_name>the_month</db_name>
+            <spoken_name>month</spoken_name>
+            <introduction>dates of</introduction>
+        </level>
+        <level>
+            <db_name>the_date</db_name>
+            <spoken_name>date</spoken_name>
+            <introduction>date</introduction>
+        </level>
+    </dimension_table>
+</data_mart>
