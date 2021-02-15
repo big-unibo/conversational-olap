@@ -26,9 +26,6 @@ import org.slf4j.LoggerFactory;
 public class VolapSession {
 
     private volatile static VolapSession instance = null;
-    private static final String INPUT_ERROR = "Input query is not supported by the vocalization system.";
-    private static final String NO_ENTRY_ERROR = "Input query doesn't match any database record";
-    private static final String TOO_FINE_ERROR = "Aggregation level is too fine for the vocalization system, go up to a coarser level.";
     private final CacheFactory cacheFactory;
     private final List<Dimension> dimensions;
     private final List<Measure> measures;
@@ -41,9 +38,9 @@ public class VolapSession {
 
     public synchronized static VolapSession getInstance() throws Exception {
         if (instance == null) {
-            Cube cube = Config.getCube("sales_fact_1997");
-            Logger logger = LoggerFactory.getLogger(VolapSession.class);
-            String xmlPath = Objects.requireNonNull(VolapSession.class.getClassLoader().getResource(Configuration.XML_DATA_MART)).getPath();
+            long startMillis = System.currentTimeMillis();
+            Cube cube = Config.getCube(Configuration.CUBE_NAME);
+            String xmlPath = Objects.requireNonNull(VolapSession.class.getClassLoader().getResource(Configuration.CUBE_XML)).getPath();
             XmlParser xmlParser = XmlParser.initialize(xmlPath);
             List<Dimension> dimensions = new ArrayList<>();
             for (int i = 0; i < xmlParser.countDimensions(); i++) {
@@ -53,7 +50,7 @@ public class VolapSession {
             }
             List<Measure> measures = xmlParser.parseMeasures(0).stream().map(m -> new Measure(m.get(0), m.get(1))).collect(Collectors.toList());
             CacheFactory cacheFactory = CacheFactory.getCache(cube, xmlParser.parseFact(0).get(0), dimensions, measures);
-            logger.debug("Completely initialized cache for vocalization session");
+            logTime("Initialized cache", startMillis);
             instance = new VolapSession(cacheFactory, dimensions, measures);
         }
         return instance;
@@ -66,28 +63,40 @@ public class VolapSession {
     public Pair<String, Pair<Double, Double>> executeQuery(String input, boolean completeTree, boolean printSpeech) throws IllegalArgumentException {
         long startMillis = System.currentTimeMillis();
         Optional<Query> query = QueryValidator.validateInput(input, this.measures, this.dimensions);
-        if (query.isEmpty()) throw new IllegalArgumentException(INPUT_ERROR);
-        Optional<Cache> cache = this.cacheFactory.groupBy(query.get(), Configuration.MAX_DIMENSION_SIZE, Configuration.MAX_GROUP_SIZE);
-        if (cache.isEmpty()) throw new IllegalArgumentException(TOO_FINE_ERROR);
-        if (cache.get().groupedEntries.isEmpty()) throw new IllegalArgumentException(NO_ENTRY_ERROR);
+        if (query.isEmpty()) throw new IllegalArgumentException(Configuration.INPUT_ERROR);
+        Optional<Cache> cache = this.cacheFactory.groupBy(query.get(), Configuration.MAX_GROUPS);
+        if (cache.isEmpty()) throw new IllegalArgumentException(Configuration.TOO_FINE_ERROR);
+        if (cache.get().groupedEntries.isEmpty()) throw new IllegalArgumentException(Configuration.NO_ENTRY_ERROR);
         String preamble = query.get().getPreamble(this.dimensions);
         if (printSpeech) System.out.println(preamble);
-        UctNode node = TreeFactory.getRoot(cache.get(), completeTree, Configuration.N_REFINEMENTS, Configuration.N_SIGNIFICANT_DIGITS, Configuration.ST_DEV_FACTOR, Configuration.P_RANGE_FACTOR);
-        Optional<UctNode> next = node.nextNode(this.getSpokenTime(preamble) - (System.currentTimeMillis() - startMillis));
+        UctNode node = TreeFactory.getRoot(cache.get(), completeTree, Configuration.MAX_CHILDREN,
+            Configuration.N_REFINEMENTS, Configuration.N_SIGNIFICANT_DIGITS, Configuration.ST_DEV_FACTOR, Configuration.P_RANGE_FACTOR);
+        Optional<UctNode> next = node.nextNode(speechTime(preamble) - (System.currentTimeMillis() - startMillis));
         while (next.isPresent()) {
             node = next.get();
             String speechFragment = node.getSpeech().getDescription();
             if (printSpeech && !(node.getSpeech() instanceof Dummy)) System.out.println(speechFragment);
-            next = node.nextNode(this.getSpokenTime(speechFragment));
+            next = node.nextNode(speechTime(speechFragment));
         }
+        logTime("Evaluated query", startMillis);
         Speech output = node.getSpeech();
         double error = cache.get().evaluateSpeechError(output);
         double quality = cache.get().evaluateSpeechQuality(output);
         return Pair.of(preamble + "\n" + output.getFullDescription(), Pair.of(error, quality));
     }
 
-    private long getSpokenTime(String output) {
-        return output.length() * Configuration.MILLIS_FOR_CHARACTER;
+    private static void logTime(String log, long startMillis) {
+        long elapsedMillis = System.currentTimeMillis() - startMillis;
+        long elapsedMinuts = elapsedMillis / 60000;
+        elapsedMillis = elapsedMillis - elapsedMinuts * 60000;
+        long elapsedSeconds = elapsedMillis / 1000;
+        elapsedMillis = elapsedMillis - elapsedSeconds * 1000;
+        Logger logger = LoggerFactory.getLogger(VolapSession.class);
+        logger.debug(log + " in " + elapsedMinuts + " min, " + elapsedSeconds + " s, " + elapsedMillis + " ms");
+    }
+
+    private static long speechTime(String output) {
+        return output.length() * Configuration.CHARACTER_MILLIS;
     }
 
 }

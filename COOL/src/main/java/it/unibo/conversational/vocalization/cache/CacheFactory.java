@@ -24,7 +24,7 @@ public class CacheFactory {
 		this.cachedEntries = Collections.unmodifiableList(cachedEntries);
 	}
 
-	public static CacheFactory getCache(Cube cube, String factDbName, List<Dimension> dimensions, List<Measure> measures) throws Exception {
+	public static CacheFactory getCache(Cube cube, String factDbName, List<Dimension> dimensions, List<Measure> measures) {
 		List<DataCube> cachedEntries = new ArrayList<>();
 		String dNames = dimensions.stream().map(d -> d.levelDbNames.get(d.levelDbNames.size() - 1)).collect(Collectors.joining(","));
 		String mNames = measures.stream().map(m -> m.dbName).collect(Collectors.joining(","));
@@ -47,13 +47,10 @@ public class CacheFactory {
 		return new CacheFactory(cachedEntries);
 	}
 
-	public Optional<Cache> groupBy(Query query, long maxDimensionSize, long maxGroupSize) {
+	public Optional<Cache> groupBy(Query query, long maxGroups) {
 		Aggregate aggregate = query.getAggregate();
-		Map<Dimension, List<Member>> members = query.getAvailableMembers();
 		List<Map<Dimension, Member>> groups = query.getSpecializationGroups();
-		if (members.values().stream().map(List::size).max(Integer::compareTo).orElse(0) > maxDimensionSize || groups.size() > maxGroupSize) {
-			return Optional.empty();
-		}
+		if (groups.size() > maxGroups) return Optional.empty();
 		Map<Map<Dimension, Member>, Pair<Double, Integer>> grouped = new HashMap<>();
 		for (DataCube cachedEntry : this.cachedEntries) {
 			for (Map<Dimension, Member> g : groups) {

@@ -30,7 +30,7 @@ public class Dimension {
 	}
 
 	public static Dimension initialize(Cube cube, String dbName, String spokenName,
-			List<String> levelDbNames, List<String> levelSpokenNames, List<String> levelIntroductions) throws Exception {
+			List<String> levelDbNames, List<String> levelSpokenNames, List<String> levelIntroductions) {
 		String query = "select distinct " + String.join(", ", levelDbNames) + " from " + dbName;
 		Map<Integer, Map<String, Member>> membersByLevelAndName = new HashMap<>();
 		for (int i = 0; i <= levelDbNames.size(); i++) {

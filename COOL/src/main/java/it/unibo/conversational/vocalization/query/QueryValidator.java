@@ -43,20 +43,20 @@ public class QueryValidator {
             input = input.replaceFirst(Pattern.quote("where"), "").trim();
             do {
                 if (input.startsWith("and")) input = input.replaceFirst(Pattern.quote("and"), "").trim();
-                String input3 = input;
-                Optional<Dimension> dimension = dimensions.stream().filter(d -> input3.startsWith(d.dbName.toLowerCase() + ".")).findFirst();
+                String input1 = input;
+                Optional<Dimension> dimension = dimensions.stream().filter(d -> input1.startsWith(d.dbName.toLowerCase() + ".")).findFirst();
                 if (dimension.isEmpty()) return Optional.empty();
                 input = input.replaceFirst(Pattern.quote(dimension.get().dbName.toLowerCase() + "."), "").trim();
-                String input4 = input;
-                Optional<String> level = dimension.get().levelDbNames.stream().filter(l -> input4.startsWith(l.toLowerCase())).findFirst();
+                String input2 = input;
+                Optional<String> level = dimension.get().levelDbNames.stream().filter(l -> input2.startsWith(l.toLowerCase())).findFirst();
                 if (level.isEmpty()) return Optional.empty();
                 input = input.replaceFirst(Pattern.quote(level.get().toLowerCase()), "").trim();
                 if (!input.startsWith("=")) return Optional.empty();
                 input = input.replaceFirst(Pattern.quote("="), "").trim();
-                String input5 = input;
+                String input3 = input;
                 int l = dimension.get().levelDbNames.indexOf(level.get()) + 1;
                 Optional<Member> member = dimension.get().membersByLevelAndName.get(l).entrySet().stream()
-                        .filter(e -> input5.startsWith("'" + e.getKey().toLowerCase() + "'")).findFirst().map(Entry::getValue);
+                        .filter(e -> input3.startsWith("'" + e.getKey().toLowerCase() + "'")).findFirst().map(Entry::getValue);
                 if (member.isEmpty()) return Optional.empty();
                 input = input.replaceFirst(Pattern.quote("'" + member.get().dbName.toLowerCase() + "'"), "").trim();
                 where.put(dimension.get(), member.get());
@@ -67,12 +67,12 @@ public class QueryValidator {
             input = input.replaceFirst(Pattern.quote("group by"), "").trim();
             do {
                 if (input.startsWith(",")) input = input.replaceFirst(Pattern.quote(","), "").trim();
-                String input3 = input;
-                Optional<Dimension> dimension = dimensions.stream().filter(d -> input3.startsWith(d.dbName.toLowerCase() + ".")).findFirst();
+                String input1 = input;
+                Optional<Dimension> dimension = dimensions.stream().filter(d -> input1.startsWith(d.dbName.toLowerCase() + ".")).findFirst();
                 if (dimension.isEmpty()) return Optional.empty();
                 input = input.replaceFirst(Pattern.quote(dimension.get().dbName.toLowerCase() + "."), "").trim();
-                String input4 = input;
-                Optional<String> level = dimension.get().levelDbNames.stream().filter(l -> input4.startsWith(l.toLowerCase())).findFirst();
+                String input2 = input;
+                Optional<String> level = dimension.get().levelDbNames.stream().filter(l -> input2.startsWith(l.toLowerCase())).findFirst();
                 if (level.isEmpty()) return Optional.empty();
                 input = input.replaceFirst(Pattern.quote(level.get().toLowerCase()), "").trim();
                 groupBy.put(dimension.get(), dimension.get().levelDbNames.indexOf(level.get()) + 1);

@@ -55,7 +55,8 @@ public class Query {
 				"Results are not broken down by any dimensional attribute." : "Results are broken down by " + groupBy + ".");
 	}
 
-	public Map<Dimension, List<Member>> getAvailableMembers() {
+	public List<Map<Dimension, Member>> getSpecializationGroups() {
+		// Compute all available members for each dimension
 		Map<Dimension, List<Member>> available = new HashMap<>();
 		for (Entry<Dimension, Member> entry : this.whereCoordinates.entrySet()) {
 			available.put(entry.getKey(), Collections.singletonList(entry.getValue()));
@@ -67,12 +68,9 @@ public class Query {
 			}
 			available.put(entry.getKey(), members);
 		}
-		return available;
-	}
-
-	public List<Map<Dimension, Member>> getSpecializationGroups() {
+		// Compute all combinations between available members
 		List<Map<Dimension, Member>> groups = new ArrayList<>();
-		for (Entry<Dimension, List<Member>> entry : this.getAvailableMembers().entrySet()) {
+		for (Entry<Dimension, List<Member>> entry : available.entrySet()) {
 			if (groups.isEmpty()) {
 				groups = entry.getValue().stream().map(m -> Collections.singletonMap(entry.getKey(), m)).collect(Collectors.toList());
 			} else {

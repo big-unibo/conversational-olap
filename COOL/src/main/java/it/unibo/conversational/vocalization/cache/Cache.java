@@ -47,7 +47,8 @@ public class Cache {
         double errorSum = 0;
         for (DataCube entry : this.groupedEntries) {
             double exact = this.getAggregateValue(this.aggregate.function, entry.sumValue, entry.countValue);
-            errorSum += Math.abs(speech.computeMeanValue(entry.coordinates) - exact) / exact;
+            double predicted = speech.computeMeanValue(entry.coordinates);
+            errorSum += Math.abs(predicted - exact) / predicted;
         }
         return errorSum / this.groupedEntries.size();
     }

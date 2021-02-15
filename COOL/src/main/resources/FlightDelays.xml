@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data_mart>
+    <fact_table>
+        <db_name>(select ft.*, ft.origin_airport as airport_code from flights ft)</db_name>
+        <spoken_name>flights</spoken_name>
+        <measure>
+            <db_name>cancelled</db_name>
+            <spoken_name>cancellation</spoken_name>
+        </measure>
+        <measure>
+            <db_name>diverted</db_name>
+            <spoken_name>deviation</spoken_name>
+        </measure>
+    </fact_table>
+    <dimension_table>
+        <db_name>airline</db_name>
+        <spoken_name>airline</spoken_name>
+        <level>
+            <db_name>airline</db_name>
+            <spoken_name>airline</spoken_name>
+            <introduction>airline</introduction>
+        </level>
+        <level>
+            <db_name>airline_code</db_name>
+            <spoken_name>airline code</spoken_name>
+            <introduction>airline with code</introduction>
+        </level>
+    </dimension_table>
+    <dimension_table>
+        <db_name>airport</db_name>
+        <spoken_name>origin airport</spoken_name>
+        <level>
+            <db_name>country</db_name>
+            <spoken_name>origin airport country</spoken_name>
+            <introduction>origin airports in</introduction>
+        </level>
+        <level>
+            <db_name>region</db_name>
+            <spoken_name>origin airport region</spoken_name>
+            <introduction>origin airports in</introduction>
+        </level>
+        <level>
+            <db_name>state</db_name>
+            <spoken_name>origin airport state</spoken_name>
+            <introduction>origin airports in</introduction>
+        </level>
+        <level>
+            <db_name>city</db_name>
+            <spoken_name>origin airport city</spoken_name>
+            <introduction>origin airports in</introduction>
+        </level>
+        <level>
+            <db_name>airport_code</db_name>
+            <spoken_name>origin airport</spoken_name>
+            <introduction>origin airport</introduction>
+        </level>
+    </dimension_table>
+    <dimension_table>
+        <db_name>dates</db_name>
+        <spoken_name>month</spoken_name>
+        <level>
+            <db_name>season</db_name>
+            <spoken_name>season</spoken_name>
+            <introduction>season</introduction>
+        </level>
+        <level>
+            <db_name>month</db_name>
+            <spoken_name>month</spoken_name>
+            <introduction>month</introduction>
+        </level>
+    </dimension_table>
+</data_mart>
