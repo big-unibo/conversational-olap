@@ -95,7 +95,7 @@ public class VolapSession {
         logger.debug(log + " in " + elapsedMinuts + " min, " + elapsedSeconds + " s, " + elapsedMillis + " ms");
     }
 
-    private static long speechTime(String output) {
+    public static long speechTime(String output) {
         return output.length() * Configuration.CHARACTER_MILLIS;
     }
 
