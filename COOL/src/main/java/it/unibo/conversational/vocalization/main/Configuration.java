@@ -11,7 +11,7 @@ public class Configuration {
     // public static final double ST_DEV_FACTOR = 0.5;
     public static final double P_RANGE_FACTOR = 0.1;
     // public static final double P_RANGE_FACTOR = 0.5;
-    public static final long MAX_CHILDREN = 50;
+    public static final long MAX_CHILDREN = 25;
     public static final long MAX_GROUPS = 1500;
     public static final long CHARACTER_MILLIS = 80;
     public static final String CUBE_NAME = "sales_fact_1997";

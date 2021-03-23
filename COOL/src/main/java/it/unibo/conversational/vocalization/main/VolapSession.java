@@ -57,10 +57,10 @@ public class VolapSession {
     }
 
     public Pair<String, Pair<Double, Double>> executeQuery(String input, boolean printSpeech) throws IllegalArgumentException {
-        return this.executeQuery(input, Configuration.COMPLETE_TREE, printSpeech);
+        return this.executeQuery(input, Configuration.COMPLETE_TREE, printSpeech, Configuration.N_REFINEMENTS);
     }
 
-    public Pair<String, Pair<Double, Double>> executeQuery(String input, boolean completeTree, boolean printSpeech) throws IllegalArgumentException {
+    public Pair<String, Pair<Double, Double>> executeQuery(String input, boolean completeTree, boolean printSpeech, int nRefinements) throws IllegalArgumentException {
         long startMillis = System.currentTimeMillis();
         Optional<Query> query = QueryValidator.validateInput(input, this.measures, this.dimensions);
         if (query.isEmpty()) throw new IllegalArgumentException(Configuration.INPUT_ERROR);
@@ -70,7 +70,7 @@ public class VolapSession {
         String preamble = query.get().getPreamble(this.dimensions);
         if (printSpeech) System.out.println(preamble);
         UctNode node = TreeFactory.getRoot(cache.get(), completeTree, Configuration.MAX_CHILDREN,
-            Configuration.N_REFINEMENTS, Configuration.N_SIGNIFICANT_DIGITS, Configuration.ST_DEV_FACTOR, Configuration.P_RANGE_FACTOR);
+            nRefinements, Configuration.N_SIGNIFICANT_DIGITS, Configuration.ST_DEV_FACTOR, Configuration.P_RANGE_FACTOR);
         Optional<UctNode> next = node.nextNode(speechTime(preamble) - (System.currentTimeMillis() - startMillis));
         while (next.isPresent()) {
             node = next.get();
