@@ -12,14 +12,13 @@ import it.unibo.conversational.algorithms.Parser.Type;
 import it.unibo.conversational.database.Cube;
 import it.unibo.conversational.database.DBmanager;
 import it.unibo.conversational.datatypes.Ngram.AnnotationType;
-import it.unibo.conversational.vocalization.main.VolapSession;
+import it.unibo.trummervocalization.main.VolapSession;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.json.JSONObject;
 import zhsh.Tree;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;

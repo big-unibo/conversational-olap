@@ -597,6 +597,48 @@ public final class Parser {
         }).findAny().get();
     }
 
+    public static String createQuery(final Cube cube, final Set<String> attributes, final Set<String> measures, final Set<Triple<String, String, String>> predicates) throws Exception {
+        final Set<String> curAttributes = Sets.newLinkedHashSet();
+        String select = "";
+        String from = "";
+        String where = "";
+        String groupby = "";
+
+        for (final String attr: attributes) {
+            final String attToString = QueryGenerator.getLevel(cube, attr).fullQualifier();
+            select += (select.isEmpty() ? "" : ",") + attToString;
+            groupby += (groupby.isEmpty() ? "" : ",") + attToString;
+            curAttributes.add(attr);
+        }
+
+        for (final String measure: measures) {
+            select += (select.isEmpty() ? "" : ",") + "sum(" + measure + ") as " + measure;
+        }
+
+        for (final Triple<String, String, String> predicate: predicates) {
+            final String attToString = QueryGenerator.getLevel(cube, predicate.getLeft()).fullQualifier();
+            where += (where.isEmpty() ? "" : " AND ") + attToString + predicate.getMiddle() + predicate.getRight();
+        }
+
+        if (select.equals("")) {
+            select = "count(*)";
+        }
+
+        Set<String> tabIns = Sets.newLinkedHashSet();
+        Pair<String, String> ftdet = QueryGenerator.getFactTable(cube);
+        from = " from " + ftdet.getRight() + " ft ";
+        for (String gba : attributes) {
+            final String idT = QueryGenerator.getTable(cube, gba);
+            if (!tabIns.contains(idT)) {
+                Pair<String, String> detTab = QueryGenerator.getTabDetails(cube, ftdet.getLeft(), idT);
+                from += " join " + detTab.getLeft() + " on " + detTab.getLeft() + "." + detTab.getRight() + " = ft." + detTab.getRight();
+                tabIns.add(idT);
+            }
+        }
+
+        return "select " + fixDeviation(cube, select) + " " + from + (where.isEmpty() ? "" : " where " + where) + (groupby.isEmpty() ? "" : " group by " + groupby);
+    }
+
     private static String createQuery(final Cube cube, final List<Ngram> ngrams) throws Exception {
         Set<Ngram> attributes = Sets.newLinkedHashSet();
         String select = "";

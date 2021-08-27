@@ -39,8 +39,8 @@ dependencies {
     implementation 'javax:javaee-api:8.0.1'
     implementation 'io.ktor:ktor-server-servlet:1.4.0'
     // kotlin
-    implementation "org.jetbrains.kotlinx:kotlinx-cli:0.3"
-    implementation 'de.mpicbg.scicomp:krangl:0.14'
+    implementation 'org.jetbrains.kotlinx:kotlinx-cli:0.3.2'
+    implementation 'de.mpicbg.scicomp:krangl:0.15'
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
     // java
     implementation 'mysql:mysql-connector-java:8.0.21'
