@@ -31,13 +31,13 @@ object AssessmentModule: VocalizationModule {
                         .sortedByDescending("score")
 
         val maxpec: Double = enhcube["score"].max()!!
+        var text = "As to assessment, "
         val patterns =
                 (0..2).map {
                     val r = enhcube.row(it)
-                    val text = "As to assessment, " +
-                            "the tuple ${cube2.attributes.map { r[it].toString() }.reduce { a, b -> "$a, $b" }} " +
+                    text += "the tuple ${cube2.attributes.map { r[it].toString() }.reduce { a, b -> "$a, $b" }} " +
                             "sold ${cube2.measureNames().map { r[it].toString() + " " + it }.reduce { a, b -> "$a, $b" }} " +
-                            "which accounts for ${cube2.measureNames().map { (r[it] as Double / r["${it}_bc"] as Double * 100).toInt().toString() + "% of the $it of its parent ${cube1.attributes.map { r[it] }.reduce { a, b -> "$a, $b" }}" }.reduce { a, b -> "$a, $b" }}"
+                            "which accounts for ${cube2.measureNames().map { (r[it] as Double / r["${it}_bc"] as Double * 100).toInt().toString() + "% of the $it of its parent ${cube1.attributes.map { r[it] }.reduce { a, b -> "$a, $b" }}" }.reduce { a, b -> "$a, $b" }}; "
                     VocalizationPattern(text, r["score"] as Double / maxpec, text.length)
                 }.toSet()
         return patterns

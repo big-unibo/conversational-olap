@@ -20,17 +20,22 @@ class Session(val cube: Cube, uuid: String? = null, val mapping: Mapping? = null
             val curQueryClauses = Parser.getClauses(cube, mapping.bestNgram) // get the clauses of the current query
             val curQuery = GPSJ(cube, curQueryClauses.left, curQueryClauses.middle, curQueryClauses.right) // build the current query
             val patterns: MutableSet<IVocalizationPattern> = mutableSetOf()
+            val vocalization: JSONObject = JSONObject()
+            vocalization.put("description", "This is not implemented yet.")
+            vocalization.put("error", 0)
+            vocalization.put("quality", 1)
             if (prevMapping != null) { // OLAP operator
                 val prevQueryClauses = Parser.getClauses(cube, prevMapping.bestNgram) // get the clauses from the previous query
                 val prevQuery = GPSJ(cube, prevQueryClauses.left, prevQueryClauses.middle, prevQueryClauses.right) // build the previous query
-                patterns.addAll(PeculiarityModule.compute(prevQuery, curQuery)) // compute the vocalization patterns
-                patterns.addAll(AssessmentModule.compute(prevQuery, curQuery)) // compute the vocalization patterns
+                patterns.addAll(setOf(PeculiarityModule.compute(prevQuery, curQuery).toList()[1])) // compute the vocalization patterns
+                patterns.addAll(setOf(AssessmentModule.compute(prevQuery, curQuery).toList()[1])) // compute the vocalization patterns
+                vocalization.put("description", patterns.map { p -> p.text }.reduce { a, b -> "$a. $b" })
             } else { // full query
                 // do nothing for now
             }
             val json = mapping.JSONobj(cube, value, if (limit == null) Optional.absent() else Optional.of(limit.toLong()))
             ret.put("parseforest", json)
-            ret.put("patterns", patterns)
+            ret.put("vocalization", vocalization)
             ret.put("operatorforest", if (operator == null || operator.countAnnotatedNodesInTree() == 0) JSONObject() else operator.toJSON(cube))
             ret.put("state", state)
             ret.put("sessionid", uuid)
