@@ -22,6 +22,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
+import org.jetbrains.annotations.NotNull;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultEdge;
 import org.slf4j.Logger;
@@ -597,10 +598,17 @@ public final class Parser {
         }).findAny().get();
     }
 
-    public static String createQuery(final Cube cube, final Set<String> attributes, final Set<String> measures, final Set<Triple<String, String, String>> predicates) throws Exception {
+    /**
+     * Create an SQL statement to be executed against the given a cube and sets of attributes, predicates, and measures
+     * @param cube cube
+     * @param attributes a set of attributes
+     * @param measures a set of measures
+     * @param predicates a set of predicates
+     * @return a string representing an SQL statement
+     */
+    public static String createQuery(final Cube cube, final Set<String> attributes, final Set<Pair<String, String>> measures, final Set<Triple<String, String, String>> predicates) {
         final Set<String> curAttributes = Sets.newLinkedHashSet();
         String select = "";
-        String from = "";
         String where = "";
         String groupby = "";
 
@@ -611,8 +619,8 @@ public final class Parser {
             curAttributes.add(attr);
         }
 
-        for (final String measure: measures) {
-            select += (select.isEmpty() ? "" : ",") + "sum(" + measure + ") as " + measure;
+        for (final Pair<String, String> measure: measures) {
+            select += (select.isEmpty() ? "" : ",") + measure.getLeft() + "(" + measure.getRight() + ") as " + measure.getRight();
         }
 
         for (final Triple<String, String, String> predicate: predicates) {
@@ -620,6 +628,12 @@ public final class Parser {
             where += (where.isEmpty() ? "" : " AND ") + attToString + predicate.getMiddle() + predicate.getRight();
         }
 
+        return getSQLString(cube, attributes, select, where, groupby);
+    }
+
+    @NotNull
+    private static String getSQLString(Cube cube, Set<String> attributes, String select, String where, String groupby) {
+        String from;
         if (select.equals("")) {
             select = "count(*)";
         }
@@ -639,10 +653,15 @@ public final class Parser {
         return "select " + fixDeviation(cube, select) + " " + from + (where.isEmpty() ? "" : " where " + where) + (groupby.isEmpty() ? "" : " group by " + groupby);
     }
 
-    private static String createQuery(final Cube cube, final List<Ngram> ngrams) throws Exception {
+    /**
+     * Create an SQL statement to be executed against the given cube and starting from a list of ngrams
+     * @param cube cube
+     * @param ngrams list of ngrams
+     * @return a string representing an SQL statement
+     */
+    private static String createQuery(final Cube cube, final List<Ngram> ngrams) {
         Set<Ngram> attributes = Sets.newLinkedHashSet();
         String select = "";
-        String from = "";
         String where = "";
         String groupby = "";
 
@@ -674,23 +693,41 @@ public final class Parser {
             }
         }
 
-        if (select.equals("")) {
-            select = "count(*)";
-        }
+        return getSQLString(cube, attributes.stream().map(n -> n.mde.get().nameInTable()).collect(Collectors.toSet()), select, where, groupby);
+    }
 
-        Set<String> tabIns = Sets.newLinkedHashSet();
-        Pair<String, String> ftdet = QueryGenerator.getFactTable(cube);
-        from = " from " + ftdet.getRight() + " ft ";
-        for (Ngram gba : attributes) {
-            final String idT = gba.mde().refToOtherTable();
-            if (!tabIns.contains(idT)) {
-                Pair<String, String> detTab = QueryGenerator.getTabDetails(cube, ftdet.getLeft(), idT);
-                from += " join " + detTab.getLeft() + " on " + detTab.getLeft() + "." + detTab.getRight() + " = ft." + detTab.getRight();
-                tabIns.add(idT);
+    /**
+     * @param cube cube
+     * @param gpsj a gpsj query
+     * @return the group by set, measures, and selection predicates composing the query
+     */
+    public static Triple<Set<String>, Set<Pair<String, String>>, Set<Triple<String, String, String>>> getClauses(final Cube cube, final Ngram gpsj) {
+        Set<String> attributes = Sets.newLinkedHashSet();
+        Set<Pair<String, String>> measures = Sets.newLinkedHashSet();
+        Set<Triple<String, String, String>> predicates = Sets.newLinkedHashSet();
+
+        for (final Ngram ngs : gpsj.getChildren()) {
+            if (ngs.type.equals(Type.GC)) { // get the attributes within the group by clause
+                final Set<Ngram> ga = Ngram.leaves(ngs).stream().filter(n -> !n.type.equals(Type.BY)).collect(Collectors.toSet());
+                attributes = ga.stream().map(nn -> nn.mde.get().nameInTable()).collect(Collectors.toSet()); // QueryGenerator.getLevel(cube, nn.mde().nameInTable()).fullQualifier()
+            } else if (ngs.type.equals(Type.SC)) { // get the predicates within the selection clause
+                predicates = Ngram.simpleClauses(ngs).stream()
+                        .map(sc ->
+                                Triple.of(
+                                        QueryGenerator.getLevel(cube, getEntity(sc, Type.ATTR).nameInTable()).fullQualifier(),
+                                        getEntity(sc, Type.COP).nameInTable(),
+                                        (getEntity(sc, Type.VAL).getTypeInDB().equals(DataType.STRING) ? "'" : "") + getEntity(sc, Type.VAL).nameInTable() + (getEntity(sc, Type.VAL).getTypeInDB().equals(DataType.STRING) ? "'" : "")
+                                )
+                        ).collect(Collectors.toSet());
+            } else if (ngs.type.equals(Type.MC)) { // get the measures within the measure clause
+                measures =
+                        Ngram.simpleClauses(ngs).stream().map(nn -> {
+                            final Pair<Entity, Type> op = getEntityWithType(nn, Type.AGG, Type.COUNT);
+                            return Pair.of(op.getLeft().nameInTable(), getEntity(nn, Type.MEA).nameInTable());
+                        }).collect(Collectors.toSet());
             }
         }
-
-        return "select " + fixDeviation(cube, select) + " " + from + (where.isEmpty() ? "" : " where " + where) + (groupby.isEmpty() ? "" : " group by " + groupby);
+        return Triple.of(attributes, measures, predicates);
     }
 
     /**

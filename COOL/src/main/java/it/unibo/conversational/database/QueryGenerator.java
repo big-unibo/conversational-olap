@@ -208,6 +208,9 @@ public final class QueryGenerator {
                 }
             }
         });
+        if (acc.isEmpty()) {
+            throw new IllegalArgumentException("Cannot find table for: " + Lists.newArrayList(attributes));
+        }
         return acc.remove(0);
     }
 

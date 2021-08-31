@@ -23,10 +23,10 @@ object PeculiarityModule: VocalizationModule {
      */
     fun extendCubeWithProxy(cube2: IGPSJ, cube1: IGPSJ): Triple<DataFrame, DataFrame, Set<String>> {
         val prevGc = cube1.attributes // get the previous coordinate
-        var prevCube = cube1.df.addColumns(*cube1.measures.map { m -> "zscore_$m" to { (it[m] - cube1.df[m].mean()!!) / cube1.df[m].sd()!! } }.toTypedArray())
+        var prevCube = cube1.df.addColumns(*cube1.measureNames().map { m -> "zscore_$m" to { (it[m] - cube1.df[m].mean()!!) / cube1.df[m].sd()!! } }.toTypedArray())
         // get the previous data
         val coordinate = cube2.attributes // get the current coordinate
-        var cube = cube2.df.addColumns(*cube2.measures.map { m -> "zscore_$m" to { (it[m] - cube2.df[m].mean()!!) / cube2.df[m].sd()!! } }.toTypedArray()) // get the current data
+        var cube = cube2.df.addColumns(*cube2.measureNames().map { m -> "zscore_$m" to { (it[m] - cube2.df[m].mean()!!) / cube2.df[m].sd()!! } }.toTypedArray()) // get the current data
         val gencoord: MutableSet<String> = Sets.newLinkedHashSet()
 
         coordinate.forEach { currA ->
@@ -85,9 +85,9 @@ object PeculiarityModule: VocalizationModule {
         val stats = cube // estimate the z-score of the previous cube
                 .leftJoin(right = prevCube, by = gencoord, suffices = "" to "_bc") // and join them base on the proxy
                 .groupBy(*cube2.attributes.toTypedArray()) // ... group by coordinate
-                .summarize(*(cube2.measures.map { m -> // ... average the z-score from the previous cube (i.e., proxy cells)
+                .summarize(*(cube2.measureNames().map { m -> // ... average the z-score from the previous cube (i.e., proxy cells)
                     ("avg_zscore_$m") to {
-                        if (cube1.measures.contains(m)) {
+                        if (cube1.measureNames().contains(m)) {
                             val avg: Double = it["zscore_${m}_bc"].mean(true)!!
                             if (avg.isNaN()) prevCube["zscore_${m}"].mean(false) else avg
                         } else {
@@ -97,7 +97,7 @@ object PeculiarityModule: VocalizationModule {
                 }.toTypedArray()))
                 .sortedBy(*cube2.attributes.toTypedArray()) // it is essential that this tuples are sorted as the ones from the original cube
         cube = cube.addColumns( // compute the difference between the zscores
-                *(cube2.measures
+                *(cube2.measureNames()
                         .filter { m -> prevCube.names.contains(m) }
                         .map { m -> ("zscore_$m") `=` { (it["zscore_$m"] - stats["avg_zscore_$m"]).map<Double> { (abs(it) * 1000).roundToInt() / 1000.0 } } }
                         .toTypedArray()
@@ -107,14 +107,14 @@ object PeculiarityModule: VocalizationModule {
 
         // get the peculiarity
         val enhcube = cube
-                        .addColumn("peculiarity") { myMax(*(cube2.measures.map { m -> it["zscore_$m"] }.toTypedArray())) }
+                        .addColumn("peculiarity") { myMax(*(cube2.measureNames().map { m -> it["zscore_$m"] }.toTypedArray())) }
                         .sortedByDescending("peculiarity")
         // val diff = cube2.attributes.minus(cube1.attributes).first()
         val maxpec: Double = enhcube["peculiarity"].max()!!
         val patterns =
                 (0..2).map {
                     val r = enhcube.row(it)
-                    val text = "As to peculiarity, the tuple ${cube2.attributes.map { r[it].toString() }.reduce { a, b -> "$a, $b" }} sold ${cube2.measures.map { r[it].toString() + " " + it }.reduce { a, b -> a + ", " + b }}"
+                    val text = "As to peculiarity, the tuple ${cube2.attributes.map { r[it].toString() }.reduce { a, b -> "$a, $b" }} sold ${cube2.measureNames().map { r[it].toString() + " " + it }.reduce { a, b -> a + ", " + b }}"
                     VocalizationPattern(text, r["peculiarity"] as Double / maxpec, text.length)
                 }.toSet()
         return patterns

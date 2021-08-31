@@ -8,6 +8,7 @@ import krangl.DataFrame
 import krangl.fromResultSet
 import krangl.readCSV
 import krangl.rename
+import org.apache.commons.lang3.tuple.Pair
 import org.apache.commons.lang3.tuple.Triple
 
 interface IVocalizationPattern {
@@ -29,14 +30,15 @@ interface IGPSJ {
     val fileName: String?
     val df: DataFrame
     val attributes: Set<String>
-    val measures: Set<String>
+    val measures: Set<Pair<String, String>>
+    fun measureNames(): Set<String> = measures.map { it.right }.toSet()
     val selection: Set<Triple<String, String, String>>
 }
 
 class GPSJ(override val cube: Cube?,
            override val fileName: String?,
            override val attributes: Set<String>,
-           override val measures: Set<String>,
+           override val measures: Set<Pair<String, String>>,
            override val selection: Set<Triple<String, String, String>>) : IGPSJ {
     var curdf: DataFrame? = null
     override val df: DataFrame
@@ -59,7 +61,7 @@ class GPSJ(override val cube: Cube?,
             }
         }
 
-    constructor(attributes: Set<String>, measures: Set<String>, selection: Set<Triple<String, String, String>>) : this(null, null, attributes.map { it.toUpperCase() }.toSet(), measures.map { it.toUpperCase() }.toSet(), selection.map { Triple.of(it.left.toUpperCase(), it.middle, it.right) }.toSet())
-    constructor(cube: Cube, attributes: Set<String>, measures: Set<String>, selection: Set<Triple<String, String, String>>) : this(cube, null, attributes.map { it.toUpperCase() }.toSet(), measures.map { it.toUpperCase() }.toSet(), selection.map { Triple.of(it.left.toUpperCase(), it.middle, it.right) }.toSet())
-    constructor(fileName: String, attributes: Set<String>, measures: Set<String>, selection: Set<Triple<String, String, String>>) : this(null, fileName, attributes.map { it.toUpperCase() }.toSet(), measures.map { it.toUpperCase() }.toSet(), selection.map { Triple.of(it.left.toUpperCase(), it.middle, it.right) }.toSet())
+    constructor(attributes: Set<String>, measures: Set<String>, selection: Set<Triple<String, String, String>>) : this(null, null, attributes.map { it.toUpperCase() }.toSet(), measures.map { Pair.of("sum", it.toUpperCase()) }.toSet(), selection.map { Triple.of(it.left.toUpperCase(), it.middle, it.right) }.toSet())
+    constructor(cube: Cube, attributes: Set<String>, measures: Set<Pair<String, String>>, selection: Set<Triple<String, String, String>>) : this(cube, null, attributes.map { it.toUpperCase() }.toSet(), measures.map { Pair.of(it.left, it.right.toUpperCase()) }.toSet(), selection.map { Triple.of(it.left.toUpperCase(), it.middle, it.right) }.toSet())
+    constructor(fileName: String, attributes: Set<String>, measures: Set<String>, selection: Set<Triple<String, String, String>>) : this(null, fileName, attributes.map { it.toUpperCase() }.toSet(), measures.map { Pair.of("sum", it.toUpperCase()) }.toSet(), selection.map { Triple.of(it.left.toUpperCase(), it.middle, it.right) }.toSet())
 }
