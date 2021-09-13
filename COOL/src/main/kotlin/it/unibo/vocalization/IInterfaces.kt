@@ -1,3 +1,4 @@
+@file:JvmName("IInterfacesVocalization")
 package it.unibo.vocalization
 
 import it.unibo.conversational.algorithms.Parser

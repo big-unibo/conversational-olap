@@ -29,9 +29,10 @@ class Session(val cube: Cube, uuid: String? = null, val mapping: Mapping? = null
                 val prevQuery = GPSJ(cube, prevQueryClauses.left, prevQueryClauses.middle, prevQueryClauses.right) // build the previous query
                 patterns.addAll(setOf(PeculiarityModule.compute(prevQuery, curQuery).toList()[1])) // compute the vocalization patterns
                 patterns.addAll(setOf(AssessmentModule.compute(prevQuery, curQuery).toList()[1])) // compute the vocalization patterns
-                vocalization.put("description", patterns.map { p -> p.text }.reduce { a, b -> "$a. $b" })
+                vocalization.put("description", Optimizer.getDummyPatterns(patterns).map { p -> p.text }.reduce { a, b -> "$a. $b" })
             } else { // full query
-                // do nothing for now
+                patterns.addAll(setOf(DescribeModule.compute(curQuery, curQuery).toList()[2])) // compute the vocalization patterns
+                vocalization.put("description", Optimizer.getDummyPatterns(patterns).map { p -> p.text }.reduce { a, b -> "$a. $b" })
             }
             val json = mapping.JSONobj(cube, value, if (limit == null) Optional.absent() else Optional.of(limit.toLong()))
             ret.put("parseforest", json)

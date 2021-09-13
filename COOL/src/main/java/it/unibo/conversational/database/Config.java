@@ -23,6 +23,16 @@ public final class Config {
     private Config() {
     }
 
+    private static String oracleclient;
+
+    public static String getOracleclient() {
+        return oracleclient;
+    }
+
+    public void setOracleclient(final String oracleclient) {
+        Config.oracleclient = oracleclient;
+    }
+
     private static String webapp;
 
     public static String getWebapp() {
@@ -45,7 +55,7 @@ public final class Config {
     }
 
     public static Cube getCube(final String cube) {
-        return getCubes().stream().filter(c -> c.getFactTable().toLowerCase().equals(cube.toLowerCase()) || c.getSynonyms().stream().anyMatch(s -> s.toLowerCase().equals(cube.toLowerCase()))).findFirst().get();
+        return getCubes().stream().filter(c -> c.getFactTable().equalsIgnoreCase(cube) || c.getSynonyms().stream().anyMatch(s -> s.equalsIgnoreCase(cube))).findFirst().get();
     }
 
     public static List<Cube> getCubes() {
