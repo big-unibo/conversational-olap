@@ -4,6 +4,8 @@ import it.unibo.conversational.olap.Operator
 import krangl.DataFrameRow
 import krangl.mean
 import krangl.sum
+import kotlin.math.pow
+import kotlin.math.roundToInt
 
 /**
  * Describe intention in action.
@@ -13,14 +15,19 @@ object DescribeModule : VocalizationModule {
         return cube.attributes.map { r[it].toString() }.reduce { a, b -> "$a, $b" }
     }
 
+    fun Double.round(decimals: Int = 2): Double {
+        val mult: Double = 10.0.pow(decimals)
+        return (this * mult).roundToInt() / mult
+    }
+
     override fun compute(cube1: IGPSJ, cube2: IGPSJ, operator: Operator?): Set<IVocalizationPattern> {
         val mea = cube1.measures.first().right // get the current measure
-        val mean: Double = cube1.df[mea].mean()!! // get the mean of the measure
+        val mean: Double = cube1.df[mea].mean()!!.round() // get the mean of the measure
         val sum: Double = cube1.df[mea].sum()!!.toDouble() // get the max of the measure
         val enhcube = cube1.df.sortedByDescending(mea) // sort by descending value
         val patterns =
                 (1..3).map { // get the topk
-                    var text = "The average sales is $mean. " // starting sentence
+                    var text = "The average sale is $mean. " // starting sentence
                     var csum = 0.0
                     if (it == 1) {
                         val r = enhcube.row(it)
