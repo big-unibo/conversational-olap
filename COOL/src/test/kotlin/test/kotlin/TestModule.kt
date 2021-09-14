@@ -5,6 +5,7 @@ import it.unibo.conversational.algorithms.Parser
 import it.unibo.conversational.database.Config
 import it.unibo.conversational.datatypes.Mapping
 import it.unibo.vocalization.AssessmentModule
+import it.unibo.vocalization.DescribeModule
 import it.unibo.vocalization.GPSJ
 import it.unibo.vocalization.PeculiarityModule
 import it.unibo.vocalization.web.MainServlet
@@ -32,5 +33,12 @@ class TestModule {
         assertFalse(c.left.isEmpty())
         assertFalse(c.middle.isEmpty())
         assertTrue(c.right.isEmpty())
+    }
+
+    @Test
+    fun test03() {
+        val c = Config.getCube("sales")
+        val cube1 = GPSJ(c, setOf("product_category", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf())
+        DescribeModule.compute(cube1, cube1)
     }
 }
