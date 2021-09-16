@@ -13,6 +13,9 @@ import kotlin.math.roundToInt
  * Describe intention in action.
  */
 object PeculiarityModule: VocalizationModule {
+    override val moduleName: String
+        get() = "Peculiarity"
+
     private val L = LoggerFactory.getLogger(PeculiarityModule::class.java)
 
     /**
@@ -115,7 +118,7 @@ object PeculiarityModule: VocalizationModule {
                 (0..2).map {
                     val r = enhcube.row(it)
                     val text = "As to peculiarity, the tuple ${cube2.attributes.map { r[it].toString() }.reduce { a, b -> "$a, $b" }} sold ${cube2.measureNames().map { r[it].toString() + " " + it }.reduce { a, b -> a + ", " + b }}"
-                    VocalizationPattern(text, r["peculiarity"] as Double / maxpec, text.length)
+                    VocalizationPattern(text, r["peculiarity"] as Double / maxpec, text.length, AssessmentModule.moduleName)
                 }.toSet()
         return patterns
     }

@@ -60,7 +60,9 @@ class MainServlet : HttpServlet() {
     }
 
     private fun navigate(result: Session, value: String, sessionid: String, annotationid: String?): Session {
-        return if (isEmpty(annotationid)) {
+        return if (value.equals("tellmemore", true)) {
+            result
+        } else if (isEmpty(annotationid)) {
             val prevTree = result.mapping!!
             val prevMapping = cloneMapping(prevTree)
             val op = Validator.parseAndTranslate(cube, Operator::class.java, prevTree, tau, log, value).getNgrams()[0] as Operator

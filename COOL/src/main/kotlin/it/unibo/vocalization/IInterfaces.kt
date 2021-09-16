@@ -16,12 +16,14 @@ interface IVocalizationPattern {
     val text: String
     val interestingness: Number
     val cost: Int
+    val moduleName: String
 }
 
-class VocalizationPattern(override val text: String, override val interestingness: Number, override val cost: Int) : IVocalizationPattern {
+class VocalizationPattern(override val text: String, override val interestingness: Number, override val cost: Int, override val moduleName: String) : IVocalizationPattern {
 }
 
 interface VocalizationModule {
+    val moduleName: String
     fun compute(cube1: IGPSJ, cube2: IGPSJ): Set<IVocalizationPattern> = compute(cube1, cube2, null)
     fun compute(cube1: IGPSJ, cube2: IGPSJ, operator: Operator?): Set<IVocalizationPattern>
 }

@@ -11,6 +11,9 @@ import kotlin.math.roundToInt
  * Describe intention in action.
  */
 object DescribeModule : VocalizationModule {
+    override val moduleName: String
+        get() = "Describe"
+
     fun tuple2string(cube: IGPSJ, r: DataFrameRow): String {
         return cube.attributes.map { r[it].toString() }.reduce { a, b -> "$a, $b" }
     }
@@ -26,7 +29,7 @@ object DescribeModule : VocalizationModule {
         val sum: Double = cube1.df[mea].sum()!!.toDouble() // get the max of the measure
         val enhcube = cube1.df.sortedByDescending(mea) // sort by descending value
         val patterns =
-                (1..3).map { // get the topk
+                (1..4).map { // get the topk
                     var text = "The average sale is $mean. " // starting sentence
                     var csum = 0.0
                     if (it == 1) {
@@ -42,7 +45,7 @@ object DescribeModule : VocalizationModule {
                         }.reduce { a, b -> "$a and $b" }
                         text += "The $it tuples with highest sales are $tuples"
                     }
-                    VocalizationPattern(text, csum / sum, text.length)
+                    VocalizationPattern(text, csum / sum, text.length, AssessmentModule.moduleName)
                 }.toSet()
         return patterns
     }
