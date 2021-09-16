@@ -1,4 +1,5 @@
 @file:JvmName("IInterfacesVocalization")
+
 package it.unibo.vocalization
 
 import it.unibo.conversational.algorithms.Parser
@@ -12,14 +13,57 @@ import krangl.rename
 import org.apache.commons.lang3.tuple.Pair
 import org.apache.commons.lang3.tuple.Triple
 
-interface IVocalizationPattern {
-    val text: String
-    val interestingness: Number
-    val cost: Int
-    val moduleName: String
+/**
+ * Describe the state of a certain pattern
+ */
+enum class PatternState {
+    /**
+     * The pattern is returned now
+     */
+    CURRENTLYTAKEN,
+
+    /**
+     * The pattern has been already returned
+     */
+    TAKEN,
+
+    /**
+     * The pattern has not been yet taken
+     */
+    AVAILABLE
 }
 
-class VocalizationPattern(override val text: String, override val interestingness: Number, override val cost: Int, override val moduleName: String) : IVocalizationPattern {
+/**
+ * A vocalization pattern (i.e., what is returned by a vocalization module)
+ */
+interface IVocalizationPattern {
+    /**
+     * Textual description of the pattern
+     */
+    val text: String
+
+    /**
+     * Interestingness
+     */
+    val interestingness: Number
+
+    /**
+     * Vocalization cost (e.g., the number of characters in the text
+     */
+    val cost: Int
+
+    /**
+     * Name of the originating module
+     */
+    val moduleName: String
+
+    /**
+     * Whether the pattern has been returned or not
+     */
+    var state: PatternState
+}
+
+class VocalizationPattern(override val text: String, override val interestingness: Double, override val cost: Int, override val moduleName: String, override var state: PatternState = PatternState.AVAILABLE) : IVocalizationPattern {
 }
 
 interface VocalizationModule {

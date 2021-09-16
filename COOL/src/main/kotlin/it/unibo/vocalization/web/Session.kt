@@ -17,7 +17,6 @@ class Session(val cube: Cube, uuid: String? = null, val mapping: Mapping? = null
     val state: Mapping.State
         get() = mapping!!.state
     val ret = JSONObject()
-    val prevPatterns: MutableCollection<IVocalizationPattern> = mutableSetOf()
     val patterns: MutableCollection<Collection<IVocalizationPattern>> = mutableSetOf()
 
     @Throws(Exception::class)
@@ -26,7 +25,7 @@ class Session(val cube: Cube, uuid: String? = null, val mapping: Mapping? = null
             val vocalization = JSONObject()
             vocalization.put("error", 0)
             vocalization.put("quality", 1)
-            if (value != "tellmemore") {
+            if (value!!.toLowerCase().replace(" ", "") != "tellmemore") {
                 val json = mapping.JSONobj(cube, value, if (limit == null) Optional.absent() else Optional.of(limit.toLong()))
                 val curQueryClauses = Parser.getClauses(cube, mapping.bestNgram) // get the clauses of the current query
                 val curQuery = GPSJ(cube, curQueryClauses.left, curQueryClauses.middle, curQueryClauses.right) // build the current query
@@ -46,15 +45,13 @@ class Session(val cube: Cube, uuid: String? = null, val mapping: Mapping? = null
                 ret.put("state", state)
                 ret.put("sessionid", uuid)
             }
-            val curPatterns = Optimizer.getDummyPatterns(prevPatterns, patterns)
+            val curPatterns = Optimizer.getDummyPatterns(patterns)
             if (curPatterns.isEmpty()) {
                 vocalization.put("description", "All patterns have been vocalized.")
             } else {
-                prevPatterns.addAll(curPatterns)
                 vocalization.put("description", curPatterns.map { p -> p.text }.reduce { a, b -> "$a. $b" })
             }
             ret.put("vocalization", vocalization)
-
         }
         return ret
     }
