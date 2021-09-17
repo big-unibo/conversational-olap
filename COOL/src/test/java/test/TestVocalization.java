@@ -22,6 +22,26 @@ public class TestVocalization {
         final VocalizationPattern c = new VocalizationPattern("foobar", 0.6, 6, "foo", PatternState.AVAILABLE);
         final Set<IVocalizationPattern> p1 = Sets.newHashSet(a, b);
         final Set<IVocalizationPattern> p2 = Sets.newHashSet(c);
-        assertEquals(Sets.newHashSet(a, b, c), Optimizer.getDummyPatterns(Sets.newHashSet(p1, p2)));
+        assertEquals(Sets.newHashSet(a, c), Optimizer.getDummyPatterns(Sets.newHashSet(p1, p2),20));
+    }
+
+    @Test
+    public void test1() {
+        final VocalizationPattern a = new VocalizationPattern("foo", 0.8, 3, "foo", PatternState.AVAILABLE);
+        final VocalizationPattern b = new VocalizationPattern("bar", 0.7, 3, "foo", PatternState.AVAILABLE);
+        final VocalizationPattern c = new VocalizationPattern("foobar", 0.6, 6, "foo", PatternState.AVAILABLE);
+        final Set<IVocalizationPattern> p1 = Sets.newHashSet(a, b);
+        final Set<IVocalizationPattern> p2 = Sets.newHashSet(c);
+        assertEquals(Sets.newHashSet(a, c), Optimizer.getPatterns(Sets.newHashSet(p1, p2), 20));
+    }
+
+    @Test
+    public void test2() {
+        final VocalizationPattern a = new VocalizationPattern("foo", 0.8, 3, "foo", PatternState.AVAILABLE);
+        final VocalizationPattern b = new VocalizationPattern("bar", 0.7, 3, "foo", PatternState.AVAILABLE);
+        final VocalizationPattern c = new VocalizationPattern("foobar", 0.6, 6, "foo", PatternState.AVAILABLE);
+        final Set<IVocalizationPattern> p1 = Sets.newHashSet(a, b);
+        final Set<IVocalizationPattern> p2 = Sets.newHashSet(c);
+        assertEquals(Sets.newHashSet(a), Optimizer.getPatterns(Sets.newHashSet(p1, p2), 4));
     }
 }
