@@ -1,6 +1,7 @@
 package it.unibo.vocalization;
 
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Sets;
 import knapsack.Knapsack;
 import knapsack.model.OneOrNoneFromGroupProblem;
 import knapsack.model.Problem;
@@ -19,8 +20,8 @@ public final class Optimizer {
     /**
      * Dummy method. Return at most three input patterns.
      *
-     * @param patterns     patterns among which the most interesting ones are selected
-     * @param maxCost      the size of the knapsack
+     * @param patterns patterns among which the most interesting ones are selected
+     * @param maxCost  the size of the knapsack
      * @return the most interesting patterns
      */
     public static Set<IVocalizationPattern> getDummyPatterns(Collection<Collection<IVocalizationPattern>> patterns, int maxCost) {
@@ -38,8 +39,8 @@ public final class Optimizer {
     }
 
     /**
-     * @param patterns     patterns among which the most interesting ones are selected
-     * @param maxCost      the size of the knapsack
+     * @param patterns patterns among which the most interesting ones are selected
+     * @param maxCost  the size of the knapsack
      * @return the most interesting patterns
      */
     public static Set<IVocalizationPattern> getPatterns(Collection<Collection<IVocalizationPattern>> patterns, int maxCost) {
@@ -48,12 +49,15 @@ public final class Optimizer {
         int nPatterns = 1; // MCKP library requires an additional slot
         for (Collection<IVocalizationPattern> module : patterns) {
             for (IVocalizationPattern pattern : module) {
-                if(pattern.getState().equals(PatternState.AVAILABLE)){
-                    nPatterns ++;
+                if (pattern.getState().equals(PatternState.AVAILABLE)) {
+                    nPatterns++;
                 }
             }
         }
-        if (nPatterns==1) throw new IllegalArgumentException("Empty patterns");
+
+        if (nPatterns == 1) {
+            return Sets.newHashSet();
+        }
 
         // Initialize other MCKP structures
         int[] profit = new int[nPatterns];
@@ -69,8 +73,8 @@ public final class Optimizer {
         for (Collection<IVocalizationPattern> module : patterns) {
             int i = 0;
             for (IVocalizationPattern pattern : module) {
-                if(pattern.getState().equals(PatternState.AVAILABLE)){
-                    Double interestingness = pattern.getInterestingness().doubleValue()*100;
+                if (pattern.getState().equals(PatternState.AVAILABLE)) {
+                    Double interestingness = pattern.getInterestingness().doubleValue() * 100;
                     profit[currentPattern] = interestingness.intValue();
                     weight[currentPattern] = pattern.getCost();
                     group[currentPattern] = currentGroup;
@@ -89,13 +93,13 @@ public final class Optimizer {
 
         // Set selected patterns as taken and return them
         Set<IVocalizationPattern> selectedPatterns = new HashSet<>();
-        int j=0;
-        for (boolean jthPatternIsSelected : solution.getSolution()){
-            if(jthPatternIsSelected){
+        int j = 0;
+        for (boolean jthPatternIsSelected : solution.getSolution()) {
+            if (jthPatternIsSelected) {
                 int i = patternIx[j];
                 int moduleIx = group[j];
-                Collection<IVocalizationPattern> module = Iterables.get(patterns,moduleIx);
-                IVocalizationPattern pattern = Iterables.get(module,i);
+                Collection<IVocalizationPattern> module = Iterables.get(patterns, moduleIx);
+                IVocalizationPattern pattern = Iterables.get(module, i);
                 pattern.setState(PatternState.CURRENTLYTAKEN);
                 selectedPatterns.add(pattern);
             }

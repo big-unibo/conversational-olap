@@ -7,6 +7,7 @@ import it.unibo.vocalization.PatternState;
 import it.unibo.vocalization.VocalizationPattern;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collection;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -22,7 +23,7 @@ public class TestVocalization {
         final VocalizationPattern c = new VocalizationPattern("foobar", 0.6, 6, "foo", PatternState.AVAILABLE);
         final Set<IVocalizationPattern> p1 = Sets.newHashSet(a, b);
         final Set<IVocalizationPattern> p2 = Sets.newHashSet(c);
-        assertEquals(Sets.newHashSet(a, c), Optimizer.getDummyPatterns(Sets.newHashSet(p1, p2),20));
+        assertEquals(Sets.newHashSet(a, b, c), Optimizer.getDummyPatterns(Sets.newHashSet(p1, p2), 20));
     }
 
     /**
@@ -74,5 +75,28 @@ public class TestVocalization {
         final Set<IVocalizationPattern> p1 = Sets.newHashSet(a);
         final Set<IVocalizationPattern> p2 = Sets.newHashSet(b);
         assertEquals(Sets.newHashSet(a), Optimizer.getPatterns(Sets.newHashSet(p1, p2), 5));
+    }
+
+    @Test
+    public void test5() {
+        final VocalizationPattern a = new VocalizationPattern("foo", 0.8, 3, "foo", PatternState.AVAILABLE);
+        final Set<IVocalizationPattern> p1 = Sets.newHashSet(a);
+        final Collection<Collection<IVocalizationPattern>> p = Sets.newHashSet();
+        p.add(p1);
+
+        assertEquals(Sets.newHashSet(a), Optimizer.getDummyPatterns(p, 5));
+        assertEquals(Sets.newHashSet(), Optimizer.getDummyPatterns(p, 5));
+    }
+
+    @Test
+    public void test6() {
+        final VocalizationPattern a = new VocalizationPattern("foo", 0.8, 3, "foo", PatternState.AVAILABLE);
+        final VocalizationPattern b = new VocalizationPattern("foo", 0.8, 3, "foo", PatternState.AVAILABLE);
+        final Set<IVocalizationPattern> p1 = Sets.newHashSet(a, b);
+        final Collection<Collection<IVocalizationPattern>> p = Sets.newHashSet();
+        p.add(p1);
+
+        assertEquals(Sets.newHashSet(a), Optimizer.getPatterns(p, 5));
+        assertEquals(Sets.newHashSet(), Optimizer.getPatterns(p, 5));
     }
 }

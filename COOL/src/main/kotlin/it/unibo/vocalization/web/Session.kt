@@ -45,7 +45,7 @@ class Session(val cube: Cube, uuid: String? = null, val mapping: Mapping? = null
                 ret.put("state", state)
                 ret.put("sessionid", uuid)
             }
-            val curPatterns = Optimizer.getDummyPatterns(patterns,20)
+            val curPatterns = Optimizer.getPatterns(patterns,400)
             if (curPatterns.isEmpty()) {
                 vocalization.put("description", "All patterns have been vocalized.")
             } else {
