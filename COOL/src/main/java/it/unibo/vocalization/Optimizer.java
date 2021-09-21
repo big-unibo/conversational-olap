@@ -48,7 +48,7 @@ public final class Optimizer {
 
         // Initialize bagSize = total number of patterns
         int nPatterns = 1; // MCKP library requires an additional slot
-        for (Collection<IVocalizationPattern> module : patterns) {
+        for (List<IVocalizationPattern> module : patterns) {
             for (IVocalizationPattern pattern : module) {
                 if (pattern.getState().equals(PatternState.AVAILABLE)) {
                     nPatterns++;
@@ -71,7 +71,7 @@ public final class Optimizer {
         group[0] = -1;
 
         int currentGroup = 0, currentPattern = 1;
-        for (Collection<IVocalizationPattern> module : patterns) {
+        for (List<IVocalizationPattern> module : patterns) {
             int i = 0;
             for (IVocalizationPattern pattern : module) {
                 if (pattern.getState().equals(PatternState.AVAILABLE)) {
@@ -99,10 +99,15 @@ public final class Optimizer {
             if (jthPatternIsSelected) {
                 int i = patternIx[j];
                 int moduleIx = group[j];
-                Collection<IVocalizationPattern> module = Iterables.get(patterns, moduleIx);
+                List<IVocalizationPattern> module = Iterables.get(patterns, moduleIx);
                 IVocalizationPattern pattern = Iterables.get(module, i);
                 pattern.setState(PatternState.CURRENTLYTAKEN);
                 selectedPatterns.add(pattern);
+                // Set all previous patterns in the same module (i.e., those coarser than the selected pattern) as taken
+                for (int k=i-1; k>=0; k--){
+                    IVocalizationPattern prevPattern = Iterables.get(module, k);
+                    prevPattern.setState(PatternState.TAKEN);
+                }
             }
             j++;
         }
