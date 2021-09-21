@@ -17,7 +17,7 @@ class Session(val cube: Cube, uuid: String? = null, val mapping: Mapping? = null
     val state: Mapping.State
         get() = mapping!!.state
     val ret = JSONObject()
-    val patterns: MutableCollection<Collection<IVocalizationPattern>> = mutableSetOf()
+    val patterns: MutableCollection<List<IVocalizationPattern>> = mutableSetOf()
 
     @Throws(Exception::class)
     fun toJSON(value: String?, limit: String?): JSONObject {
@@ -33,7 +33,7 @@ class Session(val cube: Cube, uuid: String? = null, val mapping: Mapping? = null
                     val prevQueryClauses = Parser.getClauses(cube, prevMapping.bestNgram) // get the clauses from the previous query
                     val prevQuery = GPSJ(cube, prevQueryClauses.left, prevQueryClauses.middle, prevQueryClauses.right) // build the previous query
                     listOf(PeculiarityModule, DescribeModule, AssessmentModule).forEach { // for each module
-                        patterns.addAll(setOf(it.compute(prevQuery, curQuery))) // add the resulting patterns
+                        patterns.addAll(listOf(it.compute(prevQuery, curQuery))) // add the resulting patterns
                     }
                 } else { // full query
                     listOf(DescribeModule).forEach { // for each module

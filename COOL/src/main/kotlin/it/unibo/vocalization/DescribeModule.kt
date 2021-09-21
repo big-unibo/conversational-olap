@@ -23,7 +23,7 @@ object DescribeModule : VocalizationModule {
         return (this * mult).roundToInt() / mult
     }
 
-    override fun compute(cube1: IGPSJ, cube2: IGPSJ, operator: Operator?): Set<IVocalizationPattern> {
+    override fun compute(cube1: IGPSJ, cube2: IGPSJ, operator: Operator?): List<IVocalizationPattern> {
         val mea = cube1.measures.first().right // get the current measure
         val mean: Double = cube1.df[mea].mean()!!.round() // get the mean of the measure
         val sum: Double = cube1.df[mea].sum()!!.toDouble() // get the max of the measure
@@ -46,7 +46,7 @@ object DescribeModule : VocalizationModule {
                         text += "The $it tuples with highest sales are $tuples"
                     }
                     VocalizationPattern(text, csum / sum, text.length, AssessmentModule.moduleName)
-                }.toSet()
+                }.toList()
         return patterns
     }
 }

@@ -9,6 +9,7 @@ import knapsack.model.Solution;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -43,7 +44,7 @@ public final class Optimizer {
      * @param maxCost  the size of the knapsack
      * @return the most interesting patterns
      */
-    public static Set<IVocalizationPattern> getPatterns(Collection<Collection<IVocalizationPattern>> patterns, int maxCost) {
+    public static Set<IVocalizationPattern> getPatterns(Collection<List<IVocalizationPattern>> patterns, int maxCost) {
 
         // Initialize bagSize = total number of patterns
         int nPatterns = 1; // MCKP library requires an additional slot

@@ -79,7 +79,7 @@ object PeculiarityModule: VocalizationModule {
                 .toTypedArray()
     }
 
-    override fun compute(cube1: IGPSJ, cube2: IGPSJ, operator: Operator?): Set<IVocalizationPattern> {
+    override fun compute(cube1: IGPSJ, cube2: IGPSJ, operator: Operator?): List<IVocalizationPattern> {
         val p = extendCubeWithProxy(cube2, cube1) // extend the cube with the proxy cells
         var cube = p.first.sortedBy(*cube2.attributes.toTypedArray()) // get the extended cube
         val prevCube = p.second // get the previous cube
@@ -119,7 +119,7 @@ object PeculiarityModule: VocalizationModule {
                     val r = enhcube.row(it)
                     val text = "As to peculiarity, the tuple ${cube2.attributes.map { r[it].toString() }.reduce { a, b -> "$a, $b" }} sold ${cube2.measureNames().map { r[it].toString() + " " + it }.reduce { a, b -> a + ", " + b }}"
                     VocalizationPattern(text, r["peculiarity"] as Double / maxpec, text.length, AssessmentModule.moduleName)
-                }.toSet()
+                }.toList()
         return patterns
     }
 }

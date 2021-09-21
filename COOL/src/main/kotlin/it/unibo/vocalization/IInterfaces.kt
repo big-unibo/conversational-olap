@@ -64,12 +64,13 @@ interface IVocalizationPattern {
 }
 
 class VocalizationPattern(override val text: String, override val interestingness: Double, override val cost: Int, override val moduleName: String, override var state: PatternState = PatternState.AVAILABLE) : IVocalizationPattern {
+    override fun toString(): String = "<$moduleName, $interestingness, $cost, $state, $text>"
 }
 
 interface VocalizationModule {
     val moduleName: String
-    fun compute(cube1: IGPSJ, cube2: IGPSJ): Set<IVocalizationPattern> = compute(cube1, cube2, null)
-    fun compute(cube1: IGPSJ, cube2: IGPSJ, operator: Operator?): Set<IVocalizationPattern>
+    fun compute(cube1: IGPSJ, cube2: IGPSJ): List<IVocalizationPattern> = compute(cube1, cube2, null)
+    fun compute(cube1: IGPSJ, cube2: IGPSJ, operator: Operator?): List<IVocalizationPattern>
 }
 
 interface IGPSJ {

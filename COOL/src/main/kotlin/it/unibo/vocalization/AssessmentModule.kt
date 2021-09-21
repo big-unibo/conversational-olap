@@ -14,7 +14,7 @@ object AssessmentModule : VocalizationModule {
     override val moduleName: String
         get() = "Assessment"
 
-    override fun compute(cube1: IGPSJ, cube2: IGPSJ, operator: Operator?): Set<IVocalizationPattern> {
+    override fun compute(cube1: IGPSJ, cube2: IGPSJ, operator: Operator?): List<IVocalizationPattern> {
         val p = extendCubeWithProxy(cube2, cube1) // extend the cube with the proxy cells
         val cube = p.first.sortedBy(*cube2.attributes.toTypedArray()) // get the extended cube
         var prevCube = p.second // get the previous cube
@@ -39,7 +39,7 @@ object AssessmentModule : VocalizationModule {
                             "sold ${cube2.measureNames().map { r[it].toString() + " " + it }.reduce { a, b -> "$a, $b" }} " +
                             "which accounts for ${cube2.measureNames().map { (r[it] as Double / r["${it}_bc"] as Double * 100).toInt().toString() + "% of the $it of its parent ${cube1.attributes.map { r[it] }.reduce { a, b -> "$a, $b" }}" }.reduce { a, b -> "$a, $b" }}; "
                     VocalizationPattern(text, r["score"] as Double / maxpec, text.length, moduleName)
-                }.toSet()
+                }.toList()
         return patterns
     }
 }
