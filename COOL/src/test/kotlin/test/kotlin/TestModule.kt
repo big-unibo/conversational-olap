@@ -4,13 +4,11 @@ import it.unibo.conversational.Validator
 import it.unibo.conversational.algorithms.Parser
 import it.unibo.conversational.database.Config
 import it.unibo.conversational.datatypes.Mapping
-import it.unibo.vocalization.AssessmentModule
-import it.unibo.vocalization.DescribeModule
-import it.unibo.vocalization.GPSJ
-import it.unibo.vocalization.PeculiarityModule
-import it.unibo.vocalization.web.MainServlet
+import it.unibo.vocalization.modules.Assess
+import it.unibo.vocalization.modules.TopK
+import it.unibo.vocalization.modules.GPSJ
+import it.unibo.vocalization.modules.PeculiarityModule
 import org.apache.commons.lang3.tuple.Pair
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
@@ -21,7 +19,7 @@ class TestModule {
         val c = Config.getCube("sales")
         val cube1 = GPSJ(c, setOf("product_category", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf())
         val cube2 = GPSJ(c, setOf("product_subcategory", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf())
-        AssessmentModule.compute(cube1, cube2)
+        Assess.compute(cube1, cube2)
         PeculiarityModule.compute(cube1, cube2)
     }
 
@@ -39,6 +37,6 @@ class TestModule {
     fun test03() {
         val c = Config.getCube("sales")
         val cube1 = GPSJ(c, setOf("product_category", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf())
-        DescribeModule.compute(cube1, cube1)
+        TopK.compute(cube1, cube1)
     }
 }

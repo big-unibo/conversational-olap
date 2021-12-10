@@ -1,6 +1,6 @@
 @file:JvmName("IInterfacesVocalization")
 
-package it.unibo.vocalization
+package it.unibo.vocalization.modules
 
 import it.unibo.conversational.algorithms.Parser
 import it.unibo.conversational.database.Cube
@@ -45,12 +45,17 @@ interface IVocalizationPattern {
     /**
      * Interestingness
      */
-    val interestingness: Number
+    val int: Number
 
     /**
      * Vocalization cost (e.g., the number of characters in the text
      */
     val cost: Int
+
+    /**
+     * Coverage of the current pattern
+     */
+    val cov: Double
 
     /**
      * Name of the originating module
@@ -63,8 +68,33 @@ interface IVocalizationPattern {
     var state: PatternState
 }
 
-class VocalizationPattern(override val text: String, override val interestingness: Double, override val cost: Int, override val moduleName: String, override var state: PatternState = PatternState.AVAILABLE) : IVocalizationPattern {
-    override fun toString(): String = "<$moduleName, $interestingness, $cost, $state, $text>"
+class VocalizationPattern(
+    override val text: String,
+    override val int: Double,
+    override val cov: Double,
+    override val cost: Int,
+    override val moduleName: String,
+    override var state: PatternState = PatternState.AVAILABLE
+) : IVocalizationPattern {
+    override fun toString(): String = "<$moduleName, $int, $cost, $state, $text>"
+
+    constructor(text: String, int: Double, moduleName: String) : this(
+        text,
+        int,
+        1.0,
+        text.split(" ").size,
+        moduleName,
+        PatternState.AVAILABLE
+    )
+
+    constructor(text: String, int: Double, cov: Double, moduleName: String) : this(
+        text,
+        int,
+        cov,
+        text.split(" ").size,
+        moduleName,
+        PatternState.AVAILABLE
+    )
 }
 
 interface VocalizationModule {
@@ -83,11 +113,13 @@ interface IGPSJ {
     val selection: Set<Triple<String, String, String>>
 }
 
-class GPSJ(override val cube: Cube?,
-           override val fileName: String?,
-           override val attributes: Set<String>,
-           override val measures: Set<Pair<String, String>>,
-           override val selection: Set<Triple<String, String, String>>) : IGPSJ {
+class GPSJ(
+    override val cube: Cube?,
+    override val fileName: String?,
+    override val attributes: Set<String>,
+    override val measures: Set<Pair<String, String>>,
+    override val selection: Set<Triple<String, String, String>>
+) : IGPSJ {
     var curdf: DataFrame? = null
     override val df: DataFrame
         get() {
@@ -109,7 +141,37 @@ class GPSJ(override val cube: Cube?,
             }
         }
 
-    constructor(attributes: Set<String>, measures: Set<String>, selection: Set<Triple<String, String, String>>) : this(null, null, attributes.map { it.toUpperCase() }.toSet(), measures.map { Pair.of("sum", it.toUpperCase()) }.toSet(), selection.map { Triple.of(it.left.toUpperCase(), it.middle, it.right) }.toSet())
-    constructor(cube: Cube, attributes: Set<String>, measures: Set<Pair<String, String>>, selection: Set<Triple<String, String, String>>) : this(cube, null, attributes.map { it.toUpperCase() }.toSet(), measures.map { Pair.of(it.left, it.right.toUpperCase()) }.toSet(), selection.map { Triple.of(it.left.toUpperCase(), it.middle, it.right) }.toSet())
-    constructor(fileName: String, attributes: Set<String>, measures: Set<String>, selection: Set<Triple<String, String, String>>) : this(null, fileName, attributes.map { it.toUpperCase() }.toSet(), measures.map { Pair.of("sum", it.toUpperCase()) }.toSet(), selection.map { Triple.of(it.left.toUpperCase(), it.middle, it.right) }.toSet())
+    constructor(attributes: Set<String>, measures: Set<String>, selection: Set<Triple<String, String, String>>) : this(
+        null,
+        null,
+        attributes.map { it.toUpperCase() }.toSet(),
+        measures.map { Pair.of("sum", it.toUpperCase()) }.toSet(),
+        selection.map { Triple.of(it.left.toUpperCase(), it.middle, it.right) }.toSet()
+    )
+
+    constructor(
+        cube: Cube,
+        attributes: Set<String>,
+        measures: Set<Pair<String, String>>,
+        selection: Set<Triple<String, String, String>>
+    ) : this(
+        cube,
+        null,
+        attributes.map { it.toUpperCase() }.toSet(),
+        measures.map { Pair.of(it.left, it.right.toUpperCase()) }.toSet(),
+        selection.map { Triple.of(it.left.toUpperCase(), it.middle, it.right) }.toSet()
+    )
+
+    constructor(
+        fileName: String,
+        attributes: Set<String>,
+        measures: Set<String>,
+        selection: Set<Triple<String, String, String>>
+    ) : this(
+        null,
+        fileName,
+        attributes.map { it.toUpperCase() }.toSet(),
+        measures.map { Pair.of("sum", it.toUpperCase()) }.toSet(),
+        selection.map { Triple.of(it.left.toUpperCase(), it.middle, it.right) }.toSet()
+    )
 }

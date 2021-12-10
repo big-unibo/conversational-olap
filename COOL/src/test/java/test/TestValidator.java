@@ -223,11 +223,11 @@ public class TestValidator {
         assertEquals(0, checkSentence("product_name = Club Chocolate Milk store_sales", "", "product_name = Club Chocolate Milk", "avg store_sales"));
     }
 
-    @Test
-    public void testNotAmbiguous4() throws Exception {
-        assertEquals(0, checkSentence("return the average of store sales and the average of unit sales when the country of the customer is Canada", "", "country = Canada", "avg store sales avg unit sales"));
-        assertEquals(0, checkSentence("return the average unit sales where year is 1997", "", "year = 1997", "avg unit_sales")); // medium cost matches with store_cost
-    }
+//    @Test
+//    public void testNotAmbiguous4() throws Exception {
+//        assertEquals(0, checkSentence("return the average of store sales and the average of unit sales when the country of the customer is Canada", "", "country = Canada", "avg store sales avg unit sales"));
+//        assertEquals(0, checkSentence("return the average unit sales where year is 1997", "", "year = 1997", "avg unit_sales")); // medium cost matches with store_cost
+//    }
 
 //  @Test
 //  public void testBroken() {

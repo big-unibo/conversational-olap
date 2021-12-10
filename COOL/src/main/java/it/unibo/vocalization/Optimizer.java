@@ -2,6 +2,8 @@ package it.unibo.vocalization;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
+import it.unibo.vocalization.modules.IVocalizationPattern;
+import it.unibo.vocalization.modules.PatternState;
 import knapsack.Knapsack;
 import knapsack.model.OneOrNoneFromGroupProblem;
 import knapsack.model.Problem;
@@ -75,7 +77,7 @@ public final class Optimizer {
             int i = 0;
             for (IVocalizationPattern pattern : module) {
                 if (pattern.getState().equals(PatternState.AVAILABLE)) {
-                    Double interestingness = pattern.getInterestingness().doubleValue() * 100;
+                    Double interestingness = pattern.getInt().doubleValue() * 100;
                     profit[currentPattern] = interestingness.intValue();
                     weight[currentPattern] = pattern.getCost();
                     group[currentPattern] = currentGroup;
@@ -104,7 +106,7 @@ public final class Optimizer {
                 pattern.setState(PatternState.CURRENTLYTAKEN);
                 selectedPatterns.add(pattern);
                 // Set all previous patterns in the same module (i.e., those coarser than the selected pattern) as taken
-                for (int k=i-1; k>=0; k--){
+                for (int k = i - 1; k >= 0; k--) {
                     IVocalizationPattern prevPattern = Iterables.get(module, k);
                     prevPattern.setState(PatternState.TAKEN);
                 }

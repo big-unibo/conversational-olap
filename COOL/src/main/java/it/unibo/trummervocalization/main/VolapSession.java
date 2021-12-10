@@ -63,9 +63,9 @@ public class VolapSession {
     public Pair<String, Pair<Double, Double>> executeQuery(String input, boolean completeTree, boolean printSpeech, int nRefinements) throws IllegalArgumentException {
         long startMillis = System.currentTimeMillis();
         Optional<Query> query = QueryValidator.validateInput(input, this.measures, this.dimensions);
-        if (query.isEmpty()) throw new IllegalArgumentException(Configuration.INPUT_ERROR);
+        if (!query.isPresent()) throw new IllegalArgumentException(Configuration.INPUT_ERROR);
         Optional<Cache> cache = this.cacheFactory.groupBy(query.get(), Configuration.MAX_GROUPS);
-        if (cache.isEmpty()) throw new IllegalArgumentException(Configuration.TOO_FINE_ERROR);
+        if (!cache.isPresent()) throw new IllegalArgumentException(Configuration.TOO_FINE_ERROR);
         if (cache.get().groupedEntries.isEmpty()) throw new IllegalArgumentException(Configuration.NO_ENTRY_ERROR);
         String preamble = query.get().getPreamble(this.dimensions);
         if (printSpeech) System.out.println(preamble);

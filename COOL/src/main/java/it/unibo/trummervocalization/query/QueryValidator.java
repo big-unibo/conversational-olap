@@ -37,7 +37,7 @@ public class QueryValidator {
                 input = input.substring(1);
             }
         }
-        if (function.isEmpty() || measure.isEmpty()) return Optional.empty();
+        if (!function.isPresent() || !measure.isPresent()) return Optional.empty();
         Map<Dimension, Member> where = new HashMap<>();
         if (input.startsWith("where")) {
             input = input.replaceFirst(Pattern.quote("where"), "").trim();
@@ -45,11 +45,11 @@ public class QueryValidator {
                 if (input.startsWith("and")) input = input.replaceFirst(Pattern.quote("and"), "").trim();
                 String input1 = input;
                 Optional<Dimension> dimension = dimensions.stream().filter(d -> input1.startsWith(d.dbName.toLowerCase() + ".")).findFirst();
-                if (dimension.isEmpty()) return Optional.empty();
+                if (!dimension.isPresent()) return Optional.empty();
                 input = input.replaceFirst(Pattern.quote(dimension.get().dbName.toLowerCase() + "."), "").trim();
                 String input2 = input;
                 Optional<String> level = dimension.get().levelDbNames.stream().filter(l -> input2.startsWith(l.toLowerCase())).findFirst();
-                if (level.isEmpty()) return Optional.empty();
+                if (!level.isPresent()) return Optional.empty();
                 input = input.replaceFirst(Pattern.quote(level.get().toLowerCase()), "").trim();
                 if (!input.startsWith("=")) return Optional.empty();
                 input = input.replaceFirst(Pattern.quote("="), "").trim();
@@ -57,7 +57,7 @@ public class QueryValidator {
                 int l = dimension.get().levelDbNames.indexOf(level.get()) + 1;
                 Optional<Member> member = dimension.get().membersByLevelAndName.get(l).entrySet().stream()
                         .filter(e -> input3.startsWith("'" + e.getKey().toLowerCase() + "'")).findFirst().map(Entry::getValue);
-                if (member.isEmpty()) return Optional.empty();
+                if (!member.isPresent()) return Optional.empty();
                 input = input.replaceFirst(Pattern.quote("'" + member.get().dbName.toLowerCase() + "'"), "").trim();
                 where.put(dimension.get(), member.get());
             } while (input.startsWith("and"));
@@ -69,11 +69,11 @@ public class QueryValidator {
                 if (input.startsWith(",")) input = input.replaceFirst(Pattern.quote(","), "").trim();
                 String input1 = input;
                 Optional<Dimension> dimension = dimensions.stream().filter(d -> input1.startsWith(d.dbName.toLowerCase() + ".")).findFirst();
-                if (dimension.isEmpty()) return Optional.empty();
+                if (!dimension.isPresent()) return Optional.empty();
                 input = input.replaceFirst(Pattern.quote(dimension.get().dbName.toLowerCase() + "."), "").trim();
                 String input2 = input;
                 Optional<String> level = dimension.get().levelDbNames.stream().filter(l -> input2.startsWith(l.toLowerCase())).findFirst();
-                if (level.isEmpty()) return Optional.empty();
+                if (!level.isPresent()) return Optional.empty();
                 input = input.replaceFirst(Pattern.quote(level.get().toLowerCase()), "").trim();
                 groupBy.put(dimension.get(), dimension.get().levelDbNames.indexOf(level.get()) + 1);
             } while (input.startsWith(","));

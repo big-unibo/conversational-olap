@@ -1,4 +1,4 @@
-package it.unibo.vocalization
+package it.unibo.vocalization.modules
 
 import it.unibo.conversational.olap.Operator
 import krangl.DataFrameRow
@@ -10,7 +10,7 @@ import kotlin.math.roundToInt
 /**
  * Describe intention in action.
  */
-object DescribeModule : VocalizationModule {
+object TopK : VocalizationModule {
     override val moduleName: String
         get() = "Describe"
 
@@ -45,7 +45,7 @@ object DescribeModule : VocalizationModule {
                         }.reduce { a, b -> "$a and $b" }
                         text += "The $it tuples with highest sales are $tuples"
                     }
-                    VocalizationPattern(text, csum / sum, text.length, AssessmentModule.moduleName)
+                    VocalizationPattern(text, csum / sum, 1.0, text.length, Assess.moduleName)  // TODO must fix coverage
                 }.toList()
         return patterns
     }

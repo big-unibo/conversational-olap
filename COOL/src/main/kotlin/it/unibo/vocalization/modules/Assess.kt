@@ -1,8 +1,8 @@
-package it.unibo.vocalization
+package it.unibo.vocalization.modules
 
 import it.unibo.conversational.olap.Operator
-import it.unibo.vocalization.PeculiarityModule.extendCubeWithProxy
-import it.unibo.vocalization.PeculiarityModule.myMax
+import it.unibo.vocalization.modules.PeculiarityModule.extendCubeWithProxy
+import it.unibo.vocalization.modules.PeculiarityModule.myMax
 import krangl.leftJoin
 import krangl.max
 import krangl.to
@@ -10,7 +10,7 @@ import krangl.to
 /**
  * Describe intention in action.
  */
-object AssessmentModule : VocalizationModule {
+object Assess : VocalizationModule {
     override val moduleName: String
         get() = "Assessment"
 
@@ -38,7 +38,7 @@ object AssessmentModule : VocalizationModule {
                     text += "the tuple ${cube2.attributes.map { r[it].toString() }.reduce { a, b -> "$a, $b" }} " +
                             "sold ${cube2.measureNames().map { r[it].toString() + " " + it }.reduce { a, b -> "$a, $b" }} " +
                             "which accounts for ${cube2.measureNames().map { (r[it] as Double / r["${it}_bc"] as Double * 100).toInt().toString() + "% of the $it of its parent ${cube1.attributes.map { r[it] }.reduce { a, b -> "$a, $b" }}" }.reduce { a, b -> "$a, $b" }}; "
-                    VocalizationPattern(text, r["score"] as Double / maxpec, text.length, moduleName)
+                    VocalizationPattern(text, r["score"] as Double / maxpec, 1.0, text.length, moduleName) // TODO must fix coverage
                 }.toList()
         return patterns
     }
