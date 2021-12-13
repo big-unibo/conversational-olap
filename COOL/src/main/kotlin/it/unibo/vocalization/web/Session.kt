@@ -33,7 +33,7 @@ class Session(val cube: Cube, uuid: String? = null, val mapping: Mapping? = null
                 if (prevMapping != null) { // OLAP operator
                     val prevQueryClauses = Parser.getClauses(cube, prevMapping.bestNgram) // get the clauses from the previous query
                     val prevQuery = GPSJ(cube, prevQueryClauses.left, prevQueryClauses.middle, prevQueryClauses.right) // build the previous query
-                    listOf(PeculiarityModule, TopK, Assess).forEach { // for each module
+                    listOf(Preamble, TopK, Assess).forEach { // for each module
                         patterns.addAll(listOf(it.compute(prevQuery, curQuery))) // add the resulting patterns
                     }
                 } else { // full query

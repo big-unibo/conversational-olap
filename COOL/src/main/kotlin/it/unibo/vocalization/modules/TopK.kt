@@ -1,8 +1,8 @@
 package it.unibo.vocalization.modules
 
 import it.unibo.conversational.olap.Operator
+import it.unibo.vocalization.modules.Peculiarity.tuple2string
 import krangl.DataFrameRow
-import krangl.mean
 import krangl.sum
 import kotlin.math.pow
 import kotlin.math.roundToInt
@@ -12,41 +12,32 @@ import kotlin.math.roundToInt
  */
 object TopK : VocalizationModule {
     override val moduleName: String
-        get() = "Describe"
+        get() = "Top-K"
 
-    fun tuple2string(cube: IGPSJ, r: DataFrameRow): String {
-        return cube.attributes.map { r[it].toString() }.reduce { a, b -> "$a, $b" }
-    }
-
-    fun Double.round(decimals: Int = 2): Double {
-        val mult: Double = 10.0.pow(decimals)
-        return (this * mult).roundToInt() / mult
-    }
-
-    override fun compute(cube1: IGPSJ, cube2: IGPSJ, operator: Operator?): List<IVocalizationPattern> {
-        val mea = cube1.measures.first().right // get the current measure
-        val mean: Double = cube1.df[mea].mean()!!.round() // get the mean of the measure
-        val sum: Double = cube1.df[mea].sum()!!.toDouble() // get the max of the measure
-        val enhcube = cube1.df.sortedByDescending(mea) // sort by descending value
+    override fun compute(cube1: IGPSJ?, cube2: IGPSJ, operator: Operator?): List<IVocalizationPattern> {
+        val cube: IGPSJ = if (cube1 != null) { Peculiarity.extendCubeWithProxy(cube2, cube1) } else { cube2 }
+        val mea = cube.measures.first().right // get the current measure
+        val sum: Double = cube.df[mea].sum()!!.toDouble() // get the sum of the measure
+        val df = cube.df.sortedByDescending(mea) // sort by descending value
         val patterns =
-                (1..4).map { // get the topk
-                    var text = "The average sale is $mean. " // starting sentence
-                    var csum = 0.0
-                    if (it == 1) {
-                        val r = enhcube.row(it)
-                        text += "The tuple with highest sales is ${tuple2string(cube2, r)} "
-                        csum += r[mea] as Double
-                    } else {
-                        val tuples: String = (1..it).map {
-                            val r = enhcube.row(it)
-                            val s = tuple2string(cube2, r)
-                            csum += r[mea] as Double
-                            s
-                        }.reduce { a, b -> "$a and $b" }
-                        text += "The $it tuples with highest sales are $tuples"
-                    }
-                    VocalizationPattern(text, csum / sum, 1.0, text.length, Assess.moduleName)  // TODO must fix coverage
-                }.toList()
+            (1..4).map { // get the topk
+                var text = "" // starting sentence
+                var csum = 0.0
+                if (it == 1) {
+                    val r = df.row(it - 1)
+                    text += "The fact with highest $mea is ${tuple2string(cube, r)} with ${r[mea]} "
+                    csum += if (cube1 == null) { r[mea] as Double } else { r[mea] as Double * r["peculiarity"] as Double }
+                } else {
+                    val tuples: String = (0 until it).map {
+                        val r = df.row(it)
+                        val s = tuple2string(cube, r)
+                        csum += if (cube1 == null) { r[mea] as Double } else { r[mea] as Double * r["peculiarity"] as Double }
+                        s + " with " + r[mea]
+                    }.reduce { a, b -> "$a, $b" }
+                    text += "The $it facts with highest $mea are $tuples"
+                }
+                VocalizationPattern(text, csum / sum, 1.0 * it / df.nrow, moduleName)
+            }.toList()
         return patterns
     }
 }

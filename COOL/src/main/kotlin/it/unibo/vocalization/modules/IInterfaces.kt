@@ -6,6 +6,8 @@ import it.unibo.conversational.algorithms.Parser
 import it.unibo.conversational.database.Cube
 import it.unibo.conversational.database.DBmanager
 import it.unibo.conversational.olap.Operator
+import it.unibo.vocalization.modules.Peculiarity.format
+import it.unibo.vocalization.modules.Peculiarity.getCost
 import krangl.DataFrame
 import krangl.fromResultSet
 import krangl.readCSV
@@ -76,7 +78,7 @@ class VocalizationPattern(
     override val moduleName: String,
     override var state: PatternState = PatternState.AVAILABLE
 ) : IVocalizationPattern {
-    override fun toString(): String = "<$moduleName, $int, $cost, $state, $text>"
+    override fun toString(): String = "<$moduleName, ${int.format(2)}, ${cov.format(2)}, $cost, $state, ${text.trim()}>"
 
     constructor(text: String, int: Double, moduleName: String) : this(
         text,
@@ -88,10 +90,10 @@ class VocalizationPattern(
     )
 
     constructor(text: String, int: Double, cov: Double, moduleName: String) : this(
-        text,
+        text.trim(),
         int,
         cov,
-        text.split(" ").size,
+        getCost(text),
         moduleName,
         PatternState.AVAILABLE
     )
@@ -99,8 +101,9 @@ class VocalizationPattern(
 
 interface VocalizationModule {
     val moduleName: String
-    fun compute(cube1: IGPSJ, cube2: IGPSJ): List<IVocalizationPattern> = compute(cube1, cube2, null)
-    fun compute(cube1: IGPSJ, cube2: IGPSJ, operator: Operator?): List<IVocalizationPattern>
+    fun compute(cube1: IGPSJ?, cube2: IGPSJ): List<IVocalizationPattern> = compute(cube1, cube2, null)
+    fun compute(cube1: IGPSJ?, cube2: IGPSJ, operator: Operator?): List<IVocalizationPattern>
+    fun applyCondition(cube1: IGPSJ?, cube2: IGPSJ, operator: Operator?): Boolean = true
 }
 
 interface IGPSJ {
@@ -116,11 +119,11 @@ interface IGPSJ {
 class GPSJ(
     override val cube: Cube?,
     override val fileName: String?,
+    var curdf: DataFrame?,
     override val attributes: Set<String>,
     override val measures: Set<Pair<String, String>>,
     override val selection: Set<Triple<String, String, String>>
 ) : IGPSJ {
-    var curdf: DataFrame? = null
     override val df: DataFrame
         get() {
             if (curdf != null) {
@@ -144,6 +147,7 @@ class GPSJ(
     constructor(attributes: Set<String>, measures: Set<String>, selection: Set<Triple<String, String, String>>) : this(
         null,
         null,
+        null,
         attributes.map { it.toUpperCase() }.toSet(),
         measures.map { Pair.of("sum", it.toUpperCase()) }.toSet(),
         selection.map { Triple.of(it.left.toUpperCase(), it.middle, it.right) }.toSet()
@@ -157,6 +161,21 @@ class GPSJ(
     ) : this(
         cube,
         null,
+        null,
+        attributes.map { it.toUpperCase() }.toSet(),
+        measures.map { Pair.of(it.left, it.right.toUpperCase()) }.toSet(),
+        selection.map { Triple.of(it.left.toUpperCase(), it.middle, it.right) }.toSet()
+    )
+
+    constructor(
+        df: DataFrame,
+        attributes: Set<String>,
+        measures: Set<Pair<String, String>>,
+        selection: Set<Triple<String, String, String>>
+    ) : this(
+        null,
+        null,
+        df,
         attributes.map { it.toUpperCase() }.toSet(),
         measures.map { Pair.of(it.left, it.right.toUpperCase()) }.toSet(),
         selection.map { Triple.of(it.left.toUpperCase(), it.middle, it.right) }.toSet()
@@ -170,6 +189,7 @@ class GPSJ(
     ) : this(
         null,
         fileName,
+        null,
         attributes.map { it.toUpperCase() }.toSet(),
         measures.map { Pair.of("sum", it.toUpperCase()) }.toSet(),
         selection.map { Triple.of(it.left.toUpperCase(), it.middle, it.right) }.toSet()
