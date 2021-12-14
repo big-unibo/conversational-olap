@@ -55,21 +55,11 @@ class TestModule {
 
     @Test
     fun test04() {
-//        val old_df = dataFrameOf("PRODUCT_CATEGORY", "QUANTITY")(
-//            "Beverages", 35.0,
-//            "Food", 11.0,
-//        )
-//
-//        val df = dataFrameOf("PRODUCT", "QUANTITY")(
-//            "Beer", 35.0,
-//            "Wine", 32.0,
-//            "Cola", 30.0,
-//            "Pizza", 6.0,
-//            "Bread", 5.0
-//        )
         val c1 = GPSJ(Config.getCube("SSBORA_TEST"), setOf("category"), setOf(Pair.of("sum", "quantity")), setOf())
         val c2 = GPSJ(Config.getCube("SSBORA_TEST"), setOf("product"), setOf(Pair.of("sum", "quantity")), setOf())
         val t = TopK.compute(c1, c2)
         t.forEach { println(it) }
+        val a = Assess.compute(c1, c2)
+        a.forEach { println(it) }
     }
 }

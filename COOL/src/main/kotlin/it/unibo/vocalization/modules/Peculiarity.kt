@@ -34,7 +34,7 @@ object Peculiarity {
      * @param d the current intention
      * @param cube the current cube
      */
-    fun extendCubeWithProxy(cube2: IGPSJ, cube1: IGPSJ, other: MutableMap<String, Any> = mutableMapOf()): IGPSJ {
+    fun extendCubeWithProxy(cube2: IGPSJ, cube1: IGPSJ, returnAllColumns: Boolean = false, other: MutableMap<String, Any> = mutableMapOf()): IGPSJ {
         val prevGc = cube1.attributes // get the previous coordinate
         var prevCube = cube1.df.addColumns(*cube1.measureNames().map { m -> "zscore_$m" to { (it[m] - cube1.df[m].mean()!!) / cube1.df[m].sd()!! } }.toTypedArray())
         // get the previous data
@@ -47,16 +47,9 @@ object Peculiarity {
                 val prev: String? = prevGc.find {
                     DependencyGraph.lca(cube2.cube, currA, it).isPresent
                 } // find an attribute with a rollup/drilldown relationship from the previous coordinate
-                if (!prev.isNullOrEmpty() && !(DependencyGraph.lca(cube2.cube, currA, prev)
-                        .get() != currA.toLowerCase() && DependencyGraph.lca(cube2.cube, currA, prev)
-                        .get() != prev.toLowerCase())
-                ) {
+                if (!prev.isNullOrEmpty() && !(DependencyGraph.lca(cube2.cube, currA, prev).get() != currA.toLowerCase() && DependencyGraph.lca(cube2.cube, currA, prev).get() != prev.toLowerCase())) {
                     val specific: String = DependencyGraph.lca(cube2.cube, currA, prev).get().toUpperCase() // get the most specific attribute
-                    val spec2gen: Map<String, String> = QueryGenerator.getFunctionalDependency(
-                        cube2.cube,
-                        specific,
-                        if (specific.equals(currA, ignoreCase = true)) prev else currA
-                    )
+                    val spec2gen: Map<String, String> = QueryGenerator.getFunctionalDependency(cube2.cube, specific, if (specific.equals(currA, ignoreCase = true)) prev else currA)
                     if (prevGc.contains(specific)) { // if it is a rollup
                         cube = cube.addColumn(currA) { it[currA].map<Any> { it.toString() } }
                         prevCube = prevCube.addColumn(currA) {
@@ -103,7 +96,7 @@ object Peculiarity {
                     .filter { m -> prevCube.names.contains(m) }
                     .map { m -> ("zscore_$m") `=` { (it["zscore_$m"] - stats["avg_zscore_$m"]).map<Double> { (abs(it) * 1000).roundToInt() / 1000.0 } } }
                     .toTypedArray())
-            ).remove(gencoord.filter { !cube2.attributes.contains(it) })
+            ).remove(gencoord.filter { !returnAllColumns && !cube2.attributes.contains(it) })
         L.warn("Proxy completed")
 
         // get the peculiarity
@@ -127,6 +120,27 @@ object Peculiarity {
         return cols
             .map { it.toDoubles().toList() }
             .reduce { a1, a2 -> a1.zip(a2).map { (it.first!!).coerceAtLeast(it.second!!) } }
+            .toTypedArray()
+    }
+
+    fun argMax(vararg cols: DataCol): Array<Any?> {
+        if (cols.isEmpty()) {
+            throw IllegalArgumentException("Empty columns")
+        }
+        if (cols.size == 1) {
+            return cols[0].map<Double> { cols[0].name.replace("diff_", "") }.toTypedArray()
+        }
+        return cols
+            .map {
+                val a = it.toStrings().map { it!! }.toMutableList()
+                a.add(0, it.name.replace("diff_", ""))
+                a
+            }
+            .reduce { a1, a2 ->
+                val t1 = a1.removeAt(0).replace("diff_", "")
+                val t2 = a2.removeAt(0).replace("diff_", "")
+                a1.map { it.toDouble() }.zip(a2.map { it.toDouble() }).map { if (it.first > it.second) { t1 } else {t2}} .toMutableList()
+            }
             .toTypedArray()
     }
 }
