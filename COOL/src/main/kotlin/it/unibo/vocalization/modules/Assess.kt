@@ -1,5 +1,6 @@
 package it.unibo.vocalization.modules
 
+import it.unibo.conversational.Utils
 import it.unibo.conversational.olap.Operator
 import it.unibo.vocalization.modules.Peculiarity.argMax
 import it.unibo.vocalization.modules.Peculiarity.extendCubeWithProxy
@@ -29,12 +30,12 @@ object Assess : VocalizationModule {
     }
 
     private fun label(c: Double): String {
-        if (c <= 0.9) {
-            return "worse than"
+        return if (c <= 0.9) {
+            "worse than"
         } else if (c > 0.9 && c <= 1.11) {
-            return "as good as"
+            "as good as"
         } else {
-            return "better than"
+            "better than"
         }
     }
 
@@ -66,5 +67,9 @@ object Assess : VocalizationModule {
                     VocalizationPattern(text, r["score"] as Double / maxpec, 1.0 / df.nrow, moduleName) // TODO must fix coverage
                 }.toList()
         return patterns
+    }
+
+    override fun applyCondition(cube1: IGPSJ?, cube2: IGPSJ, operator: Operator?): Boolean {
+        return cube1 != null && setOf(Utils.Type.DRILL, Utils.Type.SAD).contains(operator!!.type)
     }
 }

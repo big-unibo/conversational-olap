@@ -21,9 +21,10 @@ object Peculiarity {
         return cube.attributes.map { r[it].toString() }.reduce { a, b -> "$a, $b" }
     }
 
-    fun Double.round(decimals: Int = 2): Double {
+    fun Double.round(decimals: Int = 0): Number {
         val mult: Double = 10.0.pow(decimals)
-        return (this * mult).roundToInt() / mult
+        val ret = (this * mult).roundToInt() / mult
+        return if (decimals == 0) { ret.toInt() } else { ret }
     }
 
     private val L = LoggerFactory.getLogger(Peculiarity::class.java)

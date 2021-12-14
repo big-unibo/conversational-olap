@@ -3,7 +3,6 @@ package it.unibo.vocalization.modules
 import it.unibo.conversational.olap.Operator
 import it.unibo.vocalization.modules.Peculiarity.round
 import org.nield.kotlinstatistics.kMeansCluster
-import org.nield.kotlinstatistics.multiKMeansCluster
 
 /**
  * Describe intention in action.
@@ -25,14 +24,14 @@ object Clustering : VocalizationModule {
                     xSelector = { it[m1] as Double },
                     ySelector = { if (m2 == "foo") { 1.0 } else { it[m2] as Double }
                 })
-        var text = "Among $k clusters"
+        var text = "Among $k clusters of facts"
         return clusters
             .toList()
             .sortedBy { -it.points.size }
             .mapIndexed { index, cluster ->
                 val n = listOf("largest", "second", "third", "fourth", "fifth")[index]
                 val hasSecondMeasure = if (m2 == "foo") "" else " and ${cluster.center.y.round(2)} as $m2"
-                text += ", the $n one includes ${cluster.points.size} facts and has ${cluster.center.x.round(2)} as $m1$hasSecondMeasure"
+                text += ", the $n one includes ${cluster.points.size} facts and has ${cluster.center.x.round()} as $m1$hasSecondMeasure"
                 VocalizationPattern(text, 1.0 * cluster.points.size / cube2.df.nrow, 1.0 * cluster.points.size / cube2.df.nrow, moduleName)
             }
     }

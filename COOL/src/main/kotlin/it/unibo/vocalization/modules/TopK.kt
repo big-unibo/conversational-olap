@@ -1,11 +1,9 @@
 package it.unibo.vocalization.modules
 
 import it.unibo.conversational.olap.Operator
+import it.unibo.vocalization.modules.Peculiarity.round
 import it.unibo.vocalization.modules.Peculiarity.tuple2string
-import krangl.DataFrameRow
 import krangl.sum
-import kotlin.math.pow
-import kotlin.math.roundToInt
 
 /**
  * Describe intention in action.
@@ -25,19 +23,23 @@ object TopK : VocalizationModule {
                 var csum = 0.0
                 if (it == 1) {
                     val r = df.row(it - 1)
-                    text += "The fact with highest $mea is ${tuple2string(cube, r)} with ${r[mea]} "
+                    text += "The fact with highest $mea is ${tuple2string(cube, r)} with ${(r[mea] as Double).round()} "
                     csum += if (cube1 == null) { r[mea] as Double } else { r[mea] as Double * r["peculiarity"] as Double }
                 } else {
                     val tuples: String = (0 until it).map {
                         val r = df.row(it)
                         val s = tuple2string(cube, r)
                         csum += if (cube1 == null) { r[mea] as Double } else { r[mea] as Double * r["peculiarity"] as Double }
-                        s + " with " + r[mea]
+                        s + " with " + (r[mea] as Double).round()
                     }.reduce { a, b -> "$a, $b" }
                     text += "The $it facts with highest $mea are $tuples"
                 }
                 VocalizationPattern(text, csum / sum, 1.0 * it / df.nrow, moduleName)
             }.toList()
         return patterns
+    }
+
+    override fun applyCondition(cube1: IGPSJ?, cube2: IGPSJ, operator: Operator?): Boolean {
+        return cube2.measures.size == 1 && setOf("max", "sum", "avg").contains(cube2.measures.first().left.toLowerCase())
     }
 }

@@ -60,7 +60,7 @@ class MainServlet : HttpServlet() {
     }
 
     private fun navigate(result: Session, value: String, sessionid: String, annotationid: String?): Session {
-        return if (value.equals("tellmemore", true)) {
+        return if (value.toLowerCase().replace("\\s*".toRegex(), "").equals("tellmemore", true)) {
             result
         } else if (isEmpty(annotationid)) {
             val prevTree = result.mapping!!
