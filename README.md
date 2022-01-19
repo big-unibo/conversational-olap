@@ -31,5 +31,9 @@ Enabling the web application
     - In Windows: Properties -> Security -> Advanced -> Add -> Add `Everyone` user with `Read & Execute privileges`
 4.  Remove the previous `.war` files, deploy the new version
     ```
-    git pull; rm '/path/to/tomcat9/webapps/COOL.war'; rm -r '/path/to/tomcat9/webapps/COOL'; ./gradlew war; cp build/libs/COOL.war '/path/to/tomcat9/webapps/'
+    git pull
+    rm '/path/to/tomcat9/webapps/COOL.war'
+    rm -r '/path/to/tomcat9/webapps/COOL'
+    ./gradlew war
+    cp build/libs/COOL.war '/path/to/tomcat9/webapps/'
     ```
