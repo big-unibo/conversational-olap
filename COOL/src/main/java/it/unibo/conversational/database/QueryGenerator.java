@@ -613,7 +613,7 @@ public final class QueryGenerator {
      * @param sessionid session to be dropped
      */
     public static void dropSession(final Cube cube, final String sessionid) {
-        DBmanager.insertMeta(cube, "DELETE FROM OLAPsession WHERE session_id = \"" + sessionid + "\"", PreparedStatement::execute);
+        DBmanager.insertMeta(cube, "DELETE FROM OLAPSESSION WHERE session_id = \"" + sessionid + "\"", PreparedStatement::execute);
     }
 
     /**
@@ -627,11 +627,11 @@ public final class QueryGenerator {
         final String sql =
                 cube.getDbms().equalsIgnoreCase("mysql") ?
                         "select value_en, timestamp, fullquery_serialized, olapoperator_serialized "
-                                + "from OLAPsession where value_en in (\"read\", \"navigate\", \"reset\") and session_id = \"" + sessionid + "\" "
-                                + "and timestamp >= (select timestamp from OLAPsession where session_id = \"" + sessionid + "\" and value_en = \"read\" order by 1 desc limit 1)" :
-                        "with timest as (select * from (select `TIMESTAMP` as timest from OLAPsession where session_id = \"" + sessionid + "\" and value_en = \"read\" order by 1 desc) where rownum <= 1) "
+                                + "from OLAPSESSION where value_en in (\"read\", \"navigate\", \"reset\") and session_id = \"" + sessionid + "\" "
+                                + "and timestamp >= (select timestamp from OLAPSESSION where session_id = \"" + sessionid + "\" and value_en = \"read\" order by 1 desc limit 1)" :
+                        "with timest as (select * from (select `TIMESTAMP` as timest from OLAPSESSION where session_id = \"" + sessionid + "\" and value_en = \"read\" order by 1 desc) where rownum <= 1) "
                                 + "select value_en, `TIMESTAMP`, fullquery_serialized, olapoperator_serialized "
-                                + "from OLAPsession, timest "
+                                + "from OLAPSESSION, timest "
                                 + "where value_en in (\"read\", \"navigate\", \"reset\") and session_id = \"" + sessionid + "\" and `TIMESTAMP` >= timest.timest";
         final Map<String, Long> lookupTime = Maps.newHashMap();
         final Map<String, Mapping> lookupQuery = Maps.newHashMap();
@@ -692,16 +692,16 @@ public final class QueryGenerator {
 
         String sql =
                 cube.getDbms().equalsIgnoreCase("oracle") ?
-                        "with hightimest as (select t1 from (select timestamp as t1 from OLAPsession where session_id = '" + sessionid + "' and value_en = 'reset' order by 1 desc) where rownum <=1), "
-                            + "lowtimest as (select t2 from (select timestamp as t2 from OLAPsession where session_id = '" + sessionid + "' and value_en = 'read'  order by 1 desc) where rownum <=1) "
+                        "with hightimest as (select t1 from (select timestamp as t1 from OLAPSESSION where session_id = '" + sessionid + "' and value_en = 'reset' order by 1 desc) where rownum <=1), "
+                            + "lowtimest as (select t2 from (select timestamp as t2 from OLAPSESSION where session_id = '" + sessionid + "' and value_en = 'read'  order by 1 desc) where rownum <=1) "
                             + "select count(*) as steps, count(distinct case when annotation_id is null or annotation_id = '' then null else annotation_id end) as annotations "
-                            + "from OLAPsession, hightimest, lowtimest "
+                            + "from OLAPSESSION, hightimest, lowtimest "
                             + "where value_en <> 'navigate' and session_id = '" + sessionid + "' and timestamp < hightimest.t1 and timestamp > lowtimest.t2"
                         :
                         "select count(*) as steps, count(distinct case when annotation_id is null or annotation_id = '' then null else annotation_id end) as annotations "
-                                + "from OLAPsession "
+                                + "from OLAPSESSION "
                                 + "where `value_en` <> \"navigate\" and session_id = \"" + sessionid + "\" and "
-                                + "`timestamp` < (select `timestamp` from OLAPsession where session_id = \"" + sessionid + "\" and value_en = \"reset\" order by 1 desc limit 1) and "
+                                + "`timestamp` < (select `timestamp` from OLAPSESSION where session_id = \"" + sessionid + "\" and value_en = \"reset\" order by 1 desc limit 1) and "
                                 + "`timestamp` > (select `timestamp` from olapsession where session_id = \"" + sessionid + "\" and value_en = \"read\"  order by 1 desc limit 1)";
         DBmanager.executeMetaQuery(cube, sql, res -> {
             while (res.next()) {
@@ -711,17 +711,17 @@ public final class QueryGenerator {
         });
 
         sql = cube.getDbms().equalsIgnoreCase("oracle") ?
-                "with  t1 as (select timest from (select timestamp as timest from OLAPsession where session_id = \"" + sessionid + "\" and value_en = 'read' order by 1 desc) where rownum <=1), "
-                        + "t2 as (select timest from (select timestamp as timest from OLAPsession where session_id = \"" + sessionid + "\" and value_en = 'navigate' order by 1 desc) where rownum <=1), "
-                        + "t3 as (select timest from (select timestamp as timest from OLAPsession, t2 where session_id = \"" + sessionid + "\" and value_en <> 'navigate' and timestamp >= t2.timest order by 1 asc) where rownum <=1) "
+                "with  t1 as (select timest from (select timestamp as timest from OLAPSESSION where session_id = \"" + sessionid + "\" and value_en = 'read' order by 1 desc) where rownum <=1), "
+                        + "t2 as (select timest from (select timestamp as timest from OLAPSESSION where session_id = \"" + sessionid + "\" and value_en = 'navigate' order by 1 desc) where rownum <=1), "
+                        + "t3 as (select timest from (select timestamp as timest from OLAPSESSION, t2 where session_id = \"" + sessionid + "\" and value_en <> 'navigate' and timestamp >= t2.timest order by 1 asc) where rownum <=1) "
                         + "select count(*) as steps, count(distinct case when annotation_id is null or annotation_id = '' then null else annotation_id end) "
-                        + "from OLAPsession, t1, t2, t3 "
+                        + "from OLAPSESSION, t1, t2, t3 "
                         + "where session_id = \"" + sessionid + "\" and value_en <> 'navigate' and timestamp > t1.timest and timestamp <= t3.timest"
                 :
                 "select count(*) as steps, count(distinct case when annotation_id is null or annotation_id = '' then null else annotation_id end) "
-                        + "from OLAPsession "
+                        + "from OLAPSESSION "
                         + "where session_id = \"" + sessionid + "\" and `value_en` <> \"navigate\" and"
-                        + "    `timestamp` > (select `timestamp` from OLAPsession where session_id = \"" + sessionid + "\" and value_en = \"read\" order by 1 desc limit 1) and "
+                        + "    `timestamp` > (select `timestamp` from OLAPSESSION where session_id = \"" + sessionid + "\" and value_en = \"read\" order by 1 desc limit 1) and "
                                 + "    `timestamp` <= (select `timestamp` from olapsession where session_id = \"" + sessionid + "\" and value_en <> \"navigate\" and `timestamp` >= (select `timestamp` from olapsession where session_id = \"" + sessionid + "\" and value_en = \"navigate\" order by 1 desc limit 1) order by 1 asc limit 1)";
         DBmanager.executeMetaQuery(cube, sql, res -> {
             while (res.next()) {

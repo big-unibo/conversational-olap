@@ -8,12 +8,14 @@ import it.unibo.conversational.database.DBmanager
 import it.unibo.conversational.olap.Operator
 import it.unibo.vocalization.modules.Peculiarity.format
 import it.unibo.vocalization.modules.Peculiarity.getCost
-import krangl.DataFrame
+import krangl.*
+import krangl.ArrayUtils.handleListErasure
 import krangl.fromResultSet
-import krangl.readCSV
-import krangl.rename
 import org.apache.commons.lang3.tuple.Pair
 import org.apache.commons.lang3.tuple.Triple
+import java.sql.ResultSet
+import java.time.LocalDate
+import java.time.LocalTime
 
 /**
  * Describe the state of a certain pattern
@@ -116,6 +118,49 @@ interface IGPSJ {
     val selection: Set<Triple<String, String, String>>
 }
 
+fun fromResultSet(rs: ResultSet): DataFrame {
+
+    val numColumns = rs.metaData.columnCount
+    val colNames = (1..numColumns).map { rs.metaData.getColumnName(it) }
+
+    // see http://www.h2database.com/html/datatypes.html
+    val colData = listOf<MutableList<Any?>>().toMutableList()
+
+    val colTypes = (1..numColumns).map { rs.metaData.getColumnTypeName(it) }
+
+    //    http://www.cs.toronto.edu/~nn/csc309/guide/pointbase/docs/html/htmlfiles/dev_datatypesandconversionsFIN.html
+    colTypes.map {
+        when (it) {
+            "INTEGER", "INT", "SMALLINT" -> listOf<Int>()
+            "REAL", "FLOAT", "NUMERIC", "DECIMAL", "NUM", "DOUBLE" -> listOf<Double?>()
+            "BOOLEAN" -> listOf<Boolean?>()
+            "DATE" -> listOf<LocalDate?>()
+            "TIME" -> listOf<LocalTime?>()
+            "CHAR", "CHARACTER", "VARCHAR", "TEXT" -> listOf<String>()
+            else -> throw IllegalArgumentException("Column type ${it} is not yet supported by {krangl}.")
+        }.toMutableList().let { colData.add(it as MutableList<Any?>) }
+    }
+
+    // see https://stackoverflow.com/questions/21956042/mapping-a-jdbc-resultset-to-an-object
+    while (rs.next()) {
+        for (colIndex in 1..numColumns) {
+            val any: Any? = when (colTypes[colIndex - 1]) {
+                "INTEGER", "INT", "SMALLINT" -> rs.getInt(colIndex)
+                "REAL", "FLOAT", "NUMERIC", "DECIMAL", "NUM", "DOUBLE" -> rs.getDouble(colIndex)
+                "BOOLEAN" -> rs.getBoolean(colIndex)
+                "DATE" -> rs.getDate(colIndex).toLocalDate()
+                "TIME" -> rs.getTime(colIndex).toLocalTime()
+                "CHAR", "CHARACTER", "VARCHAR", "TEXT" -> rs.getString(colIndex)
+                else -> throw IllegalArgumentException("Column type ${colTypes[colIndex - 1]} is not yet supported by {krangl}. ")
+            }
+            colData[colIndex - 1].add(any)
+        }
+    }
+
+    val cols = colNames.zip(colData).map { (name, data) -> handleListErasure(name, data) }
+    return dataFrameOf(*cols.toTypedArray())
+}
+
 class GPSJ(
     override val cube: Cube?,
     override val fileName: String?,
@@ -135,7 +180,7 @@ class GPSJ(
             } else if (cube != null) {
                 val sql = Parser.createQuery(cube, attributes, measures, selection)
                 DBmanager.executeDataQuery(cube, sql) {
-                    curdf = DataFrame.fromResultSet(it)
+                    curdf = fromResultSet(it) // DataFrame.fromResultSet(it)
                 }
                 curdf = curdf!!.rename(*curdf!!.names.map { Pair(it, it.toUpperCase()) }.toTypedArray())
                 return curdf!!

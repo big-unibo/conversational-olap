@@ -2,8 +2,8 @@ package test;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import it.unibo.vocalization.modules.IVocalizationPattern;
 import it.unibo.vocalization.Optimizer;
+import it.unibo.vocalization.modules.IVocalizationPattern;
 import it.unibo.vocalization.modules.VocalizationPattern;
 import org.junit.jupiter.api.Test;
 

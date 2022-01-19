@@ -7,7 +7,6 @@ import it.unibo.conversational.algorithms.Parser;
 import it.unibo.conversational.algorithms.Parser.Type;
 import it.unibo.conversational.database.Config;
 import it.unibo.conversational.database.Cube;
-import it.unibo.conversational.database.DBmanager;
 import it.unibo.conversational.database.QueryGenerator;
 import it.unibo.conversational.datatypes.Entity;
 import it.unibo.conversational.datatypes.Mapping;
@@ -23,7 +22,6 @@ import org.junit.jupiter.api.Test;
 import java.io.*;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static it.unibo.conversational.Validator.parseAndTranslate;
@@ -630,11 +628,11 @@ public class TestOLAP {
 //
 //        DBmanager.executeQuery(cube, "delete from OLAPsession where session_id = '" + sessionid + "'");
 //    }
-
-    @Test
-    public void testSessionSerializationAndEvaluation03() throws Exception {
-        final Mapping true_fullquery = execute("avg unit sales on 1997", "", "avg unit sales where year = 1997");
-        final Mapping true_session = execute("avg unit sales on 1997 by category", "", "avg unit sales where year = 1997 by product_category");
-        checkSerializedSession("test123@test.test_q1", true_fullquery, true_session, 3);
-    }
+//
+//    @Test
+//    public void testSessionSerializationAndEvaluation03() throws Exception {
+//        final Mapping true_fullquery = execute("avg unit sales on 1997", "", "avg unit sales where year = 1997");
+//        final Mapping true_session = execute("avg unit sales on 1997 by category", "", "avg unit sales where year = 1997 by product_category");
+//        checkSerializedSession("test123@test.test_q1", true_fullquery, true_session, 3);
+//    }
 }
