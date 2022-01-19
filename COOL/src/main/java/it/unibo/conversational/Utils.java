@@ -336,8 +336,8 @@ public final class Utils {
         while (gcIterator.hasNext()) {
             final Entity attr = QueryGenerator.getLevel(c, unquote(gcIterator.next().toString(), ignoreQuotes));
             attributes.add(attr);
-            groupby += attr.fullQualifier().toLowerCase() + (gcIterator.hasNext() ? ", " : "");
-            select += attr.fullQualifier().toLowerCase() + (gcIterator.hasNext() ? ", " : "");
+            groupby += attr.fullQualifier().toUpperCase() + (gcIterator.hasNext() ? ", " : "");
+            select += attr.fullQualifier().toUpperCase() + (gcIterator.hasNext() ? ", " : "");
         }
 
         JSONArray sc = json.getJSONArray(quote(Type.SC.toString(), ignoreQuotes));

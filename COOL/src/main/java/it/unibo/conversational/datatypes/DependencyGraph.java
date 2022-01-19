@@ -36,10 +36,11 @@ public class DependencyGraph {
                 return getCovidMartDependencies();
             case "sales_fact_1997":
                 return getFoodMartDependencies();
+            case "ssb_test_lineorder":
             case "lineorder2": // ssb cube
                 return getSSBDependencies();
         }
-        throw new IllegalArgumentException(DependencyGraph.class + ": unknown schema " + cube.getMetaData());
+        throw new IllegalArgumentException(DependencyGraph.class + ": unknown schema " + cube.getFactTable());
     }
 
     private static Graph<String, DefaultEdge> getSSBDependencies() {

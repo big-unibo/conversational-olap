@@ -1,6 +1,7 @@
 package it.unibo.conversational.database;
 
 import java.util.List;
+import java.util.Locale;
 
 public class Cube {
     private String datamart;
@@ -24,7 +25,7 @@ public class Cube {
     }
 
     public String getFactTable() {
-        return facttable;
+        return facttable.toLowerCase();
     }
 
     public void setFactTable(final String fact_table) {

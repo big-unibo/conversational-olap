@@ -1,0 +1,37 @@
+cubes:
+  - dataMart: SSB_TEST
+    factTable: SSB_TEST_LINEORDER
+    synonyms:
+      - SSBORA_TEST
+    metadata: SSB_TEST
+    dbms: mysql
+    ip: 127.0.0.1
+    port: 3306
+    create: false
+    importmembers: false
+    user: root
+    pwd: root
+  - dataMart: foodmart
+    factTable: sales_fact_1997
+    synonyms:
+      - SALES
+    metadata: foodmart
+    dbms: mysql
+    ip: 127.0.0.1
+    port: 3306
+    create: false
+    importmembers: false
+    user: root
+    pwd: root
+  - dataMart: covid_weekly
+    factTable: ft
+    synonyms:
+      - covid
+    metadata: covid_weekly
+    dbms: mysql
+    ip: 127.0.0.1
+    port: 3306
+    create: false
+    importmembers: false
+    user: root
+    pwd: root

@@ -16,7 +16,6 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -57,7 +56,8 @@ public class TestAmbiguity {
         final List<Ngram> ann = ambiguousMapping.getAnnotatedNgrams();
         assertTrue(ann.isEmpty(), ann.toString());
         try {
-            DBmanager.executeDataQuery(cube, Parser.getSQLQuery(cube, ambiguousMapping), res -> {});
+            DBmanager.executeDataQuery(cube, Parser.getSQLQuery(cube, ambiguousMapping), res -> {
+            });
             ambiguousMapping.toJSON(cube, "", com.google.common.base.Optional.of(100L));
         } catch (final Exception e) {
             e.printStackTrace();
@@ -127,11 +127,13 @@ public class TestAmbiguity {
         checkEquals(cube, ambiguousMapping, correctSentence, true);
     }
 
-     /** Test disambiguation. */
-     @Test
-     public void test01() throws Exception {
-         test(foodmart, "sum unit sales by product id in 1997", "product_id", "year = 1997", "sum unit_sales", 0);
-     }
+    /**
+     * Test disambiguation.
+     */
+    @Test
+    public void test01() throws Exception {
+        test(foodmart, "sum unit sales by product id in 1997", "product_id", "year = 1997", "sum unit_sales", 0);
+    }
 
     /**
      * Test disambiguation.
@@ -410,45 +412,77 @@ public class TestAmbiguity {
 
     @Test
     public void ssbTest01() throws Exception {
-        test(ssb(), "sum quantity for Apolonia Carroll", "", "customer = Apolonia Carroll", "sum quantity", 0);
+        try {
+            test(ssb(), "sum quantity for Apolonia Carroll", "", "customer = Apolonia Carroll", "sum quantity", 0);
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
     public void ssbTest02() throws Exception {
-        test(ssb(), "count sales for catskill eagle", "", "product = A Catskill Eagle", "count lineorder2", 0);
-        test(ssb(), "count sales", "", "", "count lineorder2", 0);
+        try {
+            test(ssb(), "count sales for catskill eagle", "", "product = A Catskill Eagle", "count lineorder2", 0);
+            test(ssb(), "count sales", "", "", "count lineorder2", 0);
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
     public void ssbTest05() throws Exception {
-        test(ssb(), "extended price", "", "", "avg extendedprice", 1);
-        test(ssb(), "extended price for catskill eagle", "", "product = A Catskill Eagle", "avg extendedprice", 1);
-        // test(ssb, "extended price by month in 2010 for catskill eagle united states by supplier", "month, supplier", "year = 2010 and product = A Catskill Eagle", "avg extendedprice", 1);
+        try {
+            test(ssb(), "extended price", "", "", "avg extendedprice", 1);
+            test(ssb(), "extended price for catskill eagle", "", "product = A Catskill Eagle", "avg extendedprice", 1);
+            // test(ssb, "extended price by month in 2010 for catskill eagle united states by supplier", "month, supplier", "year = 2010 and product = A Catskill Eagle", "avg extendedprice", 1);
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
     public void ssbTest25() throws Exception {
-        test(ssb(), "reven by nation for 2015 as year", "nation", "year = 2015", "avg revenue", 1);
+        try {
+            test(ssb(), "reven by nation for 2015 as year", "nation", "year = 2015", "avg revenue", 1);
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
     public void ssbTest58() throws Exception {
-        test(ssb(), "sum revenue for mint milk chocolate as product name", "", "product = mint milk chocolate", "sum revenue", 0);
+        try {
+            test(ssb(), "sum revenue for mint milk chocolate as product name", "", "product = mint milk chocolate", "sum revenue", 0);
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
     public void ssbTest85() throws Exception {
-        test(ssb(), "extended price by month for mint milk chocolate as product", "month", "product = mint milk chocolate", "avg extendedprice", 1);
-        // test(ssb(), "extended price by month for mint chocol as product", "month", "product = mint milk chocolate", "avg extendedprice", 1);
+        try {
+            test(ssb(), "extended price by month for mint milk chocolate as product", "month", "product = mint milk chocolate", "avg extendedprice", 1);
+            // test(ssb(), "extended price by month for mint chocol as product", "month", "product = mint milk chocolate", "avg extendedprice", 1);
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
     public void ssbTest98() throws Exception {
-        test(ssb(), "sum reve by product for Apolonia Carroll as customer", "product", "customer = Apolonia Carroll", "sum revenue", 0);
+        try {
+            test(ssb(), "sum reve by product for Apolonia Carroll as customer", "product", "customer = Apolonia Carroll", "sum revenue", 0);
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
     public void ssbTest108() throws Exception {
-        test(ssb(), "extended price for united states", "", "nation = united states", "avg extendedprice", 2);
+        try {
+            test(ssb(), "extended price for united states", "", "nation = united states", "avg extendedprice", 2);
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
     }
 }

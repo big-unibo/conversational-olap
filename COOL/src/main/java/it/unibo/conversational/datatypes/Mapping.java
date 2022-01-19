@@ -12,14 +12,13 @@ import it.unibo.conversational.algorithms.Parser.Type;
 import it.unibo.conversational.database.Cube;
 import it.unibo.conversational.database.DBmanager;
 import it.unibo.conversational.datatypes.Ngram.AnnotationType;
-import it.unibo.conversational.vocalization.main.VolapSession;
+import it.unibo.trummervocalization.main.VolapSession;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.json.JSONObject;
 import zhsh.Tree;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -117,8 +116,6 @@ public final class Mapping implements Serializable {
             });
         }
     }
-
-    ;
 
     /**
      * Create a CSV representing the mapping.
@@ -407,7 +404,7 @@ public final class Mapping implements Serializable {
         final String sql = getAnnotatedNgrams().isEmpty() ? Parser.getSQLQuery(cube, this) : "";
         final List<JSONObject> result = Lists.newLinkedList();
         final JSONObject res = new JSONObject();
-        final JSONObject vocalization = new JSONObject();
+
         if (!sql.isEmpty()) {
             final long startTime = System.currentTimeMillis();
             final String sqlwithlimit;
@@ -429,19 +426,27 @@ public final class Mapping implements Serializable {
             res.append("clauses", ngram);
         });
         // If the query is a GPSJ with no annotations, it can be executed. So return its SQL and query result.
-        if (!sql.isEmpty()) {
-            res.put("sql", sql);
-            res.put("result", result.remove(0));
-            try {
-                Pair<String, Pair<Double, Double>> voc = VolapSession.getInstance().executeQuery(sql, false);
-                vocalization.put("description", voc.getLeft());
-                vocalization.put("error", voc.getRight().getLeft());
-                vocalization.put("quality", voc.getRight().getRight());
-            } catch (Exception e) {
-                vocalization.put("message", e.getMessage());
-            }
-            res.put("vocalization", vocalization);
-        }
+
+         if (!sql.isEmpty()) {
+             res.put("sql", sql);
+             res.put("result", result.remove(0));
+             // /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+             // THIS ENABLES TRUMMER's CODE
+             // /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+             //     final JSONObject vocalization = new JSONObject();
+             //     try {
+             //         Pair<String, Pair<Double, Double>> voc = VolapSession.getInstance().executeQuery(sql, false);
+             //         vocalization.put("description", voc.getLeft());
+             //         vocalization.put("error", voc.getRight().getLeft());
+             //         vocalization.put("quality", voc.getRight().getRight());
+             //     } catch (Exception e) {
+             //         vocalization.put("message", e.getMessage());
+             //     }
+             //     res.put("vocalization", vocalization);
+             // /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+             // THIS ENDS TRUMMER's CODE
+             // /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+         }
         if (nlp != null) {
             res.put("tree_csv", toCsv(this, nlp));
         }

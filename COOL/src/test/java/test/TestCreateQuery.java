@@ -31,7 +31,7 @@ public class TestCreateQuery {
     @Test
     public void test1() {
         execute("{" +
-                "\"GC\": [\"store_id\", \"the_year\"]," +
+                "\"GC\": [\"STORE_ID\", \"the_year\"]," +
                 "\"MC\": [{\"AGG\": \"sum\", \"MEA\": \"unit_sales\"}, {\"AGG\": \"avg\", \"MEA\": \"unit_sales\"}]," +
                 "\"SC\": [{\"ATTR\": \"product_id\", \"COP\": \"=\", \"VAL\": [\"1\"]}, {\"ATTR\": \"the_year\", \"COP\": \"=\", \"VAL\": [\"1998\"]}]" +
                 "}");
@@ -58,6 +58,6 @@ public class TestCreateQuery {
      */
     @Test
     public void test4() {
-        execute("{\"GC\": [\"store_id\", \"the_year\"],\"MC\": [{\"AGG\": \"sum\", \"MEA\": \"unit_sales\"}, {\"AGG\": \"avg\", \"MEA\": \"unit_sales\"}],\"SC\": []}");
+        execute("{\"GC\": [\"STORE_ID\", \"the_year\"],\"MC\": [{\"AGG\": \"sum\", \"MEA\": \"unit_sales\"}, {\"AGG\": \"avg\", \"MEA\": \"unit_sales\"}],\"SC\": []}");
     }
 }

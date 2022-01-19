@@ -7,7 +7,6 @@ import it.unibo.conversational.algorithms.Parser;
 import it.unibo.conversational.algorithms.Parser.Type;
 import it.unibo.conversational.database.Config;
 import it.unibo.conversational.database.Cube;
-import it.unibo.conversational.database.DBmanager;
 import it.unibo.conversational.database.QueryGenerator;
 import it.unibo.conversational.datatypes.Entity;
 import it.unibo.conversational.datatypes.Mapping;
@@ -23,7 +22,6 @@ import org.junit.jupiter.api.Test;
 import java.io.*;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static it.unibo.conversational.Validator.parseAndTranslate;
@@ -48,7 +46,7 @@ public class TestOLAP {
     }
 
     private void checkSerializedSession(final String sessionid, final Mapping fullquery, final Mapping session, int steps) throws IOException {
-        final Map<String, Object> statistics = QueryGenerator.getSessionStatistics(cube, sessionid, List.of(fullquery), List.of(session));
+        final Map<String, Object> statistics = QueryGenerator.getSessionStatistics(cube, sessionid, Lists.newArrayList(fullquery), Lists.newArrayList(session));
         assertTrue((long) statistics.get("fullquery_time") >= 0);
         assertTrue((long) statistics.get("session_time") >= 0);
         assertEquals(1.0, (double) statistics.get("fullquery_sim"), 0.001);
@@ -573,68 +571,68 @@ public class TestOLAP {
         assertEquals(op1, deserialized);
     }
 
-    /**
-     * Test serialization
-     *
-     * @throws Exception in case of error
-     */
-    @Test
-    public void testSessionSerializationAndEvaluation01() throws Exception {
-        final String sessionid = "foo1-" + UUID.randomUUID().toString();
-        QueryGenerator.dropSession(cube, sessionid);
+//    /**
+//     * Test serialization
+//     *
+//     * @throws Exception in case of error
+//     */
+//    @Test
+//    public void testSessionSerializationAndEvaluation01() throws Exception {
+//        final String sessionid = "foo1-" + UUID.randomUUID().toString();
+//        QueryGenerator.dropSession(cube, sessionid);
+//
+//        QueryGenerator.saveSession(cube, sessionid, null, "read", null, null, null, null);
+//
+//        final Mapping session = execute("avg unit sales on 1997", "", "average unit sales where year = 1997");
+//        QueryGenerator.saveSession(cube, sessionid, null, "avg unit sales on 1997", "media delle unità vendute nel 1997", "100", session, null);
+//        QueryGenerator.saveSession(cube, sessionid, null, "navigate", null, null, session, null);
+//
+//        final Operator op2 = (Operator) parseAndTranslate(cube, Operator.class, session, 0.5, Lists.newArrayList(), "slice on beer and wine").getBest();
+//        op2.apply(session.bestNgram);
+//        QueryGenerator.saveSession(cube, sessionid, null, "slice on beer and wine", "selezione birra e vino", null, session, op2);
+//
+//        QueryGenerator.saveSession(cube, sessionid, null, "reset", null, null, session, op2);
+//
+//        final Mapping true_fullquery = execute("avg unit sales on 1997", "", "avg unit sales where year = 1997");
+//        final Mapping true_session = execute("avg unit sales on 1997 and category is Beer and Wine", "", "avg unit sales where year = 1997 and product_category = Beer and Wine");
+//        checkSerializedSession(sessionid, true_fullquery, true_session, 2);
+//
+//        DBmanager.executeQuery(cube, "delete from OLAPsession where session_id = '" + sessionid + "'");
+//    }
 
-        QueryGenerator.saveSession(cube, sessionid, null, "read", null, null, null, null);
-
-        final Mapping session = execute("avg unit sales on 1997", "", "average unit sales where year = 1997");
-        QueryGenerator.saveSession(cube, sessionid, null, "avg unit sales on 1997", "media delle unità vendute nel 1997", "100", session, null);
-        QueryGenerator.saveSession(cube, sessionid, null, "navigate", null, null, session, null);
-
-        final Operator op2 = (Operator) parseAndTranslate(cube, Operator.class, session, 0.5, Lists.newArrayList(), "slice on beer and wine").getBest();
-        op2.apply(session.bestNgram);
-        QueryGenerator.saveSession(cube, sessionid, null, "slice on beer and wine", "selezione birra e vino", null, session, op2);
-
-        QueryGenerator.saveSession(cube, sessionid, null, "reset", null, null, session, op2);
-
-        final Mapping true_fullquery = execute("avg unit sales on 1997", "", "avg unit sales where year = 1997");
-        final Mapping true_session = execute("avg unit sales on 1997 and category is Beer and Wine", "", "avg unit sales where year = 1997 and product_category = Beer and Wine");
-        checkSerializedSession(sessionid, true_fullquery, true_session, 2);
-
-        DBmanager.executeQuery(cube, "delete from OLAPsession where session_id = '" + sessionid + "'");
-    }
-
-    /**
-     * Test serialization
-     *
-     * @throws Exception in case of error
-     */
-    @Test
-    public void testSessionSerializationAndEvaluation02() throws Exception {
-        final String sessionid = "foo-" + UUID.randomUUID().toString();
-        QueryGenerator.dropSession(cube, sessionid);
-
-        QueryGenerator.saveSession(cube, sessionid, null, "read", null, null, null, null);
-
-        final Mapping session = execute("avg unit sales on 1997", "", "average unit sales where year = 1997");
-        QueryGenerator.saveSession(cube, sessionid, null, "avg unit sales on 1997", "media delle unità vendute nel 1997", "100", session, null);
-        QueryGenerator.saveSession(cube, sessionid, null, "navigate", null, null, session, null);
-
-        final Operator op2 = (Operator) parseAndTranslate(cube, Operator.class, session, 0.5, Lists.newArrayList(), "add category").getBest();
-        op2.apply(session.bestNgram);
-        QueryGenerator.saveSession(cube, sessionid, null, "add category", "aggiungi categoria", null, session, op2);
-
-        QueryGenerator.saveSession(cube, sessionid, null, "reset", null, null, session, op2);
-
-        final Mapping true_fullquery = execute("avg unit sales on 1997", "", "avg unit sales where year = 1997");
-        final Mapping true_session = execute("avg unit sales on 1997 by category", "", "avg unit sales where year = 1997 by product_category");
-        checkSerializedSession(sessionid, true_fullquery, true_session, 2);
-
-        DBmanager.executeQuery(cube, "delete from OLAPsession where session_id = '" + sessionid + "'");
-    }
-
-    @Test
-    public void testSessionSerializationAndEvaluation03() throws Exception {
-        final Mapping true_fullquery = execute("avg unit sales on 1997", "", "avg unit sales where year = 1997");
-        final Mapping true_session = execute("avg unit sales on 1997 by category", "", "avg unit sales where year = 1997 by product_category");
-        checkSerializedSession("test123@test.test_q1", true_fullquery, true_session, 3);
-    }
+//    /**
+//     * Test serialization
+//     *
+//     * @throws Exception in case of error
+//     */
+//    @Test
+//    public void testSessionSerializationAndEvaluation02() throws Exception {
+//        final String sessionid = "foo-" + UUID.randomUUID().toString();
+//        QueryGenerator.dropSession(cube, sessionid);
+//
+//        QueryGenerator.saveSession(cube, sessionid, null, "read", null, null, null, null);
+//
+//        final Mapping session = execute("avg unit sales on 1997", "", "average unit sales where year = 1997");
+//        QueryGenerator.saveSession(cube, sessionid, null, "avg unit sales on 1997", "media delle unità vendute nel 1997", "100", session, null);
+//        QueryGenerator.saveSession(cube, sessionid, null, "navigate", null, null, session, null);
+//
+//        final Operator op2 = (Operator) parseAndTranslate(cube, Operator.class, session, 0.5, Lists.newArrayList(), "add category").getBest();
+//        op2.apply(session.bestNgram);
+//        QueryGenerator.saveSession(cube, sessionid, null, "add category", "aggiungi categoria", null, session, op2);
+//
+//        QueryGenerator.saveSession(cube, sessionid, null, "reset", null, null, session, op2);
+//
+//        final Mapping true_fullquery = execute("avg unit sales on 1997", "", "avg unit sales where year = 1997");
+//        final Mapping true_session = execute("avg unit sales on 1997 by category", "", "avg unit sales where year = 1997 by product_category");
+//        checkSerializedSession(sessionid, true_fullquery, true_session, 2);
+//
+//        DBmanager.executeQuery(cube, "delete from OLAPsession where session_id = '" + sessionid + "'");
+//    }
+//
+//    @Test
+//    public void testSessionSerializationAndEvaluation03() throws Exception {
+//        final Mapping true_fullquery = execute("avg unit sales on 1997", "", "avg unit sales where year = 1997");
+//        final Mapping true_session = execute("avg unit sales on 1997 by category", "", "avg unit sales where year = 1997 by product_category");
+//        checkSerializedSession("test123@test.test_q1", true_fullquery, true_session, 3);
+//    }
 }

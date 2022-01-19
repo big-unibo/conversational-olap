@@ -1,13 +1,6 @@
-*.twbr
-dump.sql
-credentials.txt
-COOL/resources/**/*.csv
-!COOL/resources/test/**/test.csv
-!COOL/resources/**/sessionsim.csv
-COOL/resources/generated/*.csv
-COOL/.tomcatplugin
-.idea/
 config.yml
+*.sql
+.idea/
 
 # Created by https://www.gitignore.io/api/java,scala,linux,macos,python,gradle,kotlin,windows,eclipse,intellij,virtualenv,jupyternotebooks
 # Edit at https://www.gitignore.io/?templates=java,scala,linux,macos,python,gradle,kotlin,windows,eclipse,intellij,virtualenv,jupyternotebooks
