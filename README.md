@@ -1,6 +1,6 @@
 # Conversational BI
 
-![Build pass](https://travis-ci.org/w4bo/CBI.svg?branch=master)
+[![build](https://github.com/big-unibo/Conversational-BI/actions/workflows/build.yml/badge.svg)](https://github.com/big-unibo/Conversational-BI/actions/workflows/build.yml)
 
 # Running this project
 
