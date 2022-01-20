@@ -9,9 +9,6 @@ Installing Java 14 and checking if the tests pass
     curl -sL https://github.com/shyiko/jabba/raw/master/install.sh | bash && . ~/.jabba/jabba.sh
     jabba install openjdk@1.14.0
     jabba use openjdk@1.14.0
-    rm -rf COOL
-    git clone git@github.com:w4bo/COOL.git
-    cd COOL/COOL
     ./gradlew --stacktrace
 
 Running the validator with the sequential scan of synonyms
