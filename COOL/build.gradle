@@ -29,7 +29,7 @@ sourceSets {
 
 dependencies {
     antlr "org.antlr:antlr4:4.8-1"
-    implementation 'org.antlr:antlr4:4.5'
+    implementation 'org.antlr:antlr4:4.5.3'
     implementation 'javax:javaee-api:8.0.1'
     implementation 'io.ktor:ktor-server-servlet:1.4.3'
     implementation 'org.jetbrains.kotlinx:kotlinx-cli:0.3.2'
