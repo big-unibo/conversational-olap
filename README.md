@@ -4,8 +4,8 @@
 
 ## Research papers
 
-- Matteo Francia, Enrico Gallinucci, Matteo Golfarelli: COOL: A framework for conversational OLAP. **Information Systems** 104: 101752 (2022)
-- Matteo Francia, Enrico Gallinucci, Matteo Golfarelli: Conversational OLAP in Action. **Proc. of EDBT** 2021: 646-649
+- Matteo Francia, Enrico Gallinucci, Matteo Golfarelli: COOL: A framework for conversational OLAP. **Information Systems** 104: 101752 (2022). DOI: https://doi.org/10.1016/j.is.2021.101752
+- Matteo Francia, Enrico Gallinucci, Matteo Golfarelli: Conversational OLAP in Action. **Proc. of EDBT** 2021: 646-649. DOI: https://doi.org/10.5441/002/edbt.2021.74
 - Matteo Francia, Enrico Gallinucci, Matteo Golfarelli: Conversational OLAP (Discussion Paper). **Proc. of SEBD** 2021: 403-410
 - Matteo Francia, Enrico Gallinucci, Matteo Golfarelli: Towards Conversational OLAP. **Proc. of DOLAP** 2020: 6-15
 
