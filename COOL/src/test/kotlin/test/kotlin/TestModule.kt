@@ -57,9 +57,11 @@ class TestModule {
     fun test04() {
         val c1 = GPSJ(Config.getCube("SSBORA_TEST"), setOf("category"), setOf(Pair.of("sum", "quantity")), setOf())
         val c2 = GPSJ(Config.getCube("SSBORA_TEST"), setOf("product"), setOf(Pair.of("sum", "quantity")), setOf())
-        val t = TopK.compute(c1, c2)
-        t.forEach { println(it) }
-        val a = Assess.compute(c1, c2)
-        a.forEach { println(it) }
+//        val t = TopK.compute(c1, c2)
+//        t.forEach { println(it) }
+//        val a = Assess.compute(c1, c2)
+//        a.forEach { println(it) }
+        val b = OutlierDetection.compute(c1, c2)
+        b.forEach { println(it) }
     }
 }

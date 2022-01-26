@@ -8,14 +8,21 @@ import it.unibo.conversational.database.DBmanager
 import it.unibo.conversational.olap.Operator
 import it.unibo.vocalization.modules.Peculiarity.format
 import it.unibo.vocalization.modules.Peculiarity.getCost
-import krangl.*
 import krangl.ArrayUtils.handleListErasure
-import krangl.fromResultSet
+import krangl.DataFrame
+import krangl.dataFrameOf
+import krangl.readCSV
+import krangl.rename
 import org.apache.commons.lang3.tuple.Pair
 import org.apache.commons.lang3.tuple.Triple
+import java.io.BufferedReader
+import java.io.File
+import java.io.IOException
+import java.io.InputStreamReader
 import java.sql.ResultSet
 import java.time.LocalDate
 import java.time.LocalTime
+
 
 /**
  * Describe the state of a certain pattern
@@ -106,12 +113,56 @@ interface VocalizationModule {
     fun compute(cube1: IGPSJ?, cube2: IGPSJ): List<IVocalizationPattern> = compute(cube1, cube2, null)
     fun compute(cube1: IGPSJ?, cube2: IGPSJ, operator: Operator?): List<IVocalizationPattern>
     fun applyCondition(cube1: IGPSJ?, cube2: IGPSJ, operator: Operator?): Boolean = true
+    fun toPythonCommand(commandPath: String, pathToPythonFile: String, measures: Collection<String>): String = ""
+
+    /**
+     * Compute python algorithms
+     *
+     * @param pythonPath   outputPath to python installation (e.g., virtual env with configured libraries)
+     * @param outputPath   output path
+     * @param pythonModule module to execute
+     */
+    @Throws(IOException::class, InterruptedException::class)
+    fun computePython(pythonPath: String, outputPath: String, pythonModule: String, measures: Collection<String>): Long {
+        val commandPath: String
+        commandPath = if (File(pythonPath + "venv/Scripts").exists()) {
+            pythonPath + "venv/Scripts/python.exe " + pythonPath + pythonModule + " " //.replace("/", File.separator);
+        } else if (File(pythonPath + "venv/bin").exists()) {
+            pythonPath + "venv/bin/python " + pythonPath + pythonModule + " "
+        } else {
+            "python3 $pythonPath$pythonModule "
+        }
+        var startTime = System.currentTimeMillis()
+        val proc = Runtime.getRuntime().exec(toPythonCommand(commandPath, outputPath, measures))
+        val ret = proc.waitFor()
+        startTime = System.currentTimeMillis() - startTime
+        if (ret != 0) {
+            val stdInput = BufferedReader(InputStreamReader(proc.inputStream))
+            var s: String
+            var error = ""
+            while (stdInput.readLine().also { s = it } != null) {
+                error += """
+                $s
+                
+                """.trimIndent()
+            }
+            val stdError = BufferedReader(InputStreamReader(proc.errorStream))
+            while (stdError.readLine().also { s = it } != null) {
+                error += """
+                $s
+                
+                """.trimIndent()
+            }
+            throw java.lang.IllegalArgumentException(error)
+        }
+        return startTime
+    }
 }
 
 interface IGPSJ {
     val cube: Cube?
     val fileName: String?
-    val df: DataFrame
+    var df: DataFrame
     val attributes: Set<String>
     val measures: Set<Pair<String, String>>
     fun measureNames(): Set<String> = measures.map { it.right }.toSet()
@@ -169,7 +220,7 @@ class GPSJ(
     override val measures: Set<Pair<String, String>>,
     override val selection: Set<Triple<String, String, String>>
 ) : IGPSJ {
-    override val df: DataFrame
+    override var df: DataFrame
         get() {
             if (curdf != null) {
                 return curdf!!
@@ -188,6 +239,7 @@ class GPSJ(
                 throw IllegalArgumentException("Cannot get the data, both filename and cube are null")
             }
         }
+        set(value) { curdf = value }
 
     constructor(attributes: Set<String>, measures: Set<String>, selection: Set<Triple<String, String, String>>) : this(
         null,

@@ -15,7 +15,12 @@ object TopK : VocalizationModule {
     override fun compute(cube1: IGPSJ?, cube2: IGPSJ, operator: Operator?): List<IVocalizationPattern> {
         val cube: IGPSJ = if (cube1 != null) { Peculiarity.extendCubeWithProxy(cube2, cube1) } else { cube2 }
         val mea = cube.measures.first().right // get the current measure
+        return topKpatterns(cube, mea)
+    }
+
+    fun topKpatterns(cube: IGPSJ, mea: String): List<VocalizationPattern> {
         val sum: Double = cube.df[mea].sum()!!.toDouble() // get the sum of the measure
+        val count: Int = cube.df[mea].length // get the count of elements
         val df = cube.df.sortedByDescending(mea) // sort by descending value
         val patterns =
             (1..4).map { // get the topk
@@ -24,17 +29,17 @@ object TopK : VocalizationModule {
                 if (it == 1) {
                     val r = df.row(it - 1)
                     text += "The fact with highest $mea is ${tuple2string(cube, r)} with ${(r[mea] as Double).round()} "
-                    csum += if (cube1 == null) { r[mea] as Double } else { r[mea] as Double * r["peculiarity"] as Double }
+                    csum += if (!r.contains("peculiarity")) { r[mea] as Double } else { r[mea]  as Double * r["peculiarity"] as Double }
                 } else {
                     val tuples: String = (0 until it).map {
                         val r = df.row(it)
                         val s = tuple2string(cube, r)
-                        csum += if (cube1 == null) { r[mea] as Double } else { r[mea] as Double * r["peculiarity"] as Double }
+                        csum += if (!r.contains("peculiarity")) { r[mea] as Double } else { r[mea] as Double * r["peculiarity"] as Double }
                         s + " with " + (r[mea] as Double).round()
                     }.reduce { a, b -> "$a, $b" }
                     text += "The $it facts with highest $mea are $tuples"
                 }
-                VocalizationPattern(text, csum / sum, 1.0 * it / df.nrow, moduleName)
+                VocalizationPattern(text, 1 - ((sum - csum) / (count - it)) / (csum / it), 1.0 * it / df.nrow, moduleName)
             }.toList()
         return patterns
     }
