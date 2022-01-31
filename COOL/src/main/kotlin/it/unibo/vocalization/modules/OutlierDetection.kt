@@ -28,7 +28,7 @@ object OutlierDetection : VocalizationModule {
         computePython(Config.getPython(), path, "modules.py", cube.measureNames())
 
         cube.df = DataFrame.readCSV(File("$path$fileName"))
-        return topKpatterns(cube, "anomaly")
+        return topKpatterns(Skyline.moduleName, cube, "anomaly")
     }
 
     override fun applyCondition(cube1: IGPSJ?, cube2: IGPSJ, operator: Operator?): Boolean {

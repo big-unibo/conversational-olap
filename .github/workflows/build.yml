@@ -1,5 +1,20 @@
 name: "build"
-on: [push, pull_request]
+
+on:
+  push:
+    tags: '*'
+    branches-ignore:
+      - 'autodelivery**'
+      - 'bump-**'
+      - 'renovate/**'
+    paths-ignore:
+      - 'CHANGELOG.md'
+      - 'LICENSE'
+      - 'README.md'
+      - 'renovate.json'
+  pull_request:
+  workflow_dispatch:
+
 jobs:
   build:
     runs-on: ubuntu-20.04
@@ -15,18 +30,31 @@ jobs:
       - name: Run docker
         run: |
           cd COOL
-          cp .env.example .env
-          cp src/main/resources/config.example.yml src/main/resources/config.yml
-          chmod +x *.sh
+          ./init.sh
           ./build.sh
           ./download.sh
           ./start.sh
-      - name: Build
-        run: |
-          cd COOL
-          chmod +x ./gradlew
           ./gradlew
-      - name: Stop docker
+          ./stop.sh
+
+  release:
+    needs:
+      - build
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2.4.0
+      - name: Deploy
         run: |
           cd COOL
-          ./stop.sh
+          ./gradlew shadowJar
+          cd ..
+          mkdir -p dist/
+          cp COOL/build/libs/* dist/
+      - name: Release
+        run: |
+          npm install
+          npx semantic-release
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}

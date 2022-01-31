@@ -2,12 +2,9 @@ package it.unibo.vocalization.modules
 
 import it.unibo.conversational.database.Config
 import it.unibo.conversational.olap.Operator
-import it.unibo.vocalization.modules.Peculiarity.round
-import it.unibo.vocalization.modules.Peculiarity.tuple2string
 import it.unibo.vocalization.modules.TopK.topKpatterns
 import krangl.DataFrame
 import krangl.readCSV
-import krangl.sum
 import krangl.writeCSV
 import java.io.File
 import java.util.*
@@ -15,9 +12,9 @@ import java.util.*
 /**
  * Describe intention in action.
  */
-object OutlierDetection : VocalizationModule {
+object Skyline : VocalizationModule {
     override val moduleName: String
-        get() = "outlierdetection"
+        get() = "skyline"
 
     val fileName = "${UUID.randomUUID()}.csv"
     override fun compute(cube1: IGPSJ?, cube2: IGPSJ, operator: Operator?): List<IVocalizationPattern> {
@@ -28,11 +25,11 @@ object OutlierDetection : VocalizationModule {
         computePython(Config.getPython(), path, "modules.py", cube.measureNames())
 
         cube.df = DataFrame.readCSV(File("$path$fileName"))
-        return topKpatterns(cube, "anomaly")
+        return topKpatterns(moduleName, cube, "dominance").filter { it.int > 0 }
     }
 
     override fun applyCondition(cube1: IGPSJ?, cube2: IGPSJ, operator: Operator?): Boolean {
-        return cube2.measures.size == 1 && setOf("max", "sum", "avg").contains(cube2.measures.first().left.toLowerCase())
+        return cube2.measures.size > 1
     }
 
     override fun toPythonCommand(commandPath: String, path: String, measures: Collection<String>): String {

@@ -1,4 +1,4 @@
-python: '/path/to/src/main/python/'
+python: '!HOME!/src/main/python/'
 cubes:
   - dataMart: SSB_TEST
     factTable: SSB_TEST_LINEORDER

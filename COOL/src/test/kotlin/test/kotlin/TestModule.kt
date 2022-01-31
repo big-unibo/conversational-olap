@@ -1,19 +1,20 @@
 package test.kotlin
 
-import edu.stanford.nlp.coref.hybrid.HybridCorefPrinter.df
 import it.unibo.conversational.Validator
 import it.unibo.conversational.algorithms.Parser
 import it.unibo.conversational.database.Config
 import it.unibo.conversational.datatypes.Mapping
 import it.unibo.vocalization.modules.*
 import krangl.dataFrameOf
-import org.apache.commons.lang3.compare.ComparableUtils.ge
 import org.apache.commons.lang3.tuple.Pair
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import javax.security.enterprise.credential.Credential
 
 class TestModule {
+
+    val c1 = GPSJ(Config.getCube("SSBORA_TEST"), setOf("category"), setOf(Pair.of("sum", "quantity")), setOf())
+    val c2 = GPSJ(Config.getCube("SSBORA_TEST"), setOf("product"), setOf(Pair.of("sum", "quantity")), setOf())
 
     @Test
     fun test01() {
@@ -54,14 +55,59 @@ class TestModule {
     }
 
     @Test
-    fun test04() {
-        val c1 = GPSJ(Config.getCube("SSBORA_TEST"), setOf("category"), setOf(Pair.of("sum", "quantity")), setOf())
-        val c2 = GPSJ(Config.getCube("SSBORA_TEST"), setOf("product"), setOf(Pair.of("sum", "quantity")), setOf())
-//        val t = TopK.compute(c1, c2)
-//        t.forEach { println(it) }
-//        val a = Assess.compute(c1, c2)
-//        a.forEach { println(it) }
-        val b = OutlierDetection.compute(c1, c2)
-        b.forEach { println(it) }
+    fun testClustering() {
+        var t = Clustering.compute(null, c2)
+        t.forEach { println(it) }
+        assertTrue(t.all { p -> p.int.toDouble() > 0 })
+        t = Clustering.compute(c1, c2)
+        t.forEach { println(it) }
+        assertTrue(t.all { p -> p.int.toDouble() > 0 })
+    }
+
+    @Test
+    fun testAssess() {
+        val t = Assess.compute(c1, c2)
+        t.forEach { println(it) }
+        assertTrue(t.all { p -> p.int.toDouble() > 0 })
+    }
+
+    @Test
+    fun testSkyline() {
+        var t = Skyline.compute(null, c2)
+        t.forEach { println(it) }
+        assertTrue(t.all { p -> p.int.toDouble() > 0 })
+        t = Skyline.compute(c1, c2)
+        t.forEach { println(it) }
+        assertTrue(t.all { p -> p.int.toDouble() > 0 })
+    }
+
+    @Test
+    fun testOutlierDetection() {
+        var t = OutlierDetection.compute(null, c2)
+        t.forEach { println(it) }
+        assertTrue(t.all { p -> p.int.toDouble() > 0 })
+        t = OutlierDetection.compute(c1, c2)
+        t.forEach { println(it) }
+        assertTrue(t.all { p -> p.int.toDouble() > 0 })
+    }
+
+    @Test
+    fun testTopK() {
+        var t = TopK.compute(null, c2)
+        t.forEach { println(it) }
+        assertTrue(t.all { p -> p.int.toDouble() > 0 })
+        t = TopK.compute(c1, c2)
+        t.forEach { println(it) }
+        // assertTrue(t.all { p -> p.int.toDouble() > 0 })
+    }
+
+    @Test
+    fun testBottomK() {
+        var t = BottomK.compute(null, c2)
+        t.forEach { println(it) }
+        assertTrue(t.all { p -> p.int.toDouble() > 0 })
+        t = BottomK.compute(c1, c2)
+        t.forEach { println(it) }
+        assertTrue(t.all { p -> p.int.toDouble() > 0 })
     }
 }

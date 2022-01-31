@@ -3,7 +3,6 @@ package it.unibo.vocalization.modules
 import it.unibo.conversational.database.Config
 import it.unibo.conversational.olap.Operator
 import it.unibo.vocalization.modules.Peculiarity.round
-import it.unibo.vocalization.modules.TopK.topKpatterns
 import krangl.*
 import java.io.File
 import java.util.*
@@ -11,7 +10,7 @@ import java.util.*
 /**
  * Describe intention in action.
  */
-object Clustering2 : VocalizationModule {
+object Clustering : VocalizationModule {
     override val moduleName: String
         get() = "clustering"
 
