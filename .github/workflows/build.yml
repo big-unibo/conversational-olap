@@ -27,11 +27,23 @@ jobs:
         with:
           distribution: 'adopt'
           java-version: ${{ matrix.java }}
-      - name: Run docker
+      - uses: actions/setup-python@v2.5.0
+        with:
+          python-version: '3.x'
+          architecture: 'x64'
+      - name: Init
         run: |
           cd COOL
           chmod +x *.sh
           ./init.sh
+      - name: Test python
+        run: |
+          cd COOL/src/main/python
+          python3 --version
+          python3 -m unittest discover
+      - name: Test Kotlin
+        run: |
+          cd COOL
           ./build.sh
           ./download.sh
           ./start.sh

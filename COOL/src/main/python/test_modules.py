@@ -36,6 +36,7 @@ class TestAssess(unittest.TestCase):
 
         outlier_detection(X, measures)
         self.assertTrue((X["anomaly"] >= -1).all())
+        print(X)
 
         skyline(X, measures)
         self.assertTrue((X["dominance"] >= 0).all())

@@ -24,7 +24,7 @@ def clustering(X, measures):
     return X
 
 def outlier_detection(X, measures):
-    X["anomaly"] = IsolationForest(random_state=0).fit(X[measures]).predict(X[measures]) * 1.0
+    X["anomaly"] = IsolationForest(random_state=0).fit(X[measures]).decision_function(X[measures]) * -1.0
     return X
 
 def skyline(X, measures):
