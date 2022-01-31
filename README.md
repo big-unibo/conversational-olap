@@ -1,4 +1,4 @@
-# Conversational BI
+# Conversational OLAP
 
 [![build](https://github.com/big-unibo/Conversational-BI/actions/workflows/build.yml/badge.svg)](https://github.com/big-unibo/Conversational-BI/actions/workflows/build.yml)
 
