@@ -30,6 +30,7 @@ jobs:
       - name: Run docker
         run: |
           cd COOL
+          chmod +x *.sh
           ./init.sh
           ./build.sh
           ./download.sh
