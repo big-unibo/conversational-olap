@@ -49,6 +49,7 @@ jobs:
       - name: Deploy
         run: |
           cd COOL
+          chmod +x ./gradlew
           ./gradlew shadowJar
           cd ..
           mkdir -p dist/
