@@ -3,17 +3,21 @@ package it.unibo.vocalization.modules
 import it.unibo.conversational.database.Config
 import it.unibo.conversational.olap.Operator
 import it.unibo.vocalization.modules.Peculiarity.round
+import it.unibo.vocalization.modules.Peculiarity.tuple2string
 import it.unibo.vocalization.modules.TopK.topKpatterns
-import krangl.*
+import krangl.DataFrame
+import krangl.readCSV
+import krangl.sum
+import krangl.writeCSV
 import java.io.File
 import java.util.*
 
 /**
  * Describe intention in action.
  */
-object Clustering2 : VocalizationModule {
+object OutlierDetection : VocalizationModule {
     override val moduleName: String
-        get() = "clustering"
+        get() = "outlierdetection"
 
     val fileName = "${UUID.randomUUID()}.csv"
     override fun compute(cube1: IGPSJ?, cube2: IGPSJ, operator: Operator?): List<IVocalizationPattern> {
@@ -24,28 +28,11 @@ object Clustering2 : VocalizationModule {
         computePython(Config.getPython(), path, "modules.py", cube.measureNames())
 
         cube.df = DataFrame.readCSV(File("$path$fileName"))
-
-
-        val df = cube.df.groupBy("cluster_label")
-            .summarize(
-                "count" to { it.nrow },
-                "cluster_sil" to { it["cluster_sil"].mean() },
-                *cube.measureNames().map { m -> m to { it[m].mean()!!.round() } }.toTypedArray()
-            )
-        var text = "Among ${df.nrow} clusters of facts"
-
-        return df.sortedByDescending("count")
-            .rows
-            .map {
-                val card = it["count"].toString().toInt()
-                val n = listOf("largest", "second", "third", "fourth", "fifth")[it["cluster_label"].toString().toInt()]
-                text += ", the $n one includes ${it["count"]} facts and has ${cube.measureNames().map { m -> "${it[m]} as $m"  }.reduce{ a, b -> "$a, $b"}}"
-                VocalizationPattern(text, it["cluster_sil"] as Double, 1.0 * card / cube2.df.nrow, moduleName)
-            }
+        return topKpatterns(cube, "anomaly")
     }
 
     override fun applyCondition(cube1: IGPSJ?, cube2: IGPSJ, operator: Operator?): Boolean {
-        return cube2.measures.size > 1
+        return cube2.measures.size == 1 && setOf("max", "sum", "avg").contains(cube2.measures.first().left.toLowerCase())
     }
 
     override fun toPythonCommand(commandPath: String, path: String, measures: Collection<String>): String {
