@@ -48,7 +48,7 @@ jobs:
           ./build.sh
           ./download.sh
           ./start.sh
-          ./gradlew
+          ./gradlew --stacktrace
           ./stop.sh
 
   release:
