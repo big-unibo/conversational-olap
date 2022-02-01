@@ -1,13 +1,13 @@
 @file:JvmName("IInterfacesVocalization")
 
-package it.unibo.vocalization.modules
+package it.unibo.vocalization.generation.modules
 
 import it.unibo.conversational.algorithms.Parser
 import it.unibo.conversational.database.Cube
 import it.unibo.conversational.database.DBmanager
 import it.unibo.conversational.olap.Operator
-import it.unibo.vocalization.modules.Peculiarity.format
-import it.unibo.vocalization.modules.Peculiarity.getCost
+import it.unibo.vocalization.generation.modules.Peculiarity.format
+import it.unibo.vocalization.generation.modules.Peculiarity.getCost
 import krangl.ArrayUtils.handleListErasure
 import krangl.DataFrame
 import krangl.dataFrameOf
@@ -113,7 +113,15 @@ interface VocalizationModule {
     fun compute(cube1: IGPSJ?, cube2: IGPSJ): List<IVocalizationPattern> = compute(cube1, cube2, null)
     fun compute(cube1: IGPSJ?, cube2: IGPSJ, operator: Operator?): List<IVocalizationPattern>
     fun applyCondition(cube1: IGPSJ?, cube2: IGPSJ, operator: Operator?): Boolean = true
-    fun toPythonCommand(commandPath: String, pathToPythonFile: String, measures: Collection<String>): String = ""
+
+    fun toPythonCommand(commandPath: String, path: String, measures: Collection<String>): String {
+        val fullCommand = (commandPath.replace("/", File.separator) //
+                + " --path " + (if (path.contains(" ")) "\"" else "") + path.replace("\\", "/") + (if (path.contains(" ")) "\"" else "") //
+                + " --file ${OutlierDetection.fileName}" //
+                + " --module ${OutlierDetection.moduleName}"
+                + " --measures ${measures.reduce{ a, b -> "$a,$b" }}")
+        return fullCommand
+    }
 
     /**
      * Compute python algorithms

@@ -4,7 +4,9 @@ import it.unibo.conversational.Validator
 import it.unibo.conversational.algorithms.Parser
 import it.unibo.conversational.database.Config
 import it.unibo.conversational.datatypes.Mapping
-import it.unibo.vocalization.modules.*
+import it.unibo.vocalization.Optimizer
+import it.unibo.vocalization.generation.modules.*
+import it.unibo.vocalization.vocalize
 import krangl.dataFrameOf
 import org.apache.commons.lang3.tuple.Pair
 import org.junit.jupiter.api.Assertions.assertFalse
@@ -24,6 +26,14 @@ class TestModule {
         check(Assess.compute(cube1, cube2))
         check(Clustering.compute(cube1, cube2))
         check(TopK.compute(cube1, cube1))
+    }
+
+    @Test
+    fun testSession01() {
+        val c = Config.getCube("sales")
+        var ci: GPSJ? = null
+        var cj = GPSJ(c, setOf("store_city"), setOf(Pair.of("sum", "unit_sales")), setOf())
+        vocalize(ci, cj, null, 60).forEach { println(it) }
     }
 
     @Test
@@ -73,7 +83,10 @@ class TestModule {
     fun check(t: Collection<IVocalizationPattern>) {
         t.forEach { println(it) }
         // assertTrue(t.isNotEmpty(), "Empty patterns")
-        assertTrue(t.all { p -> p.int.toDouble() > 0 }, t.filter { p -> p.int.toDouble() <= 0 }.toString())
+        assertTrue(t.all { p -> p.int.toDouble() >= 0 }, t.filter { p -> p.int.toDouble() <= 0 }.toString())
+        if (t.isNotEmpty()) {
+            Optimizer.getPatterns(listOf(t.toList()), 120)
+        }
     }
 
     @Test

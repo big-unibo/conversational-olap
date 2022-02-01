@@ -1,4 +1,4 @@
-package it.unibo.vocalization.modules
+package it.unibo.vocalization.generation.modules
 
 import com.google.common.collect.Sets
 import it.unibo.conversational.database.QueryGenerator

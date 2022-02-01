@@ -1,8 +1,8 @@
-package it.unibo.vocalization.modules
+package it.unibo.vocalization.generation.modules
 
 import it.unibo.conversational.database.Config
 import it.unibo.conversational.olap.Operator
-import it.unibo.vocalization.modules.TopK.topKpatterns
+import it.unibo.vocalization.generation.modules.TopK.topKpatterns
 import krangl.DataFrame
 import krangl.readCSV
 import krangl.writeCSV
@@ -30,14 +30,5 @@ object Skyline : VocalizationModule {
 
     override fun applyCondition(cube1: IGPSJ?, cube2: IGPSJ, operator: Operator?): Boolean {
         return cube2.measures.size > 1
-    }
-
-    override fun toPythonCommand(commandPath: String, path: String, measures: Collection<String>): String {
-        val fullCommand = (commandPath.replace("/", File.separator) //
-                + " --path " + (if (path.contains(" ")) "\"" else "") + path.replace("\\", "/") + (if (path.contains(" ")) "\"" else "") //
-                + " --file $fileName" //
-                + " --module $moduleName"
-                + " --measures ${measures.reduce{ a, b -> "$a,$b" }}")
-        return fullCommand
     }
 }

@@ -1,7 +1,7 @@
-package it.unibo.vocalization.modules
+package it.unibo.vocalization.generation.modules
 
 import it.unibo.conversational.olap.Operator
-import it.unibo.vocalization.modules.Peculiarity.round
+import it.unibo.vocalization.generation.modules.Peculiarity.round
 import krangl.mean
 
 /**

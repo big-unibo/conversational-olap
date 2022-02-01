@@ -1,8 +1,8 @@
-package it.unibo.vocalization.modules
+package it.unibo.vocalization.generation.modules
 
 import it.unibo.conversational.olap.Operator
-import it.unibo.vocalization.modules.Peculiarity.round
-import it.unibo.vocalization.modules.Peculiarity.tuple2string
+import it.unibo.vocalization.generation.modules.Peculiarity.round
+import it.unibo.vocalization.generation.modules.Peculiarity.tuple2string
 import krangl.sum
 
 /**
@@ -13,7 +13,9 @@ object TopK : VocalizationModule {
         get() = "top-K"
 
     override fun compute(cube1: IGPSJ?, cube2: IGPSJ, operator: Operator?): List<IVocalizationPattern> {
-        val cube: IGPSJ = if (cube1 != null) { Peculiarity.extendCubeWithProxy(cube2, cube1) } else { cube2 }
+        val cube: IGPSJ = if (cube1 != null) {
+            Peculiarity.extendCubeWithProxy(cube2, cube1)
+        } else { cube2 }
         val mea = cube.measures.first().right // get the current measure
         return topKpatterns(moduleName, cube, mea)
     }

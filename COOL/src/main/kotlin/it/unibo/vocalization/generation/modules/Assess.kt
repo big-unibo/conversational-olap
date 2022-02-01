@@ -1,11 +1,11 @@
-package it.unibo.vocalization.modules
+package it.unibo.vocalization.generation.modules
 
 import it.unibo.conversational.Utils
 import it.unibo.conversational.olap.Operator
-import it.unibo.vocalization.modules.Peculiarity.argMax
-import it.unibo.vocalization.modules.Peculiarity.extendCubeWithProxy
-import it.unibo.vocalization.modules.Peculiarity.myMax
-import it.unibo.vocalization.modules.Peculiarity.tuple2string
+import it.unibo.vocalization.generation.modules.Peculiarity.argMax
+import it.unibo.vocalization.generation.modules.Peculiarity.extendCubeWithProxy
+import it.unibo.vocalization.generation.modules.Peculiarity.myMax
+import it.unibo.vocalization.generation.modules.Peculiarity.tuple2string
 import krangl.DataFrame
 import krangl.leftJoin
 import krangl.max
