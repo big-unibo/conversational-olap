@@ -138,11 +138,13 @@ interface VocalizationModule {
         startTime = System.currentTimeMillis() - startTime
         if (ret != 0) {
             val stdInput = BufferedReader(InputStreamReader(proc.inputStream))
-            var s: String
+            var s: String? = ""
             var error = ""
-            while (stdInput.readLine().also { s = it } != null) {
+            while (s != null) {
+                s = stdInput.readLine()
+
                 error += """
-                $s
+                ${s ?: ""}
                 
                 """.trimIndent()
             }

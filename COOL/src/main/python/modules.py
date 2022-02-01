@@ -31,7 +31,7 @@ def clustering(X, measures):
         silhouette_avg = silhouette_score(Z, kmeans.labels_)
         if silhouette_avg > max_sil:
             best_k = k
-    X.drop([x for x in X.columns if ("cluster_label_" in x or "cluster_sil_" in x) and str(best_k) not in x], inplace=True)
+    X.drop(columns=[x for x in X.columns if ("cluster_label_" in x or "cluster_sil_" in x) and str(best_k) not in x], inplace=True)
     X.rename(columns={"cluster_label_" + str(best_k): "cluster_label", "cluster_sil_" + str(best_k): "cluster_sil"}, inplace=True)
     return X
 
@@ -52,8 +52,7 @@ def skyline(X, measures):
         is_efficient = np.ones(costs.shape[0], dtype=bool)
         for i, c in enumerate(costs):
             if is_efficient[i]:
-                is_efficient[is_efficient] = np.any(costs[is_efficient] >= c,
-                                                    axis=1)  # Keep any point with a lower cost
+                is_efficient[is_efficient] = np.any(costs[is_efficient] >= c, axis=1)  # Keep any point with a lower cost
                 is_efficient[i] = True  # And keep self
         return is_efficient
 
