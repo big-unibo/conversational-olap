@@ -21,9 +21,9 @@ class TestModule {
         val c = Config.getCube("sales")
         val cube1 = GPSJ(c, setOf("product_category", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf())
         val cube2 = GPSJ(c, setOf("product_subcategory", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf())
-        Assess.compute(cube1, cube2)
-        Clustering.compute(cube1, cube2)
-        TopK.compute(cube1, cube1)
+        check(Assess.compute(cube1, cube2))
+        check(Clustering.compute(cube1, cube2))
+        check(TopK.compute(cube1, cube1))
     }
 
     @Test
@@ -39,75 +39,52 @@ class TestModule {
     @Test
     fun test03() {
         val df = dataFrameOf("PRODUCT", "QUANTITY")(
-            "Beer", 35.0,
-            "Wine", 32.0,
-            "Cola", 30.0,
-            "Pizza", 6.0,
-            "Bread", 5.0
+            "Beer", 35.0, "Wine", 32.0, "Cola", 30.0, "Pizza", 6.0, "Bread", 5.0
         )
         val c = GPSJ(df, setOf("product"), setOf(Pair.of("sum", "quantity")), setOf())
-        val p = Preamble.compute(null, c)
-        p.forEach { println(it) }
-        val t = TopK.compute(null, c)
-        t.forEach { println(it) }
-        val cl = Clustering.compute(null, c)
-        cl.forEach { println(it) }
+        check(Preamble.compute(null, c))
+        check(TopK.compute(null, c))
+        check(Clustering.compute(null, c))
     }
 
     @Test
     fun testClustering() {
-        var t = Clustering.compute(null, c2)
-        t.forEach { println(it) }
-        assertTrue(t.all { p -> p.int.toDouble() > 0 })
-        t = Clustering.compute(c1, c2)
-        t.forEach { println(it) }
-        assertTrue(t.all { p -> p.int.toDouble() > 0 })
+        check(Clustering.compute(null, c2))
+        check(Clustering.compute(c1, c2))
     }
 
     @Test
     fun testAssess() {
-        val t = Assess.compute(c1, c2)
-        t.forEach { println(it) }
-        assertTrue(t.all { p -> p.int.toDouble() > 0 })
+        check(Assess.compute(c1, c2))
     }
 
     @Test
     fun testSkyline() {
-        var t = Skyline.compute(null, c2)
-        t.forEach { println(it) }
-        assertTrue(t.all { p -> p.int.toDouble() > 0 })
-        t = Skyline.compute(c1, c2)
-        t.forEach { println(it) }
-        assertTrue(t.all { p -> p.int.toDouble() > 0 })
+        check(Skyline.compute(null, c2))
+        check(Skyline.compute(c1, c2))
     }
 
     @Test
     fun testOutlierDetection() {
-        var t = OutlierDetection.compute(null, c2)
+        check(OutlierDetection.compute(null, c2))
+        check(OutlierDetection.compute(c1, c2))
+    }
+
+    fun check(t: Collection<IVocalizationPattern>) {
         t.forEach { println(it) }
-        assertTrue(t.all { p -> p.int.toDouble() > 0 })
-        t = OutlierDetection.compute(c1, c2)
-        t.forEach { println(it) }
-        assertTrue(t.all { p -> p.int.toDouble() > 0 })
+        // assertTrue(t.isNotEmpty(), "Empty patterns")
+        assertTrue(t.all { p -> p.int.toDouble() > 0 }, t.filter { p -> p.int.toDouble() <= 0 }.toString())
     }
 
     @Test
     fun testTopK() {
-        var t = TopK.compute(null, c2)
-        t.forEach { println(it) }
-        assertTrue(t.all { p -> p.int.toDouble() > 0 })
-        t = TopK.compute(c1, c2)
-        t.forEach { println(it) }
-        // assertTrue(t.all { p -> p.int.toDouble() > 0 })
+        check(TopK.compute(null, c2))
+        check(TopK.compute(c1, c2))
     }
 
     @Test
     fun testBottomK() {
-        var t = BottomK.compute(null, c2)
-        t.forEach { println(it) }
-        assertTrue(t.all { p -> p.int.toDouble() > 0 })
-        t = BottomK.compute(c1, c2)
-        t.forEach { println(it) }
-        assertTrue(t.all { p -> p.int.toDouble() > 0 })
+        check(BottomK.compute(null, c2))
+        check(BottomK.compute(c1, c2))
     }
 }

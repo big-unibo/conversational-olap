@@ -11,7 +11,7 @@ import krangl.sum
  */
 object BottomK : VocalizationModule {
     override val moduleName: String
-        get() = "Bottom-K"
+        get() = "bottom-K"
 
     override fun compute(cube1: IGPSJ?, cube2: IGPSJ, operator: Operator?): List<IVocalizationPattern> {
         val cube: IGPSJ = if (cube1 != null) { Peculiarity.extendCubeWithProxy(cube2, cube1) } else { cube2 }

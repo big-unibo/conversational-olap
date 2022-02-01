@@ -9,7 +9,7 @@ import krangl.mean
  */
 object Preamble : VocalizationModule {
     override val moduleName: String
-        get() = "Preamble"
+        get() = "preamble"
 
     override fun compute(cube1: IGPSJ?, cube2: IGPSJ, operator: Operator?): List<IVocalizationPattern> {
         val text = "Grouped by ${cube2.attributes.reduce { a, b -> "$a, $b" }}, ${cube2.measureNames().map { "the average $it is ${cube2.df[it].mean()!!.round()}" }.reduce { a, b -> "$a, $b"}}"

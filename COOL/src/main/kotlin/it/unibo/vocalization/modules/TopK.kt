@@ -10,7 +10,7 @@ import krangl.sum
  */
 object TopK : VocalizationModule {
     override val moduleName: String
-        get() = "Top-K"
+        get() = "top-K"
 
     override fun compute(cube1: IGPSJ?, cube2: IGPSJ, operator: Operator?): List<IVocalizationPattern> {
         val cube: IGPSJ = if (cube1 != null) { Peculiarity.extendCubeWithProxy(cube2, cube1) } else { cube2 }
@@ -49,7 +49,7 @@ object TopK : VocalizationModule {
                 }
                 VocalizationPattern(text, int, 1.0 * it / df.nrow, moduleName)
             }.toList()
-        return patterns
+        return patterns.filter { it.int > 0 }
     }
 
     override fun applyCondition(cube1: IGPSJ?, cube2: IGPSJ, operator: Operator?): Boolean {

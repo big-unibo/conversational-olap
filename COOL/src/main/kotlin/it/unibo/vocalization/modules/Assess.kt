@@ -16,7 +16,7 @@ import krangl.to
  */
 object Assess : VocalizationModule {
     override val moduleName: String
-        get() = "Assess"
+        get() = "assess"
 
     private fun label(a: Double, b: Double): String {
         val c = a / (b + 1)
