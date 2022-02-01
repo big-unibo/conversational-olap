@@ -18,7 +18,7 @@ object Peculiarity {
     fun Double.format(digits: Int) = "%.${digits}f".format(this)
 
     fun tuple2string(cube: IGPSJ, r: DataFrameRow): String {
-        return cube.attributes.map { r[it].toString() }.reduce { a, b -> "$a, $b" }
+        return "(" + cube.attributes.map { r[it].toString() }.reduce { a, b -> "$a, $b" } + ")"
     }
 
     fun Double.round(decimals: Int = 0): Number {
@@ -98,7 +98,7 @@ object Peculiarity {
                     .map { m -> ("zscore_$m") `=` { (it["zscore_$m"] - stats["avg_zscore_$m"]).map<Double> { (abs(it) * 1000).roundToInt() / 1000.0 } } }
                     .toTypedArray())
             ).remove(gencoord.filter { !returnAllColumns && !cube2.attributes.contains(it) })
-        L.warn("Proxy completed")
+        L.debug("Proxy completed")
 
         // get the peculiarity
         var enh = cube.addColumn("peculiarity") { myMax(*(cube2.measureNames().map { m -> it["zscore_$m"] }.toTypedArray())) }

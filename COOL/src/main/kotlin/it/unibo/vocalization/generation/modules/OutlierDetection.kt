@@ -16,16 +16,14 @@ object OutlierDetection : VocalizationModule {
     override val moduleName: String
         get() = "outlierdetection"
 
-    val fileName = "${UUID.randomUUID()}.csv"
     override fun compute(cube1: IGPSJ?, cube2: IGPSJ, operator: Operator?): List<IVocalizationPattern> {
         val cube: IGPSJ = cube2
         val path = "generated/"
-
+        val fileName = "${UUID.randomUUID()}.csv"
         cube.df.writeCSV(File("$path$fileName"))
-        computePython(Config.getPython(), path, "modules.py", cube.measureNames())
-
+        computePython(Config.getPython(), path, "modules.py", fileName, cube.measureNames())
         cube.df = DataFrame.readCSV(File("$path$fileName"))
-        return topKpatterns(Skyline.moduleName, cube, "anomaly")
+        return topKpatterns(moduleName, cube, "anomaly")
     }
 
     override fun applyCondition(cube1: IGPSJ?, cube2: IGPSJ, operator: Operator?): Boolean {

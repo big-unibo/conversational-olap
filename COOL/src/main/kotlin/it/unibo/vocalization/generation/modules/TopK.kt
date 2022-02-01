@@ -31,14 +31,14 @@ object TopK : VocalizationModule {
                 var csum = 0.0
                 if (it == 1) {
                     val r = df.row(it - 1)
-                    text += "The fact with $superlative $mea is ${tuple2string(cube, r)} with ${(r[mea] as Double).round()} "
+                    text += "The fact with $superlative $mea is ${tuple2string(cube, r)} with ${(r[mea] as Double).round(2)} "
                     csum += if (!r.contains("peculiarity")) { r[mea] as Double } else { r[mea]  as Double * r["peculiarity"] as Double }
                 } else {
                     val tuples: String = (0 until it).map {
                         val r = df.row(it)
                         val s = tuple2string(cube, r)
                         csum += if (!r.contains("peculiarity")) { r[mea] as Double } else { r[mea] as Double * r["peculiarity"] as Double }
-                        s + " with " + (r[mea] as Double).round()
+                        s + " with " + (r[mea] as Double).round(2)
                     }.reduce { a, b -> "$a, $b" }
                     text += "The $it facts with $superlative $mea are $tuples"
                 }

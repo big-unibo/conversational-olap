@@ -113,12 +113,11 @@ interface VocalizationModule {
     fun compute(cube1: IGPSJ?, cube2: IGPSJ): List<IVocalizationPattern> = compute(cube1, cube2, null)
     fun compute(cube1: IGPSJ?, cube2: IGPSJ, operator: Operator?): List<IVocalizationPattern>
     fun applyCondition(cube1: IGPSJ?, cube2: IGPSJ, operator: Operator?): Boolean = true
-
-    fun toPythonCommand(commandPath: String, path: String, measures: Collection<String>): String {
+    fun toPythonCommand(commandPath: String, path: String, fileName: String, measures: Collection<String>): String {
         val fullCommand = (commandPath.replace("/", File.separator) //
                 + " --path " + (if (path.contains(" ")) "\"" else "") + path.replace("\\", "/") + (if (path.contains(" ")) "\"" else "") //
-                + " --file ${OutlierDetection.fileName}" //
-                + " --module ${OutlierDetection.moduleName}"
+                + " --file $fileName" //
+                + " --module $moduleName"
                 + " --measures ${measures.reduce{ a, b -> "$a,$b" }}")
         return fullCommand
     }
@@ -131,7 +130,7 @@ interface VocalizationModule {
      * @param pythonModule module to execute
      */
     @Throws(IOException::class, InterruptedException::class)
-    fun computePython(pythonPath: String, outputPath: String, pythonModule: String, measures: Collection<String>): Long {
+    fun computePython(pythonPath: String, outputPath: String, pythonModule: String, fileName: String, measures: Collection<String>): Long {
         val commandPath: String
         commandPath = if (File(pythonPath + "venv/Scripts").exists()) {
             pythonPath + "venv/Scripts/python.exe " + pythonPath + pythonModule + " " //.replace("/", File.separator);
@@ -141,7 +140,7 @@ interface VocalizationModule {
             "python3 $pythonPath$pythonModule "
         }
         var startTime = System.currentTimeMillis()
-        val proc = Runtime.getRuntime().exec(toPythonCommand(commandPath, outputPath, measures))
+        val proc = Runtime.getRuntime().exec(toPythonCommand(commandPath, outputPath, fileName, measures))
         val ret = proc.waitFor()
         startTime = System.currentTimeMillis() - startTime
         if (ret != 0) {

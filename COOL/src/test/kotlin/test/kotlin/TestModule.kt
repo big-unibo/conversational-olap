@@ -4,6 +4,7 @@ import it.unibo.conversational.Validator
 import it.unibo.conversational.algorithms.Parser
 import it.unibo.conversational.database.Config
 import it.unibo.conversational.datatypes.Mapping
+import it.unibo.conversational.olap.Operator
 import it.unibo.vocalization.Optimizer
 import it.unibo.vocalization.generation.modules.*
 import it.unibo.vocalization.vocalize
@@ -30,10 +31,34 @@ class TestModule {
 
     @Test
     fun testSession01() {
+        println("\n---\n")
         val c = Config.getCube("sales")
         var ci: GPSJ? = null
         var cj = GPSJ(c, setOf("store_city"), setOf(Pair.of("sum", "unit_sales")), setOf())
-        vocalize(ci, cj, null, 60).forEach { println(it) }
+        var p = vocalize(ci, cj, null, 60)
+        check(p)
+
+        println("\n---\n")
+        ci = cj
+        cj = GPSJ(c, setOf("store_city", "product_category"), setOf(Pair.of("sum", "unit_sales")), setOf())
+        p = vocalize(ci, cj, Operator(Parser.Type.DRILL), 120)
+        check(p)
+    }
+
+    @Test
+    fun testSession02() {
+        println("\n---\n")
+        val c = Config.getCube("sales")
+        var ci: GPSJ? = null
+        var cj = GPSJ(c, setOf("store_type"), setOf(Pair.of("sum", "unit_sales")), setOf())
+        var p = vocalize(ci, cj, null, 60)
+        check(p)
+
+        println("\n---\n")
+        ci = cj
+        cj = GPSJ(c, setOf("store_type", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf())
+        p = vocalize(ci, cj, Operator(Parser.Type.DRILL), 120)
+        check(p)
     }
 
     @Test
@@ -83,7 +108,8 @@ class TestModule {
     fun check(t: Collection<IVocalizationPattern>) {
         t.forEach { println(it) }
         // assertTrue(t.isNotEmpty(), "Empty patterns")
-        assertTrue(t.all { p -> p.int.toDouble() >= 0 }, t.filter { p -> p.int.toDouble() <= 0 }.toString())
+        assertTrue(t.all { p -> p.int.toDouble() in 0.0..1.0 }, t.filter { p -> p.int.toDouble() < 0 || p.int.toDouble() > 1 }.toString())
+        assertTrue(t.all { p -> p.cov in 0.0..1.0 }, t.filter { p -> p.cov < 0 || p.cov > 1 }.toString())
         if (t.isNotEmpty()) {
             Optimizer.getPatterns(listOf(t.toList()), 120)
         }
