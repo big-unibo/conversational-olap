@@ -8,6 +8,10 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '6.1.0'
 }
 
+shadowJar {
+    zip64 true
+}
+
 gretty {   // Add these lines
     contextPath = '/'
     servletContainer = 'jetty9'
@@ -104,4 +108,4 @@ task runValidator(type: JavaExec) {
     jvmArgs = ['-Xmx12g']
 }
 
-defaultTasks 'clean', 'build', 'check', 'war'
+defaultTasks 'clean', 'build', 'check', 'war', 'shadowJar'
