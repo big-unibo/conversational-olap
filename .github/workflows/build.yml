@@ -3,10 +3,10 @@ name: "build"
 on:
   push:
     tags: '*'
-    branches-ignore:
-      - 'autodelivery**'
-      - 'bump-**'
-      - 'renovate/**'
+    # branches-ignore:
+    #   - 'autodelivery**'
+    #   - 'bump-**'
+    #   - 'renovate/**'
     paths-ignore:
       - 'CHANGELOG.md'
       - 'LICENSE'
@@ -29,7 +29,7 @@ jobs:
           java-version: ${{ matrix.java }}
       - uses: actions/setup-python@v2
         with:
-          python-version: '3.x'
+          python-version: '3.10.2'
           architecture: 'x64'
       - name: Init
         run: |
@@ -39,10 +39,9 @@ jobs:
       - name: Test python
         run: |
           cd COOL/src/main/python
-          python3 --version
-          pip3 install -r requirements.txt
-          pip3 freeze
-          python3 -m unittest discover
+          pip install -r requirements.txt
+          pip freeze
+          python -m unittest discover
       - name: Test Kotlin
         run: |
           cd COOL

@@ -6,21 +6,30 @@ from modules import *
 
 class TestAssess(unittest.TestCase):
 
-    def test_all(self):
-        X = pd.DataFrame([["a", 1, 2], ["b", 2, 2], ["c", 2, 1], ["d", 1, 1], ["e", 11, 10], ["f", 10, 11]])
-        X.columns = ["foo", "quantity", "cost"]
-        measures = X.columns[1:]
-
+    def check(self, X, measures):
         outlier_detection(X, measures)
-        self.assertTrue((X["anomaly"] >= -1).all())
+        self.assertTrue((X["anomaly"].between(-1, 1)).all())
 
         skyline(X, measures)
-        self.assertTrue((X["dominance"] >= 0).all())
+        self.assertTrue((X["dominance"].between(0, 1)).all())
 
         clustering(X, measures)
         self.assertTrue((X["cluster_label"] >= 0).all())
         self.assertTrue((X["cluster_sil"].between(-1, 1)).all())
 
+    def test_all(self):
+        X = pd.DataFrame([
+            ["a", 1, 2],
+            ["b", 2, 2],
+            ["c", 2, 1],
+            ["d", 1, 1],
+            ["e", 11, 10],
+            ["f", 10, 11]
+        ])
+        X.columns = ["foo", "quantity", "cost"]
+        measures = X.columns[1:]
+
+        self.check(X, measures)
         self.assertTrue(len(X) == 6)
 
     def test_all2(self):
@@ -33,17 +42,7 @@ class TestAssess(unittest.TestCase):
         ])
         X.columns = ["foo", "quantity"]
         measures = X.columns[1:]
-
-        outlier_detection(X, measures)
-        self.assertTrue((X["anomaly"] >= -1).all())
-        print(X)
-
-        skyline(X, measures)
-        self.assertTrue((X["dominance"] >= 0).all())
-
-        clustering(X, measures)
-        self.assertTrue((X["cluster_label"] >= 0).all())
-
+        self.check(X, measures)
         self.assertTrue(len(X) == 5)
 
 

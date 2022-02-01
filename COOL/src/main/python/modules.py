@@ -1,26 +1,38 @@
 import argparse
+import math
 import numpy as np
 import pandas as pd
 import sys
-from sklearn.ensemble import IsolationForest
-from yellowbrick.cluster import KElbowVisualizer
 from sklearn.cluster import KMeans
-import math
+from sklearn.ensemble import IsolationForest
 from sklearn.metrics import silhouette_score, silhouette_samples
 
+
 def clustering(X, measures):
-    facts = len(X)
-    model = KMeans()
-    visualizer = KElbowVisualizer(model, k=(1, min(6, math.ceil(facts / 2))))
+    # facts = len(X)
+    # model = KMeans()
+    # visualizer = KElbowVisualizer(model, k=(1, min(6, math.ceil(facts / 2))))
+    # Z = X[measures].to_numpy()
+    # visualizer.fit(Z)  # Fit the data to the visualizer
+    # # visualizer.show()
+    # def_k = visualizer.elbow_value_
+    # if def_k is None:
+    #     def_k = 2
+    # kmeans = KMeans(n_clusters=def_k, random_state=0).fit(Z)
+    # X["cluster_label"] = kmeans.labels_
+    # X["cluster_sil"] = silhouette_samples(Z, kmeans.labels_)
+    # return X
     Z = X[measures].to_numpy()
-    visualizer.fit(Z)  # Fit the data to the visualizer
-    # visualizer.show()
-    def_k = visualizer.elbow_value_
-    if def_k is None:
-        def_k = 2
-    kmeans = KMeans(n_clusters=def_k, random_state=0).fit(Z)
-    X["cluster_label"] = kmeans.labels_
-    X["cluster_sil"] = silhouette_samples(Z, kmeans.labels_)
+    max_sil, best_k = -2, 1
+    for k in range(2, min(6, math.ceil(len(X) / 2))):
+        kmeans = KMeans(n_clusters=k, random_state=0).fit(Z)
+        X["cluster_label_" + str(k)] = kmeans.labels_
+        X["cluster_sil_" + str(k)] = silhouette_samples(Z, kmeans.labels_)
+        silhouette_avg = silhouette_score(Z, kmeans.labels_)
+        if silhouette_avg > max_sil:
+            best_k = k
+    X.drop([x for x in X.columns if ("cluster_label_" in x or "cluster_sil_" in x) and str(best_k) not in x], inplace=True)
+    X.rename(columns={"cluster_label_" + str(best_k): "cluster_label", "cluster_sil_" + str(best_k): "cluster_sil"}, inplace=True)
     return X
 
 def outlier_detection(X, measures):
