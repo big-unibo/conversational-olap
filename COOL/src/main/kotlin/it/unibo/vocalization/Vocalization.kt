@@ -4,7 +4,7 @@ import it.unibo.conversational.olap.Operator
 import it.unibo.vocalization.generation.generatePatterns
 import it.unibo.vocalization.generation.modules.GPSJ
 import it.unibo.vocalization.generation.modules.IVocalizationPattern
-import it.unibo.vocalization.generation.modules.Preamble
+import it.unibo.vocalization.generation.modules.querydriven.Preamble
 
 fun vocalize(prevQuery: GPSJ?, curQuery: GPSJ, operator: Operator?, budget: Int): List<IVocalizationPattern> {
     val allPatterns = generatePatterns(prevQuery, curQuery, operator)

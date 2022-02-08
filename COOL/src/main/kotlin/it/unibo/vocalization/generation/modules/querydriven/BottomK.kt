@@ -1,7 +1,10 @@
-package it.unibo.vocalization.generation.modules
+package it.unibo.vocalization.generation.modules.querydriven
 
 import it.unibo.conversational.olap.Operator
-import it.unibo.vocalization.generation.modules.TopK.topKpatterns
+import it.unibo.vocalization.generation.modules.IGPSJ
+import it.unibo.vocalization.generation.modules.IVocalizationPattern
+import it.unibo.vocalization.generation.modules.VocalizationModule
+import it.unibo.vocalization.generation.modules.querydriven.TopK.topKpatterns
 
 /**
  * Describe intention in action.

@@ -6,8 +6,8 @@ import it.unibo.conversational.algorithms.Parser
 import it.unibo.conversational.database.Cube
 import it.unibo.conversational.database.DBmanager
 import it.unibo.conversational.olap.Operator
-import it.unibo.vocalization.generation.modules.Peculiarity.format
-import it.unibo.vocalization.generation.modules.Peculiarity.getCost
+import it.unibo.vocalization.generation.modules.querydriven.Peculiarity.format
+import it.unibo.vocalization.generation.modules.querydriven.Peculiarity.getCost
 import krangl.ArrayUtils.handleListErasure
 import krangl.DataFrame
 import krangl.dataFrameOf
@@ -113,12 +113,13 @@ interface VocalizationModule {
     fun compute(cube1: IGPSJ?, cube2: IGPSJ): List<IVocalizationPattern> = compute(cube1, cube2, null)
     fun compute(cube1: IGPSJ?, cube2: IGPSJ, operator: Operator?): List<IVocalizationPattern>
     fun applyCondition(cube1: IGPSJ?, cube2: IGPSJ, operator: Operator?): Boolean = true
-    fun toPythonCommand(commandPath: String, path: String, fileName: String, measures: Collection<String>): String {
+    fun toPythonCommand(commandPath: String, path: String, fileName: String, attributes: Collection<String>, measures: Collection<String>): String {
         val fullCommand = (commandPath.replace("/", File.separator) //
                 + " --path " + (if (path.contains(" ")) "\"" else "") + path.replace("\\", "/") + (if (path.contains(" ")) "\"" else "") //
                 + " --file $fileName" //
                 + " --module $moduleName"
-                + " --measures ${measures.reduce{ a, b -> "$a,$b" }}")
+                + " --measures ${measures.reduce{ a, b -> "$a,$b" }}"
+                + " --attributes ${attributes.reduce{ a, b -> "$a,$b" }}")
         return fullCommand
     }
 
@@ -130,7 +131,7 @@ interface VocalizationModule {
      * @param pythonModule module to execute
      */
     @Throws(IOException::class, InterruptedException::class)
-    fun computePython(pythonPath: String, outputPath: String, pythonModule: String, fileName: String, measures: Collection<String>): Long {
+    fun computePython(pythonPath: String, outputPath: String, pythonModule: String, fileName: String, attributes: Collection<String>, measures: Collection<String>): Long {
         val commandPath: String
         commandPath = if (File(pythonPath + "venv/Scripts").exists()) {
             pythonPath + "venv/Scripts/python.exe " + pythonPath + pythonModule + " " //.replace("/", File.separator);
@@ -140,7 +141,7 @@ interface VocalizationModule {
             "python3 $pythonPath$pythonModule "
         }
         var startTime = System.currentTimeMillis()
-        val proc = Runtime.getRuntime().exec(toPythonCommand(commandPath, outputPath, fileName, measures))
+        val proc = Runtime.getRuntime().exec(toPythonCommand(commandPath, outputPath, fileName, attributes, measures))
         val ret = proc.waitFor()
         startTime = System.currentTimeMillis() - startTime
         if (ret != 0) {

@@ -2,6 +2,7 @@ package it.unibo.vocalization.generation
 
 import it.unibo.conversational.olap.Operator
 import it.unibo.vocalization.generation.modules.*
+import it.unibo.vocalization.generation.modules.querydriven.*
 
 fun generatePatterns(prevQuery: GPSJ?, curQuery: GPSJ, operator: Operator?): List<List<IVocalizationPattern>> {
     return listOf(Preamble, TopK, BottomK, Skyline, OutlierDetection, Assess, Clustering) // list of modules

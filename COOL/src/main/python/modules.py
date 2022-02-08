@@ -35,6 +35,40 @@ def clustering(X, measures):
     X.rename(columns={"cluster_label_" + str(best_k): "cluster_label", "cluster_sil_" + str(best_k): "cluster_sil"}, inplace=True)
     return X
 
+
+def intravariance(X, attributes, measures):
+    def v(x):
+        A = pd.concat([(x.std() / x.mean()).apply(lambda x: 1 if x > 1 else x), 1.0 * x.count() / len(X)], axis=1)
+        A.columns = ["intravariance", "cov"]
+        return A
+    print(X)
+    return X.groupby(attributes)[measures].apply(lambda x: v(x)).reset_index().drop(columns=["level_1"])
+
+
+def univariance(X, attributes, measures):
+    X = intravariance(X, attributes, measures)
+    X["univariance"] = 1 - X["intravariance"]
+    return X.drop(columns=["intravariance"])
+
+
+def cardvariance(X, attributes, measures):
+    X = X.copy(deep=True)
+    y = X.groupby(attributes)[measures[0]].count()
+    y = y.std() / y.mean()
+    y = 1 if y > 1 else y
+    X['cardvariance'] = y
+    return X
+
+
+def maxratio(X, attributes, measures):
+    def v(x):
+        A = pd.concat([x.max() / x.sum(), 1.0 * x.count() / len(X)], axis=1)
+        A.columns = ["maxratio", "cov"]
+        return A
+
+    return X.groupby(attributes)[measures].apply(lambda x: v(x))
+
+
 def outlier_detection(X, measures):
     X["anomaly"] = IsolationForest(random_state=0).fit(X[measures]).decision_function(X[measures]) * -1.0
     X["anomaly"] = X["anomaly"].apply(lambda x: 0 if x < 0 else x)
@@ -77,18 +111,23 @@ if __name__ == '__main__':
     parser.add_argument("--file", type=str)
     parser.add_argument("--module", type=str)
     parser.add_argument("--measures", type=str)
+    parser.add_argument("--attributes", type=str)
     parser.add_argument("--path", type=str)
     args = parser.parse_args()
     module = args.module
-    measures = args.measures.split(",")
+    measures = args.measures.lower().split(",")
+    attributes = args.attributes.lower().split(",")
 
     df = pd.read_csv(args.path + args.file)
+    df.columns = [x.lower() for x in df.columns]
     if module == "outlierdetection":
         df = outlier_detection(df, measures)
     elif module == "skyline":
         df = skyline(df, measures)
     elif module == "clustering":
         df = clustering(df, measures)
+    elif module == "intravariance":
+        df = intravariance(df, attributes, measures)
     else:
         print("Unknown module: " + module)
         sys.exit(1)

@@ -1,11 +1,15 @@
-package it.unibo.vocalization.generation.modules
+package it.unibo.vocalization.generation.modules.querydriven
 
 import it.unibo.conversational.Utils
 import it.unibo.conversational.olap.Operator
-import it.unibo.vocalization.generation.modules.Peculiarity.argMax
-import it.unibo.vocalization.generation.modules.Peculiarity.extendCubeWithProxy
-import it.unibo.vocalization.generation.modules.Peculiarity.myMax
-import it.unibo.vocalization.generation.modules.Peculiarity.tuple2string
+import it.unibo.vocalization.generation.modules.IGPSJ
+import it.unibo.vocalization.generation.modules.IVocalizationPattern
+import it.unibo.vocalization.generation.modules.VocalizationModule
+import it.unibo.vocalization.generation.modules.VocalizationPattern
+import it.unibo.vocalization.generation.modules.querydriven.Peculiarity.argMax
+import it.unibo.vocalization.generation.modules.querydriven.Peculiarity.extendCubeWithProxy
+import it.unibo.vocalization.generation.modules.querydriven.Peculiarity.myMax
+import it.unibo.vocalization.generation.modules.querydriven.Peculiarity.tuple2string
 import krangl.DataFrame
 import krangl.leftJoin
 import krangl.max

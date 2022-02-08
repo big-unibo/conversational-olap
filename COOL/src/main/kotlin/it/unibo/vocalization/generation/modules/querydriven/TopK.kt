@@ -1,8 +1,12 @@
-package it.unibo.vocalization.generation.modules
+package it.unibo.vocalization.generation.modules.querydriven
 
 import it.unibo.conversational.olap.Operator
-import it.unibo.vocalization.generation.modules.Peculiarity.round
-import it.unibo.vocalization.generation.modules.Peculiarity.tuple2string
+import it.unibo.vocalization.generation.modules.IGPSJ
+import it.unibo.vocalization.generation.modules.IVocalizationPattern
+import it.unibo.vocalization.generation.modules.VocalizationModule
+import it.unibo.vocalization.generation.modules.VocalizationPattern
+import it.unibo.vocalization.generation.modules.querydriven.Peculiarity.round
+import it.unibo.vocalization.generation.modules.querydriven.Peculiarity.tuple2string
 import krangl.sum
 
 /**

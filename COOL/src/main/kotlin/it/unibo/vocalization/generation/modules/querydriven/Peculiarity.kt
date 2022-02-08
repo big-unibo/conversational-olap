@@ -1,8 +1,10 @@
-package it.unibo.vocalization.generation.modules
+package it.unibo.vocalization.generation.modules.querydriven
 
 import com.google.common.collect.Sets
 import it.unibo.conversational.database.QueryGenerator
 import it.unibo.conversational.datatypes.DependencyGraph
+import it.unibo.vocalization.generation.modules.GPSJ
+import it.unibo.vocalization.generation.modules.IGPSJ
 import krangl.*
 import org.slf4j.LoggerFactory
 import kotlin.math.abs
@@ -18,7 +20,11 @@ object Peculiarity {
     fun Double.format(digits: Int) = "%.${digits}f".format(this)
 
     fun tuple2string(cube: IGPSJ, r: DataFrameRow): String {
-        return "(" + cube.attributes.map { r[it].toString() }.reduce { a, b -> "$a, $b" } + ")"
+        return tuple2string(cube.attributes, r)
+    }
+
+    fun tuple2string(values: Collection<String>, r: DataFrameRow): String {
+        return "(" + values.map { r[it].toString() }.reduce { a, b -> "$a, $b" } + ")"
     }
 
     fun Double.round(decimals: Int = 0): Number {

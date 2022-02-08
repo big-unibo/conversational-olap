@@ -1,8 +1,12 @@
-package it.unibo.vocalization.generation.modules
+package it.unibo.vocalization.generation.modules.querydriven
 
 import it.unibo.conversational.database.Config
 import it.unibo.conversational.olap.Operator
-import it.unibo.vocalization.generation.modules.Peculiarity.round
+import it.unibo.vocalization.generation.modules.IGPSJ
+import it.unibo.vocalization.generation.modules.IVocalizationPattern
+import it.unibo.vocalization.generation.modules.VocalizationModule
+import it.unibo.vocalization.generation.modules.VocalizationPattern
+import it.unibo.vocalization.generation.modules.querydriven.Peculiarity.round
 import krangl.*
 import java.io.File
 import java.util.*
@@ -19,7 +23,7 @@ object Clustering : VocalizationModule {
         val path = "generated/"
         val fileName = "${UUID.randomUUID()}.csv"
         cube.df.writeCSV(File("$path$fileName"))
-        computePython(Config.getPython(), path, "modules.py", fileName, cube.measureNames())
+        computePython(Config.getPython(), path, "modules.py", fileName, cube.attributes, cube.measureNames())
         cube.df = DataFrame.readCSV(File("$path$fileName"))
         val df = cube.df.groupBy("cluster_label")
             .summarize(

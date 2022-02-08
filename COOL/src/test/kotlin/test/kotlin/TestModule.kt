@@ -7,6 +7,8 @@ import it.unibo.conversational.datatypes.Mapping
 import it.unibo.conversational.olap.Operator
 import it.unibo.vocalization.Optimizer
 import it.unibo.vocalization.generation.modules.*
+import it.unibo.vocalization.generation.modules.intentiondriven.Intravariance
+import it.unibo.vocalization.generation.modules.querydriven.*
 import it.unibo.vocalization.vocalize
 import krangl.dataFrameOf
 import org.apache.commons.lang3.tuple.Pair
@@ -125,5 +127,10 @@ class TestModule {
     fun testBottomK() {
         check(BottomK.compute(null, c2))
         check(BottomK.compute(c1, c2))
+    }
+
+    @Test
+    fun testIntravariance() {
+        check(Intravariance.compute(c1, c2, Operator(Parser.Type.DRILL)))
     }
 }

@@ -5,6 +5,25 @@ from modules import *
 
 
 class TestAssess(unittest.TestCase):
+    B = pd.DataFrame([
+        ["Beer", 35.0],
+        ["Wine", 32.0],
+        ["Cola", 30.0],
+        ["Pizza", 6.0],
+        ["Bread", 5.0]
+    ], columns=["product", "quantity"])
+    Bmea = ["quantity"]
+    Battr = ["product"]
+
+    C = pd.DataFrame([
+        ["Beverages", "Beer", 35.0],
+        ["Beverages", "Wine", 32.0],
+        ["Beverages", "Cola", 30.0],
+        ["Food", "Pizza", 6.0],
+        ["Food", "Bread", 5.0]
+    ], columns=["category", "product", "quantity"])
+    Cmea = ["quantity"]
+    Cattr = ["category"]
 
     def check(self, X, measures):
         outlier_detection(X, measures)
@@ -33,18 +52,23 @@ class TestAssess(unittest.TestCase):
         self.assertTrue(len(X) == 6)
 
     def test_all2(self):
-        X = pd.DataFrame([
-            ["Beer", 35.0],
-            ["Wine", 32.0],
-            ["Cola", 30.0],
-            ["Pizza", 6.0],
-            ["Bread", 5.0]
-        ])
-        X.columns = ["foo", "quantity"]
-        measures = X.columns[1:]
-        self.check(X, measures)
+        self.check(self.B, self.Bmea)
+
+    def test_all3(self):
+        X = intravariance(self.C, self.Cattr, self.Cmea)
+        self.assertTrue(len(X) == 2)
+
+    def test_all4(self):
+        X = univariance(self.C, self.Cattr, self.Cmea)
+        self.assertTrue(len(X) == 2)
+
+    def test_all5(self):
+        X = cardvariance(self.C, self.Cattr, self.Cmea)
         self.assertTrue(len(X) == 5)
 
+    def test_all6(self):
+        X = maxratio(self.C, self.Cattr, self.Cmea)
+        self.assertTrue(len(X) == 2)
 
 if __name__ == '__main__':
     unittest.main()
