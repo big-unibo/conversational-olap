@@ -24,7 +24,8 @@ object TopK : VocalizationModule {
         return topKpatterns(moduleName, cube, mea)
     }
 
-    fun topKpatterns(moduleName: String, cube: IGPSJ, mea: String, isTopK: Boolean = true): List<VocalizationPattern> {
+    fun topKpatterns(moduleName: String, cube: IGPSJ, mea: String, isTopK: Boolean = true, kpi: String? = null): List<VocalizationPattern> {
+        val kpi = if (kpi == null) mea else kpi
         val sum: Double = cube.df[mea].sum()!!.toDouble() // get the sum of the measure
         val count: Int = cube.df[mea].length // get the count of elements
         val df = if (isTopK) { cube.df.sortedByDescending(mea) } else { cube.df.sortedBy(mea) } // sort by descending value
@@ -35,14 +36,14 @@ object TopK : VocalizationModule {
                 var csum = 0.0
                 if (it == 1) {
                     val r = df.row(it - 1)
-                    text += "The fact with $superlative $mea is ${tuple2string(cube, r)} with ${(r[mea] as Double).round(2)} "
+                    text += "The fact with $superlative $mea is ${tuple2string(cube, r)} with $mea ${(r[kpi] as Double).round(2)} "
                     csum += if (!r.contains("peculiarity")) { r[mea] as Double } else { r[mea]  as Double * r["peculiarity"] as Double }
                 } else {
                     val tuples: String = (0 until it).map {
                         val r = df.row(it)
                         val s = tuple2string(cube, r)
                         csum += if (!r.contains("peculiarity")) { r[mea] as Double } else { r[mea] as Double * r["peculiarity"] as Double }
-                        s + " with " + (r[mea] as Double).round(2)
+                        s + " with " + (r[kpi] as Double).round(2)
                     }.reduce { a, b -> "$a, $b" }
                     text += "The $it facts with $superlative $mea are $tuples"
                 }

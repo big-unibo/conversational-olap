@@ -175,7 +175,7 @@ public final class DBmanager {
         final String password = cube.getPwd();
         final String schemaDBstringConnection;
         if (cube.getDbms().equals("mysql")) {
-            schemaDBstringConnection = "jdbc:" + cube.getDbms() + "://" + ip + ":" + port + "/" + (isData ? cube.getDataMart() : cube.getMetaData()) + "?serverTimezone=UTC&autoReconnect=true";
+            schemaDBstringConnection = "jdbc:" + cube.getDbms() + "://" + ip + ":" + port + "/" + (isData ? cube.getDataMart() : cube.getMetaData()) + "?serverTimezone=UTC&autoReconnect=true&characterEncoding=utf8";
             Class.forName("com.mysql.cj.jdbc.Driver");
         } else if (cube.getDbms().equals("oracle")) {
             schemaDBstringConnection = "jdbc:oracle:thin:@" + ip + ":" + port + "/" + cube.getDataMart();

@@ -16,7 +16,10 @@ object Preamble : VocalizationModule {
         get() = "preamble"
 
     override fun compute(cube1: IGPSJ?, cube2: IGPSJ, operator: Operator?): List<IVocalizationPattern> {
-        val text = "Grouped by ${cube2.attributes.reduce { a, b -> "$a, $b" }}, ${cube2.measureNames().map { "the average $it is ${cube2.df[it].mean()!!.round()}" }.reduce { a, b -> "$a, $b"}}"
+        val groupby = "Grouped by ${cube2.attributes.reduce { a, b -> "$a, $b" }}"
+        val where = if (cube2.selection.isNotEmpty()) " and filtered by ${cube2.selection.map { it.right }.reduce { a, b -> "$a, $b" }}," else ""
+        val mea = " ${cube2.measureNames().map { "the average $it is ${cube2.df[it].mean()!!.round()}" }.reduce { a, b -> "$a, $b"}}"
+        val text = groupby + where + mea
         return listOf(VocalizationPattern(text, 1.0, 1.0, moduleName))
     }
 }

@@ -14,7 +14,7 @@ import kotlin.math.roundToInt
 object Peculiarity {
 
     fun getCost(s: String): Int {
-        return s.split(" ").filter { it.isNotEmpty() }.size
+        return s.replace("\\(|\\)".toRegex(), "").split(" ").filter { it.isNotEmpty() }.size
     }
 
     fun Double.format(digits: Int) = "%.${digits}f".format(this)

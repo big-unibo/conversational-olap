@@ -34,15 +34,16 @@ object Clustering : VocalizationModule {
         var text = "Among ${df.nrow} clusters"
         var i = 0
         var cumSil = 0.0
+        var cumCard = 0.0
         return df
             .sortedByDescending("count")
             .rows
             .map {
-                val card = it["count"].toString().toInt()
+                cumCard += it["count"].toString().toInt()
                 val n = listOf("largest", "second", "third", "fourth", "fifth")[i++] // it["cluster_label"] as Int - 1
-                text += ", the $n one includes ${it["count"]} facts and has ${cube.measureNames().map { m -> "${it[m]} as $m"  }.reduce{ a, b -> "$a, $b"}}"
+                text += ", the $n has ${it["count"]} facts and ${cube.measureNames().map { m -> "${it[m]} as average $m"  }.reduce{ a, b -> "$a, $b"}}"
                 cumSil += it["cluster_sil"] as Double
-                VocalizationPattern(text, cumSil / i, 1.0 * card / cube2.df.nrow, moduleName)
+                VocalizationPattern(text, cumSil / i, 1.0 * cumCard / cube2.df.nrow, moduleName)
             }
     }
 }

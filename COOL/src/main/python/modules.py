@@ -9,19 +9,6 @@ from sklearn.metrics import silhouette_score, silhouette_samples
 
 
 def clustering(X, measures):
-    # facts = len(X)
-    # model = KMeans()
-    # visualizer = KElbowVisualizer(model, k=(1, min(6, math.ceil(facts / 2))))
-    # Z = X[measures].to_numpy()
-    # visualizer.fit(Z)  # Fit the data to the visualizer
-    # # visualizer.show()
-    # def_k = visualizer.elbow_value_
-    # if def_k is None:
-    #     def_k = 2
-    # kmeans = KMeans(n_clusters=def_k, random_state=0).fit(Z)
-    # X["cluster_label"] = kmeans.labels_
-    # X["cluster_sil"] = silhouette_samples(Z, kmeans.labels_)
-    # return X
     Z = X[measures].to_numpy()
     max_sil, best_k = -2, 1
     for k in range(2, min(6, math.ceil(len(X) / 2))):
@@ -38,10 +25,9 @@ def clustering(X, measures):
 
 def intravariance(X, attributes, measures):
     def v(x):
-        A = pd.concat([(x.std() / x.mean()).apply(lambda x: 1 if x > 1 else x), 1.0 * x.count() / len(X)], axis=1)
+        A = pd.concat([(x.std() / (x.mean() + 1)).apply(lambda x: 1 if x > 1 else x) * 1.0, 1.0 * x.count() / len(X)], axis=1)
         A.columns = ["intravariance", "cov"]
-        return A
-    print(X)
+        return A.fillna(0)
     return X.groupby(attributes)[measures].apply(lambda x: v(x)).reset_index().drop(columns=["level_1"])
 
 
@@ -56,13 +42,14 @@ def cardvariance(X, attributes, measures):
     y = X.groupby(attributes)[measures[0]].count()
     y = y.std() / y.mean()
     y = 1 if y > 1 else y
-    X['cardvariance'] = y
+    X['cardvariance'] = y * 1.0
+    X['cov'] = 1.0
     return X
 
 
 def maxratio(X, attributes, measures):
     def v(x):
-        A = pd.concat([x.max() / x.sum(), 1.0 * x.count() / len(X)], axis=1)
+        A = pd.concat([x.max() / x.sum() * 1.0, 1.0 * x.count() / len(X)], axis=1)
         A.columns = ["maxratio", "cov"]
         return A
 
@@ -115,11 +102,18 @@ if __name__ == '__main__':
     parser.add_argument("--path", type=str)
     args = parser.parse_args()
     module = args.module
-    measures = args.measures.lower().split(",")
-    attributes = args.attributes.lower().split(",")
+    # measures = args.measures.lower().split(",")
+    # attributes = args.attributes.lower().split(",")
+    measures = args.measures.split(",")
+    attributes = args.attributes.split(",")
+    df = pd.DataFrame([])
+    try:
+        df = pd.read_csv(args.path + args.file, encoding='utf-8')
+    except:
+        df = pd.read_csv(args.path + args.file, encoding='cp1252')
+    df.dropna(inplace=True)
 
-    df = pd.read_csv(args.path + args.file)
-    df.columns = [x.lower() for x in df.columns]
+    # df.columns = [x.lower() for x in df.columns]
     if module == "outlierdetection":
         df = outlier_detection(df, measures)
     elif module == "skyline":
@@ -128,6 +122,11 @@ if __name__ == '__main__':
         df = clustering(df, measures)
     elif module == "intravariance":
         df = intravariance(df, attributes, measures)
+    elif module == "univariance":
+        df = univariance(df, attributes, measures)
+    elif module == "cardvariance":
+        print(df)
+        df = cardvariance(df, attributes, measures)
     else:
         print("Unknown module: " + module)
         sys.exit(1)

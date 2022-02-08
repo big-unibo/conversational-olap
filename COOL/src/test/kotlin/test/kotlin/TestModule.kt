@@ -6,17 +6,24 @@ import it.unibo.conversational.database.Config
 import it.unibo.conversational.datatypes.Mapping
 import it.unibo.conversational.olap.Operator
 import it.unibo.vocalization.Optimizer
-import it.unibo.vocalization.generation.modules.*
+import it.unibo.vocalization.generation.modules.GPSJ
+import it.unibo.vocalization.generation.modules.IVocalizationPattern
+import it.unibo.vocalization.generation.modules.intentiondriven.Cardvariance
 import it.unibo.vocalization.generation.modules.intentiondriven.Intravariance
+import it.unibo.vocalization.generation.modules.intentiondriven.Univariance
 import it.unibo.vocalization.generation.modules.querydriven.*
 import it.unibo.vocalization.vocalize
 import krangl.dataFrameOf
 import org.apache.commons.lang3.tuple.Pair
+import org.apache.commons.lang3.tuple.Triple
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 class TestModule {
+
+    companion object {
+    }
 
     val c1 = GPSJ(Config.getCube("SSBORA_TEST"), setOf("category"), setOf(Pair.of("sum", "quantity")), setOf())
     val c2 = GPSJ(Config.getCube("SSBORA_TEST"), setOf("product"), setOf(Pair.of("sum", "quantity")), setOf())
@@ -59,7 +66,31 @@ class TestModule {
         println("\n---\n")
         ci = cj
         cj = GPSJ(c, setOf("store_type", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf())
-        p = vocalize(ci, cj, Operator(Parser.Type.DRILL), 120)
+        // generatePatterns(ci, cj, Operator(Parser.Type.DRILL), listOf(Intravariance, Univariance, Cardvariance)).flatten().forEach { println(it) }
+        p = vocalize(ci, cj, Operator(Parser.Type.DRILL), 300)
+        check(p)
+
+        println("\n---\n")
+        ci = cj
+        cj = GPSJ(c, setOf("store_type", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf(Triple.of("product_subcategory", "=", "'Beer'")))
+        p = vocalize(ci, cj, Operator(Parser.Type.SAD), 300)
+        check(p)
+    }
+
+    @Test
+    fun testSession03() {
+        System.setProperty("file.encoding", "UTF-8")
+        println("\n---\n")
+        val c = Config.getCube("covid")
+        var ci: GPSJ? = null
+        var cj = GPSJ(c, setOf("country"), setOf(Pair.of("sum", "cases")), setOf())
+        var p = vocalize(ci, cj, null, 60)
+        check(p)
+
+        println("\n---\n")
+        ci = cj
+        cj = GPSJ(c, setOf("continent"), setOf(Pair.of("sum", "cases")), setOf())
+        p = vocalize(ci, cj, Operator(Parser.Type.ROLLUP), 300)
         check(p)
     }
 
@@ -131,6 +162,18 @@ class TestModule {
 
     @Test
     fun testIntravariance() {
+        check(Intravariance.compute(c2, c1, Operator(Parser.Type.ROLLUP)))
         check(Intravariance.compute(c1, c2, Operator(Parser.Type.DRILL)))
+    }
+
+    @Test
+    fun testCardvariance() {
+        check(Cardvariance.compute(c2, c1, Operator(Parser.Type.ROLLUP)))
+        check(Cardvariance.compute(c1, c2, Operator(Parser.Type.DRILL)))
+    }
+
+    @Test
+    fun testUnivariance() {
+        check(Univariance.compute(c1, c2, Operator(Parser.Type.DRILL)))
     }
 }

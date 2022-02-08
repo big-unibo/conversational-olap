@@ -626,9 +626,10 @@ public final class Parser {
         for (final Triple<String, String, String> predicate: predicates) {
             final String attToString = QueryGenerator.getLevel(cube, predicate.getLeft()).fullQualifier();
             where += (where.isEmpty() ? "" : " AND ") + attToString + predicate.getMiddle() + predicate.getRight();
+            curAttributes.add(QueryGenerator.getLevel(cube, predicate.getLeft()).nameInTable());
         }
 
-        return getSQLString(cube, attributes, select, where, groupby);
+        return getSQLString(cube, Sets.union(attributes, curAttributes), select, where, groupby);
     }
 
     @NotNull

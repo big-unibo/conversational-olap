@@ -1,8 +1,6 @@
 package it.unibo.vocalization.selection.model
 
 import it.unibo.vocalization.selection.helper.Printer
-import it.unibo.vocalization.selection.model.Problem
-import it.unibo.vocalization.selection.model.Solution
 
 class Knapsack(private val problem: Problem) {
     private var maximumProfit = 0

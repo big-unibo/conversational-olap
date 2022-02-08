@@ -4,8 +4,10 @@ import com.google.common.collect.Iterables
 import com.google.common.collect.Sets
 import it.unibo.vocalization.generation.modules.IVocalizationPattern
 import it.unibo.vocalization.generation.modules.PatternState
-import it.unibo.vocalization.selection.model.*
 import it.unibo.vocalization.selection.model.Knapsack
+import it.unibo.vocalization.selection.model.OneOrNoneFromGroupProblem
+import it.unibo.vocalization.selection.model.Problem
+import it.unibo.vocalization.selection.model.Solution
 import java.util.function.Consumer
 import java.util.stream.Collectors
 

@@ -93,7 +93,7 @@ class VocalizationPattern(
         text,
         int,
         1.0,
-        text.split(" ").size,
+        getCost(text),
         moduleName,
         PatternState.AVAILABLE
     )
@@ -211,7 +211,7 @@ fun fromResultSet(rs: ResultSet): DataFrame {
                 "BOOLEAN" -> rs.getBoolean(colIndex)
                 "DATE" -> rs.getDate(colIndex).toLocalDate()
                 "TIME" -> rs.getTime(colIndex).toLocalTime()
-                "CHAR", "CHARACTER", "VARCHAR", "TEXT" -> rs.getString(colIndex)
+                "CHAR", "CHARACTER", "VARCHAR", "TEXT" ->  String(rs.getString(colIndex).toByteArray(), charset("UTF-8"))
                 else -> throw IllegalArgumentException("Column type ${colTypes[colIndex - 1]} is not yet supported by {krangl}. ")
             }
             colData[colIndex - 1].add(any)

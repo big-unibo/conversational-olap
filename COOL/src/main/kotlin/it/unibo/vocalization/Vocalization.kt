@@ -14,5 +14,5 @@ fun vocalize(prevQuery: GPSJ?, curQuery: GPSJ, operator: Operator?, budget: Int)
 fun vocalize(allPatterns: List<List<IVocalizationPattern>>, budget: Int): List<IVocalizationPattern> {
     val preamble: IVocalizationPattern = allPatterns.flatten().first { it.moduleName == Preamble.moduleName }
     val budget1 = budget - preamble.cost
-    return Optimizer.getPatterns(allPatterns, budget1).sortedByDescending { it.cov }
+    return Optimizer.getPatterns(allPatterns, budget1).sortedWith(compareBy({ -it.cov }, { -it.int.toDouble() }))
 }
