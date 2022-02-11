@@ -6,8 +6,10 @@ import it.unibo.conversational.database.Config
 import it.unibo.conversational.datatypes.Mapping
 import it.unibo.conversational.olap.Operator
 import it.unibo.vocalization.Optimizer
+import it.unibo.vocalization.generation.generatePatterns
 import it.unibo.vocalization.generation.modules.GPSJ
 import it.unibo.vocalization.generation.modules.IVocalizationPattern
+import it.unibo.vocalization.generation.modules.intentiondriven.Assess
 import it.unibo.vocalization.generation.modules.intentiondriven.Cardvariance
 import it.unibo.vocalization.generation.modules.intentiondriven.Intravariance
 import it.unibo.vocalization.generation.modules.intentiondriven.Univariance
@@ -92,6 +94,31 @@ class TestModule {
         cj = GPSJ(c, setOf("continent"), setOf(Pair.of("sum", "cases")), setOf())
         p = vocalize(ci, cj, Operator(Parser.Type.ROLLUP), 300)
         check(p)
+
+        println("\n---\n")
+        ci = cj
+        cj = GPSJ(c, setOf("continent"), setOf(Pair.of("sum", "cases"), Pair.of("sum", "deaths")), setOf())
+        p = vocalize(ci, cj, Operator(Parser.Type.ADD), 300)
+        check(p)
+    }
+
+
+
+    @Test
+    fun testSession04() {
+        System.setProperty("file.encoding", "UTF-8")
+        println("\n---\n")
+        val c = Config.getCube("covid")
+        var ci: GPSJ? = null
+        var cj = GPSJ(c, setOf("continent"), setOf(Pair.of("sum", "cases")), setOf())
+        var p = vocalize(ci, cj, null, 60)
+        check(p)
+
+        println("\n---\n")
+        ci = cj
+        cj = GPSJ(c, setOf("country"), setOf(Pair.of("sum", "cases")), setOf())
+        p = vocalize(ci, cj, Operator(Parser.Type.DRILL), 300)
+        check(p)
     }
 
     @Test
@@ -139,7 +166,7 @@ class TestModule {
     }
 
     fun check(t: Collection<IVocalizationPattern>) {
-        t.forEach { println(it) }
+        t.forEach { println(it.text) }
         // assertTrue(t.isNotEmpty(), "Empty patterns")
         assertTrue(t.all { p -> p.int.toDouble() in 0.0..1.0 }, t.filter { p -> p.int.toDouble() < 0 || p.int.toDouble() > 1 }.toString())
         assertTrue(t.all { p -> p.cov in 0.0..1.0 }, t.filter { p -> p.cov < 0 || p.cov > 1 }.toString())

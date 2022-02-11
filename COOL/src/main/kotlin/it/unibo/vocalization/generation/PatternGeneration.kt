@@ -4,9 +4,7 @@ import it.unibo.conversational.olap.Operator
 import it.unibo.vocalization.generation.modules.GPSJ
 import it.unibo.vocalization.generation.modules.IVocalizationPattern
 import it.unibo.vocalization.generation.modules.VocalizationModule
-import it.unibo.vocalization.generation.modules.intentiondriven.Cardvariance
-import it.unibo.vocalization.generation.modules.intentiondriven.Intravariance
-import it.unibo.vocalization.generation.modules.intentiondriven.Univariance
+import it.unibo.vocalization.generation.modules.intentiondriven.*
 import it.unibo.vocalization.generation.modules.querydriven.*
 
 fun generatePatterns(prevQuery: GPSJ?, curQuery: GPSJ, operator: Operator?): List<List<IVocalizationPattern>> {
@@ -24,7 +22,8 @@ fun generatePatterns(prevQuery: GPSJ?, curQuery: GPSJ, operator: Operator?): Lis
             Clustering,
             Cardvariance,
             Intravariance,
-            Univariance
+            Univariance,
+            Correlation
         )
     )
 }

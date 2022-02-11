@@ -23,6 +23,13 @@ def clustering(X, measures):
     return X
 
 
+def correlation(X, attributes, measures):
+    def get_corrs(df):
+        col_correlations = df[measures].corr()
+        cor_pairs = col_correlations.stack()
+        return [[k[0], k[1], v] for k, v in cor_pairs.to_dict().items() if k[0] < k[1]]
+    return pd.DataFrame(get_corrs(X), columns=["m1", "m2", "correlation"])
+
 def intravariance(X, attributes, measures):
     def v(x):
         A = pd.concat([(x.std() / (x.mean() + 1)).apply(lambda x: 1 if x > 1 else x) * 1.0, 1.0 * x.count() / len(X)], axis=1)
@@ -105,7 +112,7 @@ if __name__ == '__main__':
     # measures = args.measures.lower().split(",")
     # attributes = args.attributes.lower().split(",")
     measures = args.measures.split(",")
-    attributes = args.attributes.split(",")
+    attributes = args.attributes.split(",") if args.attributes is not None else []
     df = pd.DataFrame([])
     try:
         df = pd.read_csv(args.path + args.file, encoding='utf-8')
@@ -125,8 +132,9 @@ if __name__ == '__main__':
     elif module == "univariance":
         df = univariance(df, attributes, measures)
     elif module == "cardvariance":
-        print(df)
         df = cardvariance(df, attributes, measures)
+    elif module == "correlation":
+        df = correlation(df, attributes, measures)
     else:
         print("Unknown module: " + module)
         sys.exit(1)

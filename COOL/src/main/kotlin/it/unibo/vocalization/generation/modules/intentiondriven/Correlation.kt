@@ -8,57 +8,63 @@ import it.unibo.vocalization.generation.modules.IVocalizationPattern
 import it.unibo.vocalization.generation.modules.VocalizationModule
 import it.unibo.vocalization.generation.modules.VocalizationPattern
 import it.unibo.vocalization.generation.modules.querydriven.Peculiarity
-import krangl.DataFrame
-import krangl.readCSV
-import krangl.writeCSV
+import krangl.*
 import java.io.File
 import java.util.*
 
 /**
  * Describe intention in action.
  */
-object Intravariance : VocalizationModule {
+object Correlation : VocalizationModule {
     override val moduleName: String
-        get() = "intravariance"
+        get() = "correlation"
+
+    fun correlation(x: Double): String {
+        return if (x > 0.6) {
+            "strong"
+        } else if (x > 0.3) {
+            "weak"
+        } else if (x > -0.3) {
+            "no"
+        } else if (x > -0.6) {
+            "weak inverse"
+        } else {
+            "strong inverse"
+        }
+    }
+
 
     override fun compute(c1: IGPSJ?, c2: IGPSJ, operator: Operator?): List<IVocalizationPattern> {
-        val cube1 = if (operator!!.type == Parser.Type.DRILL) c1!! else c2
-        val cube2 = if (operator.type == Parser.Type.DRILL) c2 else c1!!
-        val cube: IGPSJ = Peculiarity.extendCubeWithProxy(cube2, cube1, returnAllColumns = true)
-        val attributes = if (cube1.attributes.size == cube2.attributes.size) cube1.attributes - cube2.attributes else cube2.attributes.intersect(cube1.attributes)
+        val measures = c2.measureNames()
+        val cube = c2
 
         val path = "generated/"
         val fileName = "${UUID.randomUUID()}.csv"
         cube.df.writeCSV(File("$path$fileName"))
-        computePython(Config.getPython(), path, "modules.py", fileName, attributes, cube.measureNames())
+        computePython(Config.getPython(), path, "modules.py", fileName, setOf(), cube.measureNames())
         cube.df = DataFrame.readCSV(File("$path$fileName"))
         val df = cube.df.sortedByDescending(moduleName)
 
         return (1..df.nrow).map { // get the topk
             var text = "" // starting sentence
             var csum = 0.0
-            var cov = 0.0
             if (it == 1) {
                 val r = df.row(it - 1)
-                csum += r[moduleName] as Double
-                cov += r["cov"] as Double
-                text += "The group with highest value variability of ${
-                    cube.measureNames().first()
-                } is ${Peculiarity.tuple2string(attributes, r)}"
+                csum += Math.abs(r[moduleName] as Double)
+                text += "${r["m1"]} and ${r["m2"]} show ${correlation(r[moduleName] as Double)} correlation"
             } else {
                 val tuples: String = (0 until it).map {
                     val r = df.row(it)
-                    csum += r[moduleName] as Double
-                    cov += r["cov"] as Double
-                    Peculiarity.tuple2string(attributes, r)
+                    csum += Math.abs(r[moduleName] as Double)
+                    "${r["m1"]} and ${r["m2"]} show ${correlation(r[moduleName] as Double)} correlation"
                 }.reduce { a, b -> "$a, $b" }
-                text += "The groups with highest value variability of ${cube.measureNames().first()} are $tuples"
+                text += tuples
             }
-            VocalizationPattern(text, csum / it, cov, moduleName)
+            VocalizationPattern(text, csum / it, 1.0, moduleName)
         }.toList()
     }
 
     override fun applyCondition(cube1: IGPSJ?, cube2: IGPSJ, operator: Operator?): Boolean {
-        return cube1 != null && setOf(Parser.Type.DRILL, Parser.Type.ROLLUP).contains(operator!!.type)
+        return cube1 != null && setOf(Parser.Type.ADD, Parser.Type.DROP).contains(operator!!.type)
     }
 }

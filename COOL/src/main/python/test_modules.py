@@ -5,6 +5,16 @@ from modules import *
 
 
 class TestAssess(unittest.TestCase):
+    A = pd.DataFrame([
+        ["Beer", 35.0, 70.0],
+        ["Wine", 32.0, 40.0],
+        ["Cola", 30.0, 55.0],
+        ["Pizza", 6.0, 12.0],
+        ["Bread", 5.0, 5.0]
+    ], columns=["product", "quantity", "revenue"])
+    Amea = ["quantity", "revenue"]
+    Aattr = ["product"]
+
     B = pd.DataFrame([
         ["Beer", 35.0],
         ["Wine", 32.0],
@@ -69,6 +79,10 @@ class TestAssess(unittest.TestCase):
     def test_all6(self):
         X = maxratio(self.C, self.Cattr, self.Cmea)
         self.assertTrue(len(X) == 2)
+
+    def test_all7(self):
+        X = correlation(self.A, self.Aattr, self.Amea)
+        self.assertTrue(len(X) == 1)
 
 if __name__ == '__main__':
     unittest.main()

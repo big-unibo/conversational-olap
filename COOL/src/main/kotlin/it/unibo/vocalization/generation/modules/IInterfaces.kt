@@ -119,7 +119,7 @@ interface VocalizationModule {
                 + " --file $fileName" //
                 + " --module $moduleName"
                 + " --measures ${measures.reduce{ a, b -> "$a,$b" }}"
-                + " --attributes ${attributes.reduce{ a, b -> "$a,$b" }}")
+                + (if (attributes.isNotEmpty()) { " --attributes ${attributes.reduce{ a, b -> "$a,$b" }}" } else { "" }))
         return fullCommand
     }
 

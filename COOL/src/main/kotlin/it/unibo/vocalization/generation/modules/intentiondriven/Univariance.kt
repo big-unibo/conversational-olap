@@ -37,7 +37,7 @@ object Univariance : VocalizationModule {
         if (min >= 0.8) {
             return listOf(
                 VocalizationPattern(
-                    "All $attribute have the same ${cube.measureNames().first()}} ",
+                    "All $attribute have similar ${cube.measureNames().first()} values",
                     df[moduleName].mean()!!,
                     1.0,
                     moduleName
@@ -57,7 +57,7 @@ object Univariance : VocalizationModule {
                         attributes,
                         r
                     )
-                } have the same ${cube.measureNames().first()} } "
+                } have similar ${cube.measureNames().first()} values"
             } else {
                 val tuples: String = (0 until it).map {
                     val r = df.row(it)
@@ -65,7 +65,7 @@ object Univariance : VocalizationModule {
                     cov += r["cov"] as Double
                     Peculiarity.tuple2string(attributes, r)
                 }.reduce { a, b -> "$a, $b" }
-                text += "All $attribute in $tuples have the same ${cube.measureNames().first()} } "
+                text += "All $attribute in $tuples have similar ${cube.measureNames().first()} values"
             }
             VocalizationPattern(text, csum / it, cov, moduleName)
         }.toList()

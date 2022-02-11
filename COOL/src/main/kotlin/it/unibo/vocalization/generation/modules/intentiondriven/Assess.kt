@@ -1,6 +1,7 @@
-package it.unibo.vocalization.generation.modules.querydriven
+package it.unibo.vocalization.generation.modules.intentiondriven
 
 import it.unibo.conversational.Utils
+import it.unibo.conversational.algorithms.Parser
 import it.unibo.conversational.olap.Operator
 import it.unibo.vocalization.generation.modules.IGPSJ
 import it.unibo.vocalization.generation.modules.IVocalizationPattern
@@ -74,6 +75,6 @@ object Assess : VocalizationModule {
     }
 
     override fun applyCondition(cube1: IGPSJ?, cube2: IGPSJ, operator: Operator?): Boolean {
-        return cube1 != null && setOf(Utils.Type.DRILL, Utils.Type.SAD).contains(operator!!.type)
+        return cube1 != null && setOf(Parser.Type.DRILL).contains(operator!!.type)
     }
 }

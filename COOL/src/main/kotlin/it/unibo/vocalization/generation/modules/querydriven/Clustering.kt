@@ -31,7 +31,7 @@ object Clustering : VocalizationModule {
                 "cluster_sil" to { it["cluster_sil"].mean() },
                 *cube.measureNames().map { m -> m to { it[m].mean()!!.round() } }.toTypedArray()
             )
-        var text = "Among ${df.nrow} clusters"
+        var text = "Facts can be grouped into ${df.nrow} clusters"
         var i = 0
         var cumSil = 0.0
         var cumCard = 0.0
