@@ -38,6 +38,6 @@ object Printer {
             }
         }
         result.append(String.format("with total profit of %s and weight %s", totalProfit, totalWeight))
-        println(result)
+        // println(result)
     }
 }

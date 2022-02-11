@@ -35,6 +35,16 @@ class TestAssess(unittest.TestCase):
     Cmea = ["quantity"]
     Cattr = ["category"]
 
+    D = pd.DataFrame([
+        ["Beer", 35.0, 23.0],
+        ["Wine", 32.0, 15.0],
+        ["Cola", 30.0, 8.0],
+        ["Pizza", 6.0, 0.0],
+        ["Bread", 5.0, 1.0]
+    ], columns=["product", "quantity.x", "quantity.y"])
+    Dmea = ["quantity"]
+    Dattr = ["product"]
+
     def check(self, X, measures):
         outlier_detection(X, measures)
         self.assertTrue((X["anomaly"].between(-1, 1)).all())
@@ -83,6 +93,11 @@ class TestAssess(unittest.TestCase):
     def test_all7(self):
         X = correlation(self.A, self.Aattr, self.Amea)
         self.assertTrue(len(X) == 1)
+
+    def test_all8(self):
+        X = sadincrease(self.D, self.Dattr, self.Dmea)
+        self.assertTrue(len(X) == 5)
+
 
 if __name__ == '__main__':
     unittest.main()

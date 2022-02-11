@@ -18,8 +18,18 @@ def clustering(X, measures):
         silhouette_avg = silhouette_score(Z, kmeans.labels_)
         if silhouette_avg > max_sil:
             best_k = k
-    X.drop(columns=[x for x in X.columns if ("cluster_label_" in x or "cluster_sil_" in x) and str(best_k) not in x], inplace=True)
-    X.rename(columns={"cluster_label_" + str(best_k): "cluster_label", "cluster_sil_" + str(best_k): "cluster_sil"}, inplace=True)
+    X.drop(columns=[x for x in X.columns if ("cluster_label_" in x or "cluster_sil_" in x) and str(best_k) not in x],
+           inplace=True)
+    X.rename(columns={"cluster_label_" + str(best_k): "cluster_label", "cluster_sil_" + str(best_k): "cluster_sil"},
+             inplace=True)
+    return X
+
+
+def sadincrease(X, attributes, measures):
+    X = X.fillna(0)
+    for m in measures:
+        X[m] = (X[m + ".x"] - X[m + ".y"]).abs() / (X[m + ".x"] + 1)
+        X[m + "_kpi"] = (X[m] - X[m].mean()).abs()
     return X
 
 
@@ -28,13 +38,17 @@ def correlation(X, attributes, measures):
         col_correlations = df[measures].corr()
         cor_pairs = col_correlations.stack()
         return [[k[0], k[1], v] for k, v in cor_pairs.to_dict().items() if k[0] < k[1]]
+
     return pd.DataFrame(get_corrs(X), columns=["m1", "m2", "correlation"])
+
 
 def intravariance(X, attributes, measures):
     def v(x):
-        A = pd.concat([(x.std() / (x.mean() + 1)).apply(lambda x: 1 if x > 1 else x) * 1.0, 1.0 * x.count() / len(X)], axis=1)
+        A = pd.concat([(x.std() / (x.mean() + 1)).apply(lambda x: 1 if x > 1 else x) * 1.0, 1.0 * x.count() / len(X)],
+                      axis=1)
         A.columns = ["intravariance", "cov"]
         return A.fillna(0)
+
     return X.groupby(attributes)[measures].apply(lambda x: v(x)).reset_index().drop(columns=["level_1"])
 
 
@@ -68,6 +82,7 @@ def outlier_detection(X, measures):
     X["anomaly"] = X["anomaly"].apply(lambda x: 0 if x < 0 else x)
     return X
 
+
 def skyline(X, measures):
     # #########################################################################
     # https://stackoverflow.com/questions/32791911/fast-calculation-of-pareto-front-in-python
@@ -81,7 +96,8 @@ def skyline(X, measures):
         is_efficient = np.ones(costs.shape[0], dtype=bool)
         for i, c in enumerate(costs):
             if is_efficient[i]:
-                is_efficient[is_efficient] = np.any(costs[is_efficient] >= c, axis=1)  # Keep any point with a lower cost
+                is_efficient[is_efficient] = np.any(costs[is_efficient] >= c,
+                                                    axis=1)  # Keep any point with a lower cost
                 is_efficient[i] = True  # And keep self
         return is_efficient
 
@@ -135,6 +151,8 @@ if __name__ == '__main__':
         df = cardvariance(df, attributes, measures)
     elif module == "correlation":
         df = correlation(df, attributes, measures)
+    elif module == "sadincrease":
+        df = sadincrease(df, attributes, measures)
     else:
         print("Unknown module: " + module)
         sys.exit(1)

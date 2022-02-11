@@ -5,7 +5,10 @@ import it.unibo.vocalization.generation.modules.GPSJ
 import it.unibo.vocalization.generation.modules.IVocalizationPattern
 import it.unibo.vocalization.generation.modules.VocalizationModule
 import it.unibo.vocalization.generation.modules.intentiondriven.*
-import it.unibo.vocalization.generation.modules.querydriven.*
+import it.unibo.vocalization.generation.modules.querydriven.Clustering
+import it.unibo.vocalization.generation.modules.querydriven.OutlierDetection
+import it.unibo.vocalization.generation.modules.querydriven.Preamble
+import it.unibo.vocalization.generation.modules.querydriven.Skyline
 
 fun generatePatterns(prevQuery: GPSJ?, curQuery: GPSJ, operator: Operator?): List<List<IVocalizationPattern>> {
     return generatePatterns(
@@ -23,7 +26,8 @@ fun generatePatterns(prevQuery: GPSJ?, curQuery: GPSJ, operator: Operator?): Lis
             Cardvariance,
             Intravariance,
             Univariance,
-            Correlation
+            Correlation,
+            SADIncrease
         )
     )
 }

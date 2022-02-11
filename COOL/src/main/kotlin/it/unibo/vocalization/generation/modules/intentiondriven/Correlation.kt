@@ -1,14 +1,14 @@
 package it.unibo.vocalization.generation.modules.intentiondriven
 
-import it.unibo.conversational.algorithms.Parser
 import it.unibo.conversational.database.Config
 import it.unibo.conversational.olap.Operator
 import it.unibo.vocalization.generation.modules.IGPSJ
 import it.unibo.vocalization.generation.modules.IVocalizationPattern
 import it.unibo.vocalization.generation.modules.VocalizationModule
 import it.unibo.vocalization.generation.modules.VocalizationPattern
-import it.unibo.vocalization.generation.modules.querydriven.Peculiarity
-import krangl.*
+import krangl.DataFrame
+import krangl.readCSV
+import krangl.writeCSV
 import java.io.File
 import java.util.*
 
@@ -35,7 +35,6 @@ object Correlation : VocalizationModule {
 
 
     override fun compute(c1: IGPSJ?, c2: IGPSJ, operator: Operator?): List<IVocalizationPattern> {
-        val measures = c2.measureNames()
         val cube = c2
 
         val path = "generated/"
@@ -65,6 +64,7 @@ object Correlation : VocalizationModule {
     }
 
     override fun applyCondition(cube1: IGPSJ?, cube2: IGPSJ, operator: Operator?): Boolean {
-        return cube1 != null && setOf(Parser.Type.ADD, Parser.Type.DROP).contains(operator!!.type)
+        // return cube1 != null && setOf(Parser.Type.ADD, Parser.Type.DROP).contains(operator!!.type)
+        return cube2.measureNames().size > 1
     }
 }

@@ -1,6 +1,5 @@
 package it.unibo.vocalization.generation.modules.intentiondriven
 
-import it.unibo.conversational.Utils
 import it.unibo.conversational.algorithms.Parser
 import it.unibo.conversational.olap.Operator
 import it.unibo.vocalization.generation.modules.IGPSJ

@@ -9,10 +9,7 @@ import it.unibo.vocalization.Optimizer
 import it.unibo.vocalization.generation.generatePatterns
 import it.unibo.vocalization.generation.modules.GPSJ
 import it.unibo.vocalization.generation.modules.IVocalizationPattern
-import it.unibo.vocalization.generation.modules.intentiondriven.Assess
-import it.unibo.vocalization.generation.modules.intentiondriven.Cardvariance
-import it.unibo.vocalization.generation.modules.intentiondriven.Intravariance
-import it.unibo.vocalization.generation.modules.intentiondriven.Univariance
+import it.unibo.vocalization.generation.modules.intentiondriven.*
 import it.unibo.vocalization.generation.modules.querydriven.*
 import it.unibo.vocalization.vocalize
 import krangl.dataFrameOf
@@ -23,9 +20,6 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 class TestModule {
-
-    companion object {
-    }
 
     val c1 = GPSJ(Config.getCube("SSBORA_TEST"), setOf("category"), setOf(Pair.of("sum", "quantity")), setOf())
     val c2 = GPSJ(Config.getCube("SSBORA_TEST"), setOf("product"), setOf(Pair.of("sum", "quantity")), setOf())
@@ -77,6 +71,7 @@ class TestModule {
         cj = GPSJ(c, setOf("store_type", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf(Triple.of("product_subcategory", "=", "'Beer'")))
         p = vocalize(ci, cj, Operator(Parser.Type.SAD), 300)
         check(p)
+        // generatePatterns(ci, cj, Operator(Parser.Type.SAD)).forEach { println(it) }
     }
 
     @Test
@@ -202,5 +197,14 @@ class TestModule {
     @Test
     fun testUnivariance() {
         check(Univariance.compute(c1, c2, Operator(Parser.Type.DRILL)))
+    }
+
+    @Test
+    fun testSADincrease() {
+        val c = Config.getCube("sales")
+        val ci = GPSJ(c, setOf("store_type", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf())
+        val cj = GPSJ(c, setOf("store_type", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf(Triple.of("product_subcategory", "=", "'Beer'")))
+        check(SADIncrease.compute(ci, cj, null))
+        // check(SADIncrease.compute(cj, ci, null))
     }
 }
