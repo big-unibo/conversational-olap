@@ -23,6 +23,7 @@ class TestModule {
 
     val c1 = GPSJ(Config.getCube("SSBORA_TEST"), setOf("category"), setOf(Pair.of("sum", "quantity")), setOf())
     val c2 = GPSJ(Config.getCube("SSBORA_TEST"), setOf("product"), setOf(Pair.of("sum", "quantity")), setOf())
+    val BUDGET = 120
 
     @Test
     fun test01() {
@@ -40,13 +41,13 @@ class TestModule {
         val c = Config.getCube("sales")
         var ci: GPSJ? = null
         var cj = GPSJ(c, setOf("store_city"), setOf(Pair.of("sum", "unit_sales")), setOf())
-        var p = vocalize(ci, cj, null, 60)
+        var p = vocalize(ci, cj, null, BUDGET)
         check(p)
 
         println("\n---\n")
         ci = cj
         cj = GPSJ(c, setOf("store_city", "product_category"), setOf(Pair.of("sum", "unit_sales")), setOf())
-        p = vocalize(ci, cj, Operator(Parser.Type.DRILL), 120)
+        p = vocalize(ci, cj, Operator(Parser.Type.DRILL), BUDGET)
         check(p)
     }
 
@@ -56,20 +57,68 @@ class TestModule {
         val c = Config.getCube("sales")
         var ci: GPSJ? = null
         var cj = GPSJ(c, setOf("store_type"), setOf(Pair.of("sum", "unit_sales")), setOf())
-        var p = vocalize(ci, cj, null, 60)
+        var p = vocalize(ci, cj, null, BUDGET)
         check(p)
 
         println("\n---\n")
         ci = cj
         cj = GPSJ(c, setOf("store_type", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf())
         // generatePatterns(ci, cj, Operator(Parser.Type.DRILL), listOf(Intravariance, Univariance, Cardvariance)).flatten().forEach { println(it) }
-        p = vocalize(ci, cj, Operator(Parser.Type.DRILL), 300)
+        p = vocalize(ci, cj, Operator(Parser.Type.DRILL), BUDGET)
         check(p)
 
         println("\n---\n")
         ci = cj
         cj = GPSJ(c, setOf("store_type", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf(Triple.of("product_subcategory", "=", "'Beer'")))
-        p = vocalize(ci, cj, Operator(Parser.Type.SAD), 300)
+        p = vocalize(ci, cj, Operator(Parser.Type.SAD), BUDGET)
+        check(p)
+        // generatePatterns(ci, cj, Operator(Parser.Type.SAD)).forEach { println(it) }
+    }
+
+    @Test
+    fun testSession05() {
+        println("\n---\n")
+        val c = Config.getCube("sales")
+        var ci: GPSJ? = null
+        var cj = GPSJ(c, setOf("product_department"), setOf(Pair.of("sum", "unit_sales")), setOf())
+        var p = vocalize(ci, cj, null, BUDGET)
+        check(p)
+
+        println("\n---\n")
+        ci = cj
+        cj = GPSJ(c, setOf("product_department", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf())
+        // generatePatterns(ci, cj, Operator(Parser.Type.DRILL), listOf(Intravariance, Univariance, Cardvariance)).flatten().forEach { println(it) }
+        p = vocalize(ci, cj, Operator(Parser.Type.DRILL), BUDGET)
+        check(p)
+
+        println("\n---\n")
+        ci = cj
+        cj = GPSJ(c, setOf("product_department", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf(Triple.of("occupation", "=", "'Professional'")))
+        p = vocalize(ci, cj, Operator(Parser.Type.SAD), BUDGET)
+        check(p)
+        // generatePatterns(ci, cj, Operator(Parser.Type.SAD)).forEach { println(it) }
+    }
+
+    @Test
+    fun testSession07() {
+        println("\n---\n")
+        val c = Config.getCube("sales")
+        var ci: GPSJ? = null
+        var cj = GPSJ(c, setOf("product_subcategory"), setOf(Pair.of("sum", "store_sales")), setOf())
+        var p = vocalize(ci, cj, null, BUDGET)
+        check(p)
+
+        println("\n---\n")
+        ci = cj
+        cj = GPSJ(c, setOf("product_category"), setOf(Pair.of("sum", "store_sales")), setOf())
+        // generatePatterns(ci, cj, Operator(Parser.Type.DRILL), listOf(Intravariance, Univariance, Cardvariance)).flatten().forEach { println(it) }
+        p = vocalize(ci, cj, Operator(Parser.Type.ROLLUP), BUDGET)
+        check(p)
+
+        println("\n---\n")
+        ci = cj
+        cj = GPSJ(c, setOf("product_category"), setOf(Pair.of("sum", "store_sales"), Pair.of("sum", "store_cost")), setOf())
+        p = vocalize(ci, cj, Operator(Parser.Type.ADD), BUDGET)
         check(p)
         // generatePatterns(ci, cj, Operator(Parser.Type.SAD)).forEach { println(it) }
     }
@@ -81,19 +130,19 @@ class TestModule {
         val c = Config.getCube("covid")
         var ci: GPSJ? = null
         var cj = GPSJ(c, setOf("country"), setOf(Pair.of("sum", "cases")), setOf())
-        var p = vocalize(ci, cj, null, 60)
+        var p = vocalize(ci, cj, null, BUDGET)
         check(p)
 
         println("\n---\n")
         ci = cj
         cj = GPSJ(c, setOf("continent"), setOf(Pair.of("sum", "cases")), setOf())
-        p = vocalize(ci, cj, Operator(Parser.Type.ROLLUP), 300)
+        p = vocalize(ci, cj, Operator(Parser.Type.ROLLUP), BUDGET)
         check(p)
 
         println("\n---\n")
         ci = cj
         cj = GPSJ(c, setOf("continent"), setOf(Pair.of("sum", "cases"), Pair.of("sum", "deaths")), setOf())
-        p = vocalize(ci, cj, Operator(Parser.Type.ADD), 300)
+        p = vocalize(ci, cj, Operator(Parser.Type.ADD), BUDGET)
         check(p)
     }
 
@@ -106,13 +155,13 @@ class TestModule {
         val c = Config.getCube("covid")
         var ci: GPSJ? = null
         var cj = GPSJ(c, setOf("continent"), setOf(Pair.of("sum", "cases")), setOf())
-        var p = vocalize(ci, cj, null, 60)
+        var p = vocalize(ci, cj, null, BUDGET)
         check(p)
 
         println("\n---\n")
         ci = cj
         cj = GPSJ(c, setOf("country"), setOf(Pair.of("sum", "cases")), setOf())
-        p = vocalize(ci, cj, Operator(Parser.Type.DRILL), 300)
+        p = vocalize(ci, cj, Operator(Parser.Type.DRILL), BUDGET)
         check(p)
     }
 
@@ -161,12 +210,12 @@ class TestModule {
     }
 
     fun check(t: Collection<IVocalizationPattern>) {
-        t.forEach { println(it.text) }
+        t.forEach { println("${it.text}.\n") }
         // assertTrue(t.isNotEmpty(), "Empty patterns")
-        assertTrue(t.all { p -> p.int.toDouble() in 0.0..1.0 }, t.filter { p -> p.int.toDouble() < 0 || p.int.toDouble() > 1 }.toString())
+        assertTrue(t.all { p -> p.int.toDouble() in 0.0..1.0001 }, t.filter { p -> p.int.toDouble() < 0 || p.int.toDouble() > 1 }.toString())
         assertTrue(t.all { p -> p.cov in 0.0..1.0 }, t.filter { p -> p.cov < 0 || p.cov > 1 }.toString())
         if (t.isNotEmpty()) {
-            Optimizer.getPatterns(listOf(t.toList()), 120)
+            Optimizer.getPatterns(listOf(t.toList()), BUDGET)
         }
     }
 

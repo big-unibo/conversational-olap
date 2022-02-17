@@ -18,10 +18,8 @@ def clustering(X, measures):
         silhouette_avg = silhouette_score(Z, kmeans.labels_)
         if silhouette_avg > max_sil:
             best_k = k
-    X.drop(columns=[x for x in X.columns if ("cluster_label_" in x or "cluster_sil_" in x) and str(best_k) not in x],
-           inplace=True)
-    X.rename(columns={"cluster_label_" + str(best_k): "cluster_label", "cluster_sil_" + str(best_k): "cluster_sil"},
-             inplace=True)
+    X.drop(columns=[x for x in X.columns if ("cluster_label_" in x or "cluster_sil_" in x) and str(best_k) not in x], inplace=True)
+    X.rename(columns={"cluster_label_" + str(best_k): "cluster_label", "cluster_sil_" + str(best_k): "cluster_sil"}, inplace=True)
     return X
 
 
@@ -49,13 +47,21 @@ def intravariance(X, attributes, measures):
         A.columns = ["intravariance", "cov"]
         return A.fillna(0)
 
-    return X.groupby(attributes)[measures].apply(lambda x: v(x)).reset_index().drop(columns=["level_1"])
+    X = X.groupby(attributes)[measures].apply(lambda x: v(x)).reset_index().drop(columns=["level_1"])
+    return X
+    # return X[X["intravariance"] > 0.1]
 
 
 def univariance(X, attributes, measures):
-    X = intravariance(X, attributes, measures)
-    X["univariance"] = 1 - X["intravariance"]
-    return X.drop(columns=["intravariance"])
+    def v(x):
+        A = pd.concat(
+            [1 - (x.std() / (x.mean() + 1)).apply(lambda x: 1 if x > 1 else x) * 1.0, 1.0 * x.count() / len(X)], axis=1)
+        A.columns = ["univariance", "cov"]
+        return A.fillna(0)
+
+    X = X.groupby(attributes)[measures].apply(lambda x: v(x)).reset_index().drop(columns=["level_1"])
+    return X
+    # return X[X["univariance"] > 0.1]
 
 
 def cardvariance(X, attributes, measures):
@@ -68,19 +74,20 @@ def cardvariance(X, attributes, measures):
     return X
 
 
-def maxratio(X, attributes, measures):
-    def v(x):
-        A = pd.concat([x.max() / x.sum() * 1.0, 1.0 * x.count() / len(X)], axis=1)
-        A.columns = ["maxratio", "cov"]
-        return A
-
-    return X.groupby(attributes)[measures].apply(lambda x: v(x))
+# def maxratio(X, attributes, measures):
+#     def v(x):
+#         A = pd.concat([x.max() / x.sum() * 1.0, 1.0 * x.count() / len(X)], axis=1)
+#         A.columns = ["maxratio", "cov"]
+#         return A
+#
+#     return X.groupby(attributes)[measures].apply(lambda x: v(x))
 
 
 def outlier_detection(X, measures):
     X["anomaly"] = IsolationForest(random_state=0).fit(X[measures]).decision_function(X[measures]) * -1.0
     X["anomaly"] = X["anomaly"].apply(lambda x: 0 if x < 0 else x)
     return X
+    # return X[X["anomaly"] > 0.2]
 
 
 def skyline(X, measures):

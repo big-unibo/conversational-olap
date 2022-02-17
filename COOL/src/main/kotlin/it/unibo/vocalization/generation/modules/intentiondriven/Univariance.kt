@@ -30,8 +30,11 @@ object Univariance : VocalizationModule {
         val fileName = "${UUID.randomUUID()}.csv"
         cube.df.writeCSV(File("$path$fileName"))
         computePython(Config.getPython(), path, "modules.py", fileName, attributes, cube.measureNames())
-        cube.df = DataFrame.readCSV(File("$path$fileName"))
-        val df = cube.df.sortedByDescending(moduleName)
+        val df = DataFrame.readCSV(File("$path$fileName")).filter { it[moduleName] gt 0.2 }.sortedByDescending(moduleName)
+
+        if (df.nrow == 0) {
+            return listOf()
+        }
 
         val min = df[moduleName].min()!!
         if (min >= 0.8) {
@@ -44,6 +47,8 @@ object Univariance : VocalizationModule {
                 )
             )
         }
+
+        val sum = df[moduleName].sum()!!.toDouble()
         return (1..df.nrow).map { // get the topk
             var text = "" // starting sentence
             var csum = 0.0
@@ -53,10 +58,7 @@ object Univariance : VocalizationModule {
                 csum += r[moduleName] as Double
                 cov += r["cov"] as Double
                 text += "All $attribute in ${
-                    Peculiarity.tuple2string(
-                        attributes,
-                        r
-                    )
+                    Peculiarity.tuple2string(attributes, r)
                 } have similar ${cube.measureNames().first()} values"
             } else {
                 val tuples: String = (0 until it).map {
@@ -67,7 +69,7 @@ object Univariance : VocalizationModule {
                 }.reduce { a, b -> "$a, $b" }
                 text += "All $attribute in $tuples have similar ${cube.measureNames().first()} values"
             }
-            VocalizationPattern(text, csum / it, cov, moduleName)
+            VocalizationPattern(text, csum / sum, cov, moduleName)
         }.toList()
     }
 

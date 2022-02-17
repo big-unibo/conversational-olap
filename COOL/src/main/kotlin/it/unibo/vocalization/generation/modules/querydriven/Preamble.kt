@@ -20,6 +20,6 @@ object Preamble : VocalizationModule {
         val where = if (cube2.selection.isNotEmpty()) " and filtered by ${cube2.selection.map { it.right }.reduce { a, b -> "$a, $b" }}," else ""
         val mea = " ${cube2.measureNames().map { "the average $it is ${cube2.df[it].mean()!!.round()}" }.reduce { a, b -> "$a, $b"}}"
         val text = groupby + where + mea
-        return listOf(VocalizationPattern(text, 1.0, 1.0, moduleName))
+        return listOf(VocalizationPattern(text, 1.0001, 1.0, moduleName))
     }
 }

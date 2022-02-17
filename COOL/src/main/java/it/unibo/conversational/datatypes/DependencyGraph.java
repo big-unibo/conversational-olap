@@ -124,13 +124,13 @@ public class DependencyGraph {
         g.addEdge("product_id", "product_subcategory");
         g.addVertex("product_category");
         g.addEdge("product_subcategory", "product_category");
-        // g.addVertex("product_department");
-        // g.addEdge("product_subcategory", "product_department");
+        g.addVertex("product_department");
+        g.addEdge("product_subcategory", "product_department");
         g.addVertex("product_family");
         g.addEdge("product_subcategory", "product_family");
         g.addVertex("all_product");
         g.addEdge("product_category", "all_product");
-        // g.addEdge("product_department", "all_products");
+        g.addEdge("product_department", "all_product");
         g.addEdge("product_family", "all_product");
         // STORE
         g.addVertex("store_id");

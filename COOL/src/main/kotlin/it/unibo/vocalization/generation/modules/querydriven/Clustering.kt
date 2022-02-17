@@ -24,26 +24,27 @@ object Clustering : VocalizationModule {
         val fileName = "${UUID.randomUUID()}.csv"
         cube.df.writeCSV(File("$path$fileName"))
         computePython(Config.getPython(), path, "modules.py", fileName, cube.attributes, cube.measureNames())
-        cube.df = DataFrame.readCSV(File("$path$fileName"))
-        val df = cube.df.groupBy("cluster_label")
+        val df = DataFrame.readCSV(File("$path$fileName"))
+            .groupBy("cluster_label")
             .summarize(
                 "count" to { it.nrow },
                 "cluster_sil" to { it["cluster_sil"].mean() },
                 *cube.measureNames().map { m -> m to { it[m].mean()!!.round() } }.toTypedArray()
             )
         var text = "Facts can be grouped into ${df.nrow} clusters"
-        var i = 0
         var cumSil = 0.0
         var cumCard = 0.0
+        val sum: Double = df["cluster_sil"].sum()!!.toDouble()
         return df
             .sortedByDescending("count")
             .rows
-            .map {
-                cumCard += it["count"].toString().toInt()
-                val n = listOf("largest", "second", "third", "fourth", "fifth")[i++] // it["cluster_label"] as Int - 1
-                text += ", the $n has ${it["count"]} facts and ${cube.measureNames().map { m -> "${it[m]} as average $m"  }.reduce{ a, b -> "$a, $b"}}"
-                cumSil += it["cluster_sil"] as Double
-                VocalizationPattern(text, cumSil / i, 1.0 * cumCard / cube2.df.nrow, moduleName)
+            .filterIndexed { i, _ -> i < 3 }
+            .mapIndexed { i, r ->
+                cumCard += r["count"].toString().toInt()
+                val n = listOf("largest", "second", "third", "fourth", "fifth")[i] // it["cluster_label"] as Int - 1
+                text += ", the $n has ${r["count"]} facts and ${cube.measureNames().map { m -> "${r[m]} as average $m" }.reduce { a, b -> "$a, $b" }}"
+                cumSil += r["cluster_sil"] as Double
+                VocalizationPattern(text, cumSil / sum, 1.0 * cumCard / cube2.df.nrow, moduleName)
             }
     }
 }

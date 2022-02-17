@@ -41,8 +41,7 @@ object Correlation : VocalizationModule {
         val fileName = "${UUID.randomUUID()}.csv"
         cube.df.writeCSV(File("$path$fileName"))
         computePython(Config.getPython(), path, "modules.py", fileName, setOf(), cube.measureNames())
-        cube.df = DataFrame.readCSV(File("$path$fileName"))
-        val df = cube.df.sortedByDescending(moduleName)
+        val df = DataFrame.readCSV(File("$path$fileName")).sortedByDescending(moduleName)
 
         return (1..df.nrow).map { // get the topk
             var text = "" // starting sentence

@@ -8,9 +8,7 @@ import it.unibo.vocalization.generation.modules.IVocalizationPattern
 import it.unibo.vocalization.generation.modules.VocalizationModule
 import it.unibo.vocalization.generation.modules.VocalizationPattern
 import it.unibo.vocalization.generation.modules.querydriven.Peculiarity
-import krangl.DataFrame
-import krangl.readCSV
-import krangl.writeCSV
+import krangl.*
 import java.io.File
 import java.util.*
 
@@ -31,10 +29,14 @@ object Intravariance : VocalizationModule {
         val fileName = "${UUID.randomUUID()}.csv"
         cube.df.writeCSV(File("$path$fileName"))
         computePython(Config.getPython(), path, "modules.py", fileName, attributes, cube.measureNames())
-        cube.df = DataFrame.readCSV(File("$path$fileName"))
-        val df = cube.df.sortedByDescending(moduleName)
+        val df = DataFrame.readCSV(File("$path$fileName")).filter { it[moduleName] gt 0.2 }.sortedByDescending(moduleName)
 
-        return (1..df.nrow).map { // get the topk
+        if (df.nrow == 0) {
+            return listOf()
+        }
+
+        val sum = df[moduleName].sum()!!.toDouble()
+        return (1..df.nrow.coerceAtMost(4)).map { // get the topk
             var text = "" // starting sentence
             var csum = 0.0
             var cov = 0.0
@@ -54,7 +56,7 @@ object Intravariance : VocalizationModule {
                 }.reduce { a, b -> "$a, $b" }
                 text += "The groups with highest value variability of ${cube.measureNames().first()} are $tuples"
             }
-            VocalizationPattern(text, csum / it, cov, moduleName)
+            VocalizationPattern(text, csum / sum, cov, moduleName)
         }.toList()
     }
 

@@ -62,7 +62,7 @@ object Assess : VocalizationModule {
                 .sortedByDescending("score")
 
         val maxpec: Double = enhcube["score"].max()!!
-        var text = "As to assessments"
+        var text = "When compared to the previous query"
         val patterns =
                 (0..2).map {
                     val r = enhcube.row(it)

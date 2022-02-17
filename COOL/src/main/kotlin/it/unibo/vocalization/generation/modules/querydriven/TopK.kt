@@ -5,8 +5,10 @@ import it.unibo.vocalization.generation.modules.IGPSJ
 import it.unibo.vocalization.generation.modules.IVocalizationPattern
 import it.unibo.vocalization.generation.modules.VocalizationModule
 import it.unibo.vocalization.generation.modules.VocalizationPattern
+import it.unibo.vocalization.generation.modules.intentiondriven.Univariance
 import it.unibo.vocalization.generation.modules.querydriven.Peculiarity.round
 import it.unibo.vocalization.generation.modules.querydriven.Peculiarity.tuple2string
+import krangl.gt
 import krangl.sum
 
 /**
@@ -25,34 +27,40 @@ object TopK : VocalizationModule {
     }
 
     fun topKpatterns(moduleName: String, cube: IGPSJ, mea: String, isTopK: Boolean = true, kpi: String? = null): List<VocalizationPattern> {
+        if (cube.df.nrow == 0) {
+            return listOf()
+        }
+
         val kpi = if (kpi == null) mea else kpi
         val sum: Double = cube.df[mea].sum()!!.toDouble() // get the sum of the measure
         val count: Int = cube.df[mea].length // get the count of elements
-        val df = if (isTopK) { cube.df.sortedByDescending(mea) } else { cube.df.sortedBy(mea) } // sort by descending value
+        val df = if (isTopK) { cube.df.sortedByDescending(mea) } else { cube.df.sortedBy(mea) }.filter { it[mea] gt 0.1 } // sort by descending value
         val superlative = if (isTopK) { "highest" } else { "lowest" }
         val patterns =
-            (1..4).map { // get the topk
+            (1..df.nrow.coerceAtMost(4)).map { // get the topk
                 var text = "" // starting sentence
                 var csum = 0.0
                 if (it == 1) {
                     val r = df.row(it - 1)
-                    text += "The fact with $superlative $mea is ${tuple2string(cube, r)} with $mea ${(r[kpi] as Double).round(2)} "
-                    csum += if (!r.contains("peculiarity")) { r[mea] as Double } else { r[mea]  as Double * r["peculiarity"] as Double }
+                    text += "The fact with $superlative $mea is ${tuple2string(cube, r)} with $kpi ${(r[kpi] as Double).round(0)} "
+                    csum += if (!r.contains("peculiarity")) { r[mea] as Double } else { r[mea] as Double * r["peculiarity"] as Double }
                 } else {
                     val tuples: String = (0 until it).map {
                         val r = df.row(it)
                         val s = tuple2string(cube, r)
                         csum += if (!r.contains("peculiarity")) { r[mea] as Double } else { r[mea] as Double * r["peculiarity"] as Double }
-                        s + " with " + (r[kpi] as Double).round(2)
+                        s + " with " + (r[kpi] as Double).round(0)
                     }.reduce { a, b -> "$a, $b" }
                     text += "The $it facts with $superlative $mea are $tuples"
                 }
                 val int = if (isTopK) {
                     // 1 - average of "not top-k value" / average of "top-k values"
-                    1 - ((sum - csum) / (count - it)) / (csum / it)
+                    // 1 - ((sum - csum) / (count - it)) / (csum / it)
+                    csum / sum
                 } else {
                     // 1 - average of "bottom-k values" / average of "not bottom-k value"
-                    1 - (csum / it) / ((sum - csum) / (count - it))
+                    // 1 - (csum / it) / ((sum - csum) / (count - it))
+                    1 - csum / sum
                 }
                 VocalizationPattern(text, int, 1.0 * it / df.nrow, moduleName)
             }.toList()

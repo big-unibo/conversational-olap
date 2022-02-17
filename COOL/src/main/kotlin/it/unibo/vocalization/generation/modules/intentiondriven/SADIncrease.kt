@@ -34,9 +34,10 @@ object SADIncrease : VocalizationModule {
         computePython(Config.getPython(), path, "modules.py", fileName, c2.attributes, c2.measureNames())
         df = DataFrame.readCSV(File("$path$fileName"))
         val avg = df[mea].mean()!!
-        df = df.sortedByDescending("${mea}_kpi")
+        df = df.filter { it[mea] gt 0.1 }.sortedByDescending("${mea}_kpi")
 
         val superlative = if (c2.selection.size > c1.selection.size) "decrease" else "increase"
+        val sum = df["${mea}_kpi"].sum()!!.toDouble()
         return (1..df.nrow).map { // get the topk
             var text = "The average $superlative in ${c2.measureNames().map { "$it is ${percent(avg)}" }.reduce { a, b -> "$a,$b" }}" // starting sentence
             var csum = 0.0
@@ -52,7 +53,7 @@ object SADIncrease : VocalizationModule {
                 }.reduce { a, b -> "$a, $b" }
                 text += ", the facts with highest $superlative are $tuples"
             }
-            VocalizationPattern(text, csum / it, 1.0 * it / df.nrow, moduleName)
+            VocalizationPattern(text, csum / sum, 1.0 * it / df.nrow, moduleName)
         }.toList()
     }
 

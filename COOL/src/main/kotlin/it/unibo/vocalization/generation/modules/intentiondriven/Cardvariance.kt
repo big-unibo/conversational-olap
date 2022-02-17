@@ -33,10 +33,9 @@ object Cardvariance : VocalizationModule {
         val fileName = "${UUID.randomUUID()}.csv"
         cube.df.writeCSV(File("$path$fileName"))
         computePython(Config.getPython(), path, "modules.py", fileName, attributes, cube.measureNames())
-        cube.df = DataFrame.readCSV(File("$path$fileName"))
-
+        val df = DataFrame.readCSV(File("$path$fileName"))
         val superlative = if (operator.type == Parser.Type.DRILL) "drilling down to" else "rolling up to"
-        return listOf(VocalizationPattern("There is a high cardinality variation when $superlative $attribute", cube.df[moduleName].max()!!, 1.0, moduleName))
+        return listOf(VocalizationPattern("There is a high cardinality variation when $superlative $attribute", df[moduleName].max()!!, 1.0, moduleName))
     }
 
     override fun applyCondition(cube1: IGPSJ?, cube2: IGPSJ, operator: Operator?): Boolean {
