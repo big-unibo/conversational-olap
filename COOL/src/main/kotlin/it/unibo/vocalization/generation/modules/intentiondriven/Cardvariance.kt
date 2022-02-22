@@ -28,14 +28,14 @@ object Cardvariance : VocalizationModule {
         val cube: IGPSJ = Peculiarity.extendCubeWithProxy(cube2, cube1, returnAllColumns = true)
         val attributes = if (cube1.attributes.size == cube2.attributes.size) cube1.attributes - cube2.attributes else cube2.attributes.intersect(cube1.attributes)
         val attribute: String = (c2.attributes - c1!!.attributes).first()
+        val prevAttributes = if (cube1.attributes.size == cube2.attributes.size) cube2.attributes - cube1.attributes else cube2.attributes - cube2.attributes.intersect(cube1.attributes)
 
         val path = "generated/"
         val fileName = "${UUID.randomUUID()}.csv"
         cube.df.writeCSV(File("$path$fileName"))
         computePython(Config.getPython(), path, "modules.py", fileName, attributes, cube.measureNames())
         val df = DataFrame.readCSV(File("$path$fileName"))
-        val superlative = if (operator.type == Parser.Type.DRILL) "drilling down to" else "rolling up to"
-        return listOf(VocalizationPattern("There is a high cardinality variation when $superlative $attribute", df[moduleName].max()!!, 1.0, moduleName))
+        return listOf(VocalizationPattern("There is a large variability in the number of members of ${prevAttributes.reduce{a, b -> "$a, $b"}} for each $attribute", df[moduleName].max()!!, 1.0, moduleName))
     }
 
     override fun applyCondition(cube1: IGPSJ?, cube2: IGPSJ, operator: Operator?): Boolean {
