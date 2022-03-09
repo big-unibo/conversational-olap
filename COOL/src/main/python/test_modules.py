@@ -52,7 +52,7 @@ class TestAssess(unittest.TestCase):
         skyline(X, measures)
         self.assertTrue((X["dominance"].between(0, 1)).all())
 
-        clustering(X, measures)
+        clustering(X, measures, "foo_filename")
         self.assertTrue((X["cluster_label"] >= 0).all())
         self.assertTrue((X["cluster_sil"].between(-1, 1)).all())
 
@@ -85,10 +85,6 @@ class TestAssess(unittest.TestCase):
     def test_all5(self):
         X = cardvariance(self.C, self.Cattr, self.Cmea)
         self.assertTrue(len(X) == 5)
-
-    def test_all6(self):
-        X = maxratio(self.C, self.Cattr, self.Cmea)
-        self.assertTrue(len(X) == 2)
 
     def test_all7(self):
         X = correlation(self.A, self.Aattr, self.Amea)

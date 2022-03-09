@@ -38,7 +38,8 @@ object Univariance : VocalizationModule {
 
         println("${moduleName} python done " + (System.currentTimeMillis() - time))
 
-        val df = DataFrame.readCSV(File("$path$fileName")).filter { it[moduleName] gt 0.2 }.sortedByDescending(moduleName)
+        var df = DataFrame.readCSV(File("$path$fileName"))
+        df = df.filter { it[moduleName] gt 0.2 }.sortedByDescending(moduleName)
 
         if (df.nrow == 0) {
             return listOf()

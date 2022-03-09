@@ -16,13 +16,10 @@ def clustering(X, measures, filename):
     # i = 0
     # fig, axs = plt.subplots(math.ceil(max_k / 3), 3)
     for k in range(2, max_k + 1):
-        start = time.time()
         kmeans = MiniBatchKMeans(n_clusters=k, random_state=0, n_init=1).fit(Z) # KMeans
         X["cluster_label_" + str(k)] = kmeans.labels_
         X["cluster_sil_" + str(k)] = silhouette_samples(Z, kmeans.labels_)
         silhouette_avg = silhouette_score(Z, kmeans.labels_)
-        end = time.time()
-        print(end - start)
         # if max_k <= 3:
         #     ax = axs[i % 3]
         # else:
@@ -59,25 +56,22 @@ def correlation(X, attributes, measures):
 
 
 def intravariance(X, attributes, measures):
-    def v(x):
-        A = pd.concat([x.std(), x.mean(), (x.std() / (x.mean() + 1)).apply(lambda x: 1 if x > 1 else x) * 1.0, 1.0 * x.count() / len(X)], axis=1)
-        A.columns = ["var", "mean", "intravariance", "cov"]
-        return A.fillna(0)
-
-    X = X.groupby(attributes)[measures].apply(lambda x: v(x)).reset_index().drop(columns=[x for x in df.columns if "level_" in x])
+    X = univariance(X, attributes, measures)
+    X["intravariance"] = 1 - X["univariance"]
+    X = X.drop(["univariance"], axis=1)
     return X
-    # return X[X["intravariance"] > 0.1]
 
 
 def univariance(X, attributes, measures):
-    def v(x):
-        A = pd.concat([1 - (x.std() / (x.mean() + 1)).apply(lambda x: 1 if x > 1 else x) * 1.0, 1.0 * x.count() / len(X)], axis=1)
-        A.columns = ["univariance", "cov"]
-        return A.fillna(0)
-
-    X = X.groupby(attributes)[measures].apply(lambda x: v(x)).reset_index().drop(columns=[x for x in df.columns if "level_" in x])
+    # X = X.groupby(attributes)[measures].agg({x: ['mean', 'std', 'count'] for x in measures})
+    # X.columns = list(map('_'.join, X.columns.values))
+    m = measures[0]
+    X = X.groupby(attributes)[m].agg(['mean', 'std', 'count'])
+    X["univariance"] = 1 - X["std"] / (X["mean"] + 1)
+    X["univariance"] = X["univariance"].fillna(0).apply(lambda x: 1 if x > 1 else x)
+    X["cov"] = 1.0 * X["count"] / len(X)
+    X = X.drop(["count", "mean", "std"], axis=1)
     return X
-    # return X[X["univariance"] > 0.1]
 
 
 def cardvariance(X, attributes, measures):
