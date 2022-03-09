@@ -3,40 +3,41 @@ import math
 import numpy as np
 import pandas as pd
 import sys
-from sklearn.cluster import KMeans
+from sklearn.cluster import KMeans, MiniBatchKMeans
 from sklearn.ensemble import IsolationForest
 from sklearn.metrics import silhouette_score, silhouette_samples
 import matplotlib.pyplot as plt
+import time
 
 def clustering(X, measures, filename):
     Z = X[measures].to_numpy()
     max_sil, best_k, max_k = -2, 2, min(6, math.ceil(len(X) / 2)) - 1
 
-    i = 0
-    fig, axs = plt.subplots(math.ceil(max_k / 3), 3)
+    # i = 0
+    # fig, axs = plt.subplots(math.ceil(max_k / 3), 3)
     for k in range(2, max_k + 1):
-        kmeans = KMeans(n_clusters=k, random_state=0).fit(Z)
+        start = time.time()
+        kmeans = MiniBatchKMeans(n_clusters=k, random_state=0, n_init=1).fit(Z) # KMeans
         X["cluster_label_" + str(k)] = kmeans.labels_
         X["cluster_sil_" + str(k)] = silhouette_samples(Z, kmeans.labels_)
         silhouette_avg = silhouette_score(Z, kmeans.labels_)
-
-        if max_k <= 3:
-            ax = axs[i % 3]
-        else:
-            ax = axs[int(i / 3)][i % 3]
-
-        ax.scatter(X[measures[0]], np.zeros(len(X)) if len(measures) == 1 else X[measures[1]], c=kmeans.labels_)
-        ax.set_title(round(silhouette_avg, 2))
-        i += 1
-
+        end = time.time()
+        print(end - start)
+        # if max_k <= 3:
+        #     ax = axs[i % 3]
+        # else:
+        #     ax = axs[int(i / 3)][i % 3]
+        # ax.scatter(X[measures[0]], np.zeros(len(X)) if len(measures) == 1 else X[measures[1]], c=kmeans.labels_)
+        # ax.set_title(round(silhouette_avg, 2))
+        # i += 1
         if silhouette_avg > max_sil:
             max_sil = silhouette_avg
             best_k = k
 
     X.drop(columns=[x for x in X.columns if ("cluster_label_" in x or "cluster_sil_" in x) and str(best_k) not in x], inplace=True)
     X.rename(columns={"cluster_label_" + str(best_k): "cluster_label", "cluster_sil_" + str(best_k): "cluster_sil"}, inplace=True)
-    fig.tight_layout()
-    fig.savefig(filename + ".pdf")
+    # fig.tight_layout()
+    # fig.savefig(filename + ".pdf")
     return X
 
 
@@ -63,19 +64,18 @@ def intravariance(X, attributes, measures):
         A.columns = ["var", "mean", "intravariance", "cov"]
         return A.fillna(0)
 
-    X = X.groupby(attributes)[measures].apply(lambda x: v(x)).reset_index().drop(columns=["level_1"])
+    X = X.groupby(attributes)[measures].apply(lambda x: v(x)).reset_index().drop(columns=[x for x in df.columns if "level_" in x])
     return X
     # return X[X["intravariance"] > 0.1]
 
 
 def univariance(X, attributes, measures):
     def v(x):
-        A = pd.concat(
-            [1 - (x.std() / (x.mean() + 1)).apply(lambda x: 1 if x > 1 else x) * 1.0, 1.0 * x.count() / len(X)], axis=1)
+        A = pd.concat([1 - (x.std() / (x.mean() + 1)).apply(lambda x: 1 if x > 1 else x) * 1.0, 1.0 * x.count() / len(X)], axis=1)
         A.columns = ["univariance", "cov"]
         return A.fillna(0)
 
-    X = X.groupby(attributes)[measures].apply(lambda x: v(x)).reset_index().drop(columns=["level_1"])
+    X = X.groupby(attributes)[measures].apply(lambda x: v(x)).reset_index().drop(columns=[x for x in df.columns if "level_" in x])
     return X
     # return X[X["univariance"] > 0.1]
 
@@ -119,8 +119,8 @@ def skyline(X, measures):
         is_efficient = np.ones(costs.shape[0], dtype=bool)
         for i, c in enumerate(costs):
             if is_efficient[i]:
-                is_efficient[is_efficient] = np.any(costs[is_efficient] >= c,
-                                                    axis=1)  # Keep any point with a lower cost
+                # Keep any point with a lower cost
+                is_efficient[is_efficient] = np.any(costs[is_efficient] >= c, axis=1)
                 is_efficient[i] = True  # And keep self
         return is_efficient
 

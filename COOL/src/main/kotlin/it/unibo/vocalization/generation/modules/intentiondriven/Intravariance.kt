@@ -22,7 +22,12 @@ object Intravariance : VocalizationModule {
     override fun compute(c1: IGPSJ?, c2: IGPSJ, operator: Operator?): List<IVocalizationPattern> {
         val cube1 = if (operator!!.type == Parser.Type.DRILL) c1!! else c2
         val cube2 = if (operator.type == Parser.Type.DRILL) c2 else c1!!
+
+        var time = System.currentTimeMillis()
         val cube: IGPSJ = Peculiarity.extendCubeWithProxy(cube2, cube1, returnAllColumns = true)
+        println("${moduleName} proxy done " + (System.currentTimeMillis() - time))
+        time = System.currentTimeMillis()
+
         val attributes = if (cube1.attributes.size == cube2.attributes.size) cube1.attributes - cube2.attributes else cube2.attributes.intersect(cube1.attributes)
 
         val path = "generated/"
@@ -30,6 +35,8 @@ object Intravariance : VocalizationModule {
         cube.df.writeCSV(File("$path$fileName"))
         computePython(Config.getPython(), path, "modules.py", fileName, attributes, cube.measureNames())
         val df = DataFrame.readCSV(File("$path$fileName")).filter { it[moduleName] gt 0.2 }.sortedByDescending(moduleName)
+
+        println("${moduleName} python done " + (System.currentTimeMillis() - time))
 
         if (df.nrow == 0) {
             return listOf()

@@ -22,17 +22,6 @@ object Assess : VocalizationModule {
     override val moduleName: String
         get() = "assess"
 
-    private fun label(a: Double, b: Double): String {
-        val c = a / (b + 1)
-        if (c <= 0.9) {
-            return "worse than"
-        } else if (c > 0.9 && c <= 1.11) {
-            return "as good as"
-        } else {
-            return "better than"
-        }
-    }
-
     private fun label(c: Double): String {
         return if (c <= 0.9) {
             "worse than"

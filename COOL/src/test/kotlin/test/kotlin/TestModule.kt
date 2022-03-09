@@ -6,7 +6,6 @@ import it.unibo.conversational.database.Config
 import it.unibo.conversational.datatypes.Mapping
 import it.unibo.conversational.olap.Operator
 import it.unibo.vocalization.Optimizer
-import it.unibo.vocalization.generation.generatePatterns
 import it.unibo.vocalization.generation.modules.GPSJ
 import it.unibo.vocalization.generation.modules.IVocalizationPattern
 import it.unibo.vocalization.generation.modules.intentiondriven.*
@@ -18,6 +17,7 @@ import org.apache.commons.lang3.tuple.Triple
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import java.io.File
 
 class TestModule {
 
@@ -255,5 +255,64 @@ class TestModule {
         val cj = GPSJ(c, setOf("store_type", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf(Triple.of("product_subcategory", "=", "'Beer'")))
         check(SADIncrease.compute(ci, cj, null))
         // check(SADIncrease.compute(cj, ci, null))
+    }
+
+    @Test
+    fun testScalability() {
+        val c = Config.getCube("sales")
+        val l =
+            listOf(
+                listOf(
+                    Pair(null, GPSJ(c, setOf("product_name", "the_month"), setOf(Pair.of("sum", "unit_sales")), setOf())),
+                    Pair(Operator(Parser.Type.DRILL), GPSJ(c, setOf("product_name", "the_month", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf())),
+                    Pair(Operator(Parser.Type.SAD), GPSJ(c, setOf("product_name", "the_month", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf(Triple.of("occupation", "=", "'Professional'"))))
+                ),
+                listOf(
+                    Pair(null, GPSJ(c, setOf("product_name"), setOf(Pair.of("sum", "unit_sales")), setOf())),
+                    Pair(Operator(Parser.Type.DRILL), GPSJ(c, setOf("product_name", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf())),
+                    Pair(Operator(Parser.Type.SAD), GPSJ(c, setOf("product_name", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf(Triple.of("occupation", "=", "'Professional'"))))
+                ),
+                listOf(
+                    Pair(null, GPSJ(c, setOf("product_subcategory"), setOf(Pair.of("sum", "unit_sales")), setOf())),
+                    Pair(Operator(Parser.Type.DRILL), GPSJ(c, setOf("product_subcategory", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf())),
+                    Pair(Operator(Parser.Type.SAD), GPSJ(c, setOf("product_subcategory", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf(Triple.of("occupation", "=", "'Professional'"))))
+                ),
+                listOf(
+                    Pair(null, GPSJ(c, setOf("product_category"), setOf(Pair.of("sum", "unit_sales")), setOf())),
+                    Pair(Operator(Parser.Type.DRILL), GPSJ(c, setOf("product_category", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf())),
+                    Pair(Operator(Parser.Type.SAD), GPSJ(c, setOf("product_category", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf(Triple.of("occupation", "=", "'Professional'"))))
+                )
+        )
+
+        val fileName = "resources/vool_stats.csv"
+        val myFile = File(fileName)
+        if (myFile.exists()) myFile.delete()
+        var first = true
+        var x = 0
+
+        l.forEachIndexed { j, l ->
+            l.forEachIndexed { i , r ->
+                val options = mutableMapOf<String, Any>()
+                options["python_time"] = -1
+                options["proxy_time"] = -1
+                options["uid"] = x++
+                options["sessionid"] = j
+                val ci = if (i == 0) { null } else { l[i - 1].second }
+                val cj = l[i].second
+                cj.df // compute the cube out of the patterns, so that query time is not counted
+                vocalize(ci, cj, l[i].first, 120, options)
+                val m: List<MutableMap<String, Any>> = options.remove("acc")!! as List<MutableMap<String, Any>>
+                options.forEach { k, v -> m.forEach { it[k] = v } }
+                if (first) {
+                    val header: String = m[0].entries.sortedBy { it.key }.map { it.key }.reduce { a, b -> "$a,$b" }
+                    File(fileName).appendText(header + "\n")
+                    first = false
+                }
+                m.forEach { options ->
+                    val data: String = options.entries.sortedBy { it.key }.map { it.value.toString() }.reduce { a, b -> "$a,$b" }
+                    File(fileName).appendText(data + "\n")
+                }
+            }
+        }
     }
 }
