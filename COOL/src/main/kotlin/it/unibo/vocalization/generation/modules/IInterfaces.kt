@@ -228,7 +228,8 @@ class GPSJ(
     var curdf: DataFrame?,
     override val attributes: Set<String>,
     override val measures: Set<Pair<String, String>>,
-    override val selection: Set<Triple<String, String, String>>
+    override val selection: Set<Triple<String, String, String>>,
+    val limit: Int = Int.MAX_VALUE
 ) : IGPSJ {
     override var df: DataFrame
         get() {
@@ -239,7 +240,7 @@ class GPSJ(
                 curdf = curdf!!.rename(*curdf!!.names.map { Pair(it, it.toUpperCase()) }.toTypedArray())
                 return curdf!!
             } else if (cube != null) {
-                val sql = Parser.createQuery(cube, attributes, measures, selection)
+                val sql = Parser.createQuery(cube, attributes, measures, selection, limit)
                 DBmanager.executeDataQuery(cube, sql) {
                     curdf = fromResultSet(it) // DataFrame.fromResultSet(it)
                 }
@@ -264,14 +265,16 @@ class GPSJ(
         cube: Cube,
         attributes: Set<String>,
         measures: Set<Pair<String, String>>,
-        selection: Set<Triple<String, String, String>>
+        selection: Set<Triple<String, String, String>>,
+        limit: Int = Int.MAX_VALUE
     ) : this(
         cube,
         null,
         null,
         attributes.map { it.toUpperCase() }.toSet(),
         measures.map { Pair.of(it.left, it.right.toUpperCase()) }.toSet(),
-        selection.map { Triple.of(it.left.toUpperCase(), it.middle, it.right) }.toSet()
+        selection.map { Triple.of(it.left.toUpperCase(), it.middle, it.right) }.toSet(),
+        limit
     )
 
     constructor(

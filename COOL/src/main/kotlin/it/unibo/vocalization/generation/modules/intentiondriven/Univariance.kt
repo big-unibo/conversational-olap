@@ -22,22 +22,13 @@ object Univariance : VocalizationModule {
     override fun compute(c1: IGPSJ?, c2: IGPSJ, operator: Operator?): List<IVocalizationPattern> {
         val cube1 = if (operator!!.type == Parser.Type.DRILL) c1!! else c2
         val cube2 = if (operator.type == Parser.Type.DRILL) c2 else c1!!
-
-        var time = System.currentTimeMillis()
         val cube: IGPSJ = Peculiarity.extendCubeWithProxy(cube2, cube1, returnAllColumns = true)
-        println("${moduleName} proxy done " + (System.currentTimeMillis() - time))
-        time = System.currentTimeMillis()
-
         val attributes = if (cube1.attributes.size == cube2.attributes.size) cube1.attributes - cube2.attributes else cube2.attributes.intersect(cube1.attributes)
         val attribute = if (cube1.attributes.size == cube2.attributes.size) (cube1.attributes - cube2.attributes).first() else (cube2.attributes - cube1.attributes).first()
-
         val path = "generated/"
         val fileName = "${UUID.randomUUID()}.csv"
         cube.df.writeCSV(File("$path$fileName"))
         computePython(Config.getPython(), path, "modules.py", fileName, attributes, cube.measureNames())
-
-        println("${moduleName} python done " + (System.currentTimeMillis() - time))
-
         var df = DataFrame.readCSV(File("$path$fileName"))
         df = df.filter { it[moduleName] gt 0.2 }.sortedByDescending(moduleName)
 

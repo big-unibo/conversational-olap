@@ -10,10 +10,7 @@ import it.unibo.vocalization.generation.modules.querydriven.Peculiarity.argMax
 import it.unibo.vocalization.generation.modules.querydriven.Peculiarity.extendCubeWithProxy
 import it.unibo.vocalization.generation.modules.querydriven.Peculiarity.myMax
 import it.unibo.vocalization.generation.modules.querydriven.Peculiarity.tuple2string
-import krangl.DataFrame
-import krangl.leftJoin
-import krangl.max
-import krangl.to
+import krangl.*
 
 /**
  * Assess intention in action.
@@ -40,7 +37,8 @@ object Assess : VocalizationModule {
         var prevCube = (other["prevcube"] as DataFrame).sortedBy(*gencoord.toTypedArray())
 
         val normCube = df.sortedBy(*gencoord.toTypedArray()).groupBy(*gencoord.toTypedArray()).summarize("count" to { nrow })
-        prevCube = prevCube.addColumn("count") { normCube["count"] }
+        prevCube = prevCube.innerJoin(normCube, by = gencoord)
+        // prevCube = prevCube.addColumn("count") { normCube["count"] }
         prevCube = prevCube.addColumns(*cube2.measureNames().map { m -> "norm_$m" to { prevCube[m].div(prevCube["count"]) } }.toTypedArray())
 
         var enhcube = df.leftJoin(right = prevCube, by = gencoord, suffices = "" to "_bc") // and join them base on the proxy

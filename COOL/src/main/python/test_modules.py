@@ -1,6 +1,7 @@
 import pandas as pd
+import numpy as np
 import unittest
-
+import time
 from modules import *
 
 
@@ -55,6 +56,14 @@ class TestAssess(unittest.TestCase):
         clustering(X, measures, "foo_filename")
         self.assertTrue((X["cluster_label"] >= 0).all())
         self.assertTrue((X["cluster_sil"].between(-1, 1)).all())
+
+        X = pd.DataFrame(np.random.randint(0, 100, size=(100, 3)), columns=list('ABC'))
+        start = time.time()
+        clustering(X, ["C"], "foo_filename")
+        self.assertTrue((X["cluster_label"] >= 0).all())
+        self.assertTrue((X["cluster_sil"].between(-1, 1)).all())
+        end = time.time()
+        print(end - start)
 
     def test_all(self):
         X = pd.DataFrame([

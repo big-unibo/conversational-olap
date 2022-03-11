@@ -26,24 +26,15 @@ object SADIncrease : VocalizationModule {
     }
 
     override fun compute(c1: IGPSJ?, c2: IGPSJ, operator: Operator?): List<IVocalizationPattern> {
-        var time = System.currentTimeMillis()
         var df = c1!!.df.outerJoin(c2.df, by = c2.attributes)
-        println("${moduleName} proxy done " + (System.currentTimeMillis() - time))
-        time = System.currentTimeMillis()
-
         val mea = c2.measureNames().first()
-
         val path = "generated/"
         val fileName = "${UUID.randomUUID()}.csv"
         df.writeCSV(File("$path$fileName"))
         computePython(Config.getPython(), path, "modules.py", fileName, c2.attributes, c2.measureNames())
         df = DataFrame.readCSV(File("$path$fileName"))
-        println("${moduleName} python done " + (System.currentTimeMillis() - time))
-
-
         val avg = df[mea].mean()!!
         df = df.filter { it[mea] gt 0.1 }.sortedByDescending("${mea}_kpi")
-
         val superlative = if (c2.selection.size > c1.selection.size) "decrease" else "increase"
         val sum = df["${mea}_kpi"].sum()!!.toDouble()
         return (1..df.nrow.coerceAtMost(7)).map { // get the topk
