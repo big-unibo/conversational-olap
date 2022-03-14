@@ -63,7 +63,6 @@ class TestAssess(unittest.TestCase):
         self.assertTrue((X["cluster_label"] >= 0).all())
         self.assertTrue((X["cluster_sil"].between(-1, 1)).all())
         end = time.time()
-        print(end - start)
 
     def test_all(self):
         X = pd.DataFrame([
@@ -84,15 +83,17 @@ class TestAssess(unittest.TestCase):
         self.check(self.B, self.Bmea)
 
     def test_all3(self):
-        X = intravariance(self.C, self.Cattr, self.Cmea)
+        X = aggregation_variance(self.C, self.Cattr, self.Cmea)
         self.assertTrue(len(X) == 2)
+        self.assertTrue((X["cov"] <= 1).all() and (X["cov"] > 0).all())
 
     def test_all4(self):
-        X = univariance(self.C, self.Cattr, self.Cmea)
+        X = uniform_aggregation_variance(self.C, self.Cattr, self.Cmea)
         self.assertTrue(len(X) == 2)
+        self.assertTrue((X["cov"] <= 1).all() and (X["cov"] > 0).all())
 
     def test_all5(self):
-        X = cardvariance(self.C, self.Cattr, self.Cmea)
+        X = domain_variance(self.C, self.Cattr, self.Cmea)
         self.assertTrue(len(X) == 5)
 
     def test_all7(self):
@@ -100,7 +101,7 @@ class TestAssess(unittest.TestCase):
         self.assertTrue(len(X) == 1)
 
     def test_all8(self):
-        X = sadincrease(self.D, self.Dattr, self.Dmea)
+        X = slicing_variance(self.D, self.Dattr, self.Dmea)
         self.assertTrue(len(X) == 5)
 
 

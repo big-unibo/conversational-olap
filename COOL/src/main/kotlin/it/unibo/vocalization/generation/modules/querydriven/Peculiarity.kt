@@ -43,10 +43,20 @@ object Peculiarity {
      */
     fun extendCubeWithProxy(cube2: IGPSJ, cube1: IGPSJ, returnAllColumns: Boolean = false, other: MutableMap<String, Any> = mutableMapOf()): IGPSJ {
         val prevGc = cube1.attributes // get the previous coordinate
-        var prevCube = cube1.df.addColumns(*cube1.measureNames().map { m -> "zscore_$m" to { (it[m] - cube1.df[m].mean()!!) / cube1.df[m].sd()!! } }.toTypedArray())
+        var prevCube = cube1.df.addColumns(*cube1.measureNames().map { m ->
+            val v1 = cube1.df[m].mean()!!
+            val v2 = cube1.df[m].sd()!!
+            "zscore_$m" to { (it[m] - v1) / v2 }
+        }.toTypedArray())
         // get the previous data
         val coordinate = cube2.attributes // get the current coordinate
-        var cube = cube2.df.addColumns(*cube2.measureNames().map { m -> "zscore_$m" to { (it[m] - cube2.df[m].mean()!!) / cube2.df[m].sd()!! } }.toTypedArray()) // get the current data
+        var cube = cube2.df.addColumns(*cube2.measureNames().map { m ->
+            "zscore_$m" to {
+                val v1 = cube2.df[m].mean()!!
+                val v2 = cube2.df[m].sd()!!
+                (it[m] - v1) / v2
+            }
+        }.toTypedArray()) // get the current data
         val gencoord: MutableSet<String> = Sets.newLinkedHashSet()
 
         coordinate.forEach { currA ->
@@ -108,7 +118,8 @@ object Peculiarity {
 
         // get the peculiarity
         var enh = cube.addColumn("peculiarity") { myMax(*(cube2.measureNames().map { m -> it["zscore_$m"] }.toTypedArray())) }
-        enh = enh.addColumn("peculiarity") { enh["peculiarity"] / (enh["peculiarity"].max() as Double) }
+        val v = enh["peculiarity"].max() as Double
+        enh = enh.addColumn("peculiarity") { enh["peculiarity"] / v }
         other["gencoord"] = gencoord
         other["prevcube"] = prevCube
         return GPSJ(enh, cube2.attributes, cube2.measures, cube2.selection)

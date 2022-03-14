@@ -181,7 +181,7 @@ class TestModule {
             "Beer", 35.0, "Wine", 32.0, "Cola", 30.0, "Pizza", 6.0, "Bread", 5.0
         )
         val c = GPSJ(df, setOf("product"), setOf(Pair.of("sum", "quantity")), setOf())
-        check(Preamble.compute(null, c))
+        check(Statistics.compute(null, c))
         check(TopK.compute(null, c))
         check(Clustering.compute(null, c))
     }
@@ -210,10 +210,10 @@ class TestModule {
     }
 
     fun check(t: Collection<IVocalizationPattern>) {
-        t.forEach { println("${it.text}.\n") }
+        t.forEach { println("${it.text}.") }
         // assertTrue(t.isNotEmpty(), "Empty patterns")
-        assertTrue(t.all { p -> p.int.toDouble() in 0.0..1.0001 }, t.filter { p -> p.int.toDouble() < 0 || p.int.toDouble() > 1 }.toString())
-        assertTrue(t.all { p -> p.cov in 0.0..1.0 }, t.filter { p -> p.cov < 0 || p.cov > 1 }.toString())
+        assertTrue(t.all { p -> p.int.toDouble() >= 0 }, t.filter { p -> p.int.toDouble() < 0 }.toString())
+        assertTrue(t.all { p -> p.cov in 0.0..1.001 }, t.filter { p -> p.cov < 0 || p.cov > 1 }.toString())
         if (t.isNotEmpty()) {
             Optimizer.getPatterns(listOf(t.toList()), BUDGET)
         }
@@ -233,19 +233,19 @@ class TestModule {
 
     @Test
     fun testIntravariance() {
-        check(Intravariance.compute(c2, c1, Operator(Parser.Type.ROLLUP)))
-        check(Intravariance.compute(c1, c2, Operator(Parser.Type.DRILL)))
+        check(AggregationVariance.compute(c2, c1, Operator(Parser.Type.ROLLUP)))
+        check(AggregationVariance.compute(c1, c2, Operator(Parser.Type.DRILL)))
     }
 
     @Test
     fun testCardvariance() {
-        check(Cardvariance.compute(c2, c1, Operator(Parser.Type.ROLLUP)))
-        check(Cardvariance.compute(c1, c2, Operator(Parser.Type.DRILL)))
+        check(DomainVariance.compute(c2, c1, Operator(Parser.Type.ROLLUP)))
+        check(DomainVariance.compute(c1, c2, Operator(Parser.Type.DRILL)))
     }
 
     @Test
     fun testUnivariance() {
-        check(Univariance.compute(c1, c2, Operator(Parser.Type.DRILL)))
+        check(UniformAggregationVariance.compute(c1, c2, Operator(Parser.Type.DRILL)))
     }
 
     @Test
@@ -253,7 +253,7 @@ class TestModule {
         val c = Config.getCube("sales")
         val ci = GPSJ(c, setOf("store_type", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf())
         val cj = GPSJ(c, setOf("store_type", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf(Triple.of("product_subcategory", "=", "'Beer'")))
-        check(SADIncrease.compute(ci, cj, null))
+        check(SlicingVariance.compute(ci, cj, null))
         // check(SADIncrease.compute(cj, ci, null))
     }
 

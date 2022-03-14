@@ -8,16 +8,19 @@ import it.unibo.vocalization.generation.modules.IVocalizationPattern
 import it.unibo.vocalization.generation.modules.VocalizationModule
 import it.unibo.vocalization.generation.modules.VocalizationPattern
 import it.unibo.vocalization.generation.modules.querydriven.Peculiarity
-import krangl.*
+import krangl.DataFrame
+import krangl.max
+import krangl.readCSV
+import krangl.writeCSV
 import java.io.File
 import java.util.*
 
 /**
  * Describe intention in action.
  */
-object Cardvariance : VocalizationModule {
+object DomainVariance : VocalizationModule {
     override val moduleName: String
-        get() = "cardvariance"
+        get() = "DomainVariance"
 
     override fun compute(c1: IGPSJ?, c2: IGPSJ, operator: Operator?): List<IVocalizationPattern> {
         val cube1 = if (operator!!.type == Parser.Type.DRILL) c1!! else c2

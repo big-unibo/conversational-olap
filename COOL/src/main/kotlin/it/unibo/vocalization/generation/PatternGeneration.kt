@@ -5,10 +5,7 @@ import it.unibo.vocalization.generation.modules.GPSJ
 import it.unibo.vocalization.generation.modules.IVocalizationPattern
 import it.unibo.vocalization.generation.modules.VocalizationModule
 import it.unibo.vocalization.generation.modules.intentiondriven.*
-import it.unibo.vocalization.generation.modules.querydriven.Clustering
-import it.unibo.vocalization.generation.modules.querydriven.OutlierDetection
-import it.unibo.vocalization.generation.modules.querydriven.Preamble
-import it.unibo.vocalization.generation.modules.querydriven.Skyline
+import it.unibo.vocalization.generation.modules.querydriven.*
 import kotlin.streams.toList
 
 fun generatePatterns(prevQuery: GPSJ?, curQuery: GPSJ, operator: Operator?, options: MutableMap<String, Any> = mutableMapOf()): List<List<IVocalizationPattern>> {
@@ -18,17 +15,18 @@ fun generatePatterns(prevQuery: GPSJ?, curQuery: GPSJ, operator: Operator?, opti
         operator,
         listOf(
             Preamble,
-            // TopK,
-            // BottomK,
+            Statistics,
+            TopK,
+            BottomK,
             Skyline,
             OutlierDetection,
             Assess,
             Clustering,
-            Cardvariance,
-            Intravariance,
-            Univariance,
+            DomainVariance,
+            AggregationVariance,
+            UniformAggregationVariance,
             Correlation,
-            SADIncrease
+            SlicingVariance
         ),
         options
     )
@@ -44,7 +42,7 @@ fun generatePatterns(
     options["cube"] = curQuery.cube!!.factTable
     options["card"] = curQuery.df.nrow
     return l // list of modules
-        .parallelStream()
+//        .parallelStream()
         .filter {
             // check conditions for applying the modules
             it.applyCondition(prevQuery, curQuery, operator)

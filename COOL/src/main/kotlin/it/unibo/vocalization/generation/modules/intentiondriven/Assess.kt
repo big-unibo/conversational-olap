@@ -17,7 +17,7 @@ import krangl.*
  */
 object Assess : VocalizationModule {
     override val moduleName: String
-        get() = "assess"
+        get() = "Assess"
 
     private fun label(c: Double): String {
         return if (c <= 0.9) {

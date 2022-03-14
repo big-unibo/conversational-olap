@@ -16,7 +16,7 @@ import java.util.*
  */
 object Clustering : VocalizationModule {
     override val moduleName: String
-        get() = "clustering"
+        get() = "Clustering"
 
     override fun compute(cube1: IGPSJ?, cube2: IGPSJ, operator: Operator?): List<IVocalizationPattern> {
         val cube: IGPSJ = cube2
@@ -34,7 +34,6 @@ object Clustering : VocalizationModule {
         var text = "Facts can be grouped into ${df.nrow} clusters"
         var cumSil = 0.0
         var cumCard = 0.0
-        val sum: Double = df["cluster_sil"].sum()!!.toDouble()
         return df
             .sortedByDescending("count")
             .rows
@@ -44,7 +43,7 @@ object Clustering : VocalizationModule {
                 val n = listOf("largest", "second", "third", "fourth", "fifth")[i] // it["cluster_label"] as Int - 1
                 text += ", the $n has ${r["count"]} facts and ${cube.measureNames().map { m -> "${r[m]} as average $m" }.reduce { a, b -> "$a, $b" }}"
                 cumSil += r["cluster_sil"] as Double
-                VocalizationPattern(text, cumSil / sum, 1.0 * cumCard / cube2.df.nrow, moduleName)
+                VocalizationPattern(text, cumSil, 1.0 * cumCard / cube2.df.nrow, moduleName)
             }
     }
 }

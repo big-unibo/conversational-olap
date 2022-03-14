@@ -6,9 +6,9 @@ import it.unibo.vocalization.generation.modules.IGPSJ
 import it.unibo.vocalization.generation.modules.IVocalizationPattern
 import it.unibo.vocalization.generation.modules.VocalizationModule
 import it.unibo.vocalization.generation.modules.VocalizationPattern
-import it.unibo.vocalization.generation.modules.querydriven.Peculiarity.round
-import it.unibo.vocalization.generation.modules.querydriven.TopK.topKpatterns
-import krangl.*
+import krangl.DataFrame
+import krangl.readCSV
+import krangl.writeCSV
 import java.io.File
 import java.util.*
 
@@ -17,7 +17,7 @@ import java.util.*
  */
 object Skyline : VocalizationModule {
     override val moduleName: String
-        get() = "skyline"
+        get() = "Skyline"
 
     override fun compute(cube1: IGPSJ?, cube2: IGPSJ, operator: Operator?): List<IVocalizationPattern> {
         val cube: IGPSJ = cube2
@@ -27,7 +27,6 @@ object Skyline : VocalizationModule {
         computePython(Config.getPython(), path, "modules.py", fileName, cube.attributes, cube.measureNames())
         val df = DataFrame.readCSV(File("$path$fileName"))
 
-        val sum: Double = df["dominance"].sum()!!.toDouble() // get the sum of the measure
         val patterns =
             (1..df.nrow.coerceAtMost(4)).map { // get the topk
                 var text = "" // starting sentence
@@ -53,10 +52,9 @@ object Skyline : VocalizationModule {
                         text += "Among the facts whose ${cube2.measureNames().reduce{a, b -> "$a, $b"}} are both higher than those of all other facts, the most relevant ones are " + tuples
                     }
                 }
-                VocalizationPattern(text, csum / sum, 1.0 * it / df.nrow, moduleName)
+                VocalizationPattern(text, csum, 1.0 * it / df.nrow, moduleName)
             }.toList()
         return patterns.filter { it.int > 0 }
-        // return topKpatterns(moduleName, cube, "dominance").filter { it.int > 0 }
     }
 
     override fun applyCondition(cube1: IGPSJ?, cube2: IGPSJ, operator: Operator?): Boolean {

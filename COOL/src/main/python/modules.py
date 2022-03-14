@@ -38,7 +38,7 @@ def clustering(X, measures, filename):
     return X
 
 
-def sadincrease(X, attributes, measures):
+def slicing_variance(X, attributes, measures):
     X = X.fillna(0)
     for m in measures:
         X[m] = (X[m + ".x"] - X[m + ".y"]).abs() / (X[m + ".x"] + 1)
@@ -52,34 +52,35 @@ def correlation(X, attributes, measures):
         cor_pairs = col_correlations.stack()
         return [[k[0], k[1], v] for k, v in cor_pairs.to_dict().items() if k[0] < k[1]]
 
-    return pd.DataFrame(get_corrs(X), columns=["m1", "m2", "correlation"])
+    return pd.DataFrame(get_corrs(X), columns=["m1", "m2", "Correlation"])
 
 
-def intravariance(X, attributes, measures):
-    X = univariance(X, attributes, measures)
-    X["intravariance"] = 1 - X["univariance"]
-    X = X.drop(["univariance"], axis=1)
+def aggregation_variance(X, attributes, measures):
+    X = uniform_aggregation_variance(X, attributes, measures)
+    X["AggregationVariance"] = 1 - X["UniformAggregationVariance"]
+    X = X.drop(["UniformAggregationVariance"], axis=1)
     return X
 
 
-def univariance(X, attributes, measures):
+def uniform_aggregation_variance(X, attributes, measures):
     # X = X.groupby(attributes)[measures].agg({x: ['mean', 'std', 'count'] for x in measures})
     # X.columns = list(map('_'.join, X.columns.values))
     m = measures[0]
     X = X.groupby(attributes)[m].agg(['mean', 'std', 'count'])
-    X["univariance"] = 1 - X["std"] / (X["mean"] + 1)
-    X["univariance"] = X["univariance"].fillna(0).apply(lambda x: 1 if x > 1 else x)
-    X["cov"] = 1.0 * X["count"] / len(X)
+    X["UniformAggregationVariance"] = 1 - X["std"] / (X["mean"] + 1)
+    X["UniformAggregationVariance"] = X["UniformAggregationVariance"].fillna(0).apply(lambda x: 1 if x > 1 else x)
+    X["cov"] = 1.0 * X["count"] / X["count"].sum()
     X = X.drop(["count", "mean", "std"], axis=1)
+    X = X.reset_index(drop=False)
     return X
 
 
-def cardvariance(X, attributes, measures):
+def domain_variance(X, attributes, measures):
     X = X.copy(deep=True)
     y = X.groupby(attributes)[measures[0]].count()
     y = y.std() / y.mean()
     y = 1 if y > 1 else y
-    X['cardvariance'] = y * 1.0
+    X['DomainVariance'] = y * 1.0
     X['cov'] = 1.0
     return X
 
@@ -154,23 +155,22 @@ if __name__ == '__main__':
         df = pd.read_csv(args.path + args.file, encoding='cp1252')
     df.dropna(inplace=True)
 
-    # df.columns = [x.lower() for x in df.columns]
-    if module == "outlierdetection":
+    if module == "OutlierDetection":
         df = outlier_detection(df, measures)
-    elif module == "skyline":
+    elif module == "Skyline":
         df = skyline(df, measures)
-    elif module == "clustering":
+    elif module == "Clustering":
         df = clustering(df, measures, args.path + args.file)
-    elif module == "intravariance":
-        df = intravariance(df, attributes, measures)
-    elif module == "univariance":
-        df = univariance(df, attributes, measures)
-    elif module == "cardvariance":
-        df = cardvariance(df, attributes, measures)
-    elif module == "correlation":
+    elif module == "AggregationVariance":
+        df = aggregation_variance(df, attributes, measures)
+    elif module == "UniformAggregationVariance":
+        df = uniform_aggregation_variance(df, attributes, measures)
+    elif module == "DomainVariance":
+        df = domain_variance(df, attributes, measures)
+    elif module == "Correlation":
         df = correlation(df, attributes, measures)
-    elif module == "sadincrease":
-        df = sadincrease(df, attributes, measures)
+    elif module == "SlicingVariance":
+        df = slicing_variance(df, attributes, measures)
     else:
         print("Unknown module: " + module)
         sys.exit(1)

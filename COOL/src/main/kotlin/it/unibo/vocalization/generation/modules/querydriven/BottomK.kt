@@ -11,7 +11,7 @@ import it.unibo.vocalization.generation.modules.querydriven.TopK.topKpatterns
  */
 object BottomK : VocalizationModule {
     override val moduleName: String
-        get() = "bottom-K"
+        get() = "Bottom-K"
 
     override fun compute(cube1: IGPSJ?, cube2: IGPSJ, operator: Operator?): List<IVocalizationPattern> {
         val cube: IGPSJ = if (cube1 != null) {

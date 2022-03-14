@@ -5,7 +5,6 @@ import it.unibo.vocalization.generation.modules.IGPSJ
 import it.unibo.vocalization.generation.modules.IVocalizationPattern
 import it.unibo.vocalization.generation.modules.VocalizationModule
 import it.unibo.vocalization.generation.modules.VocalizationPattern
-import it.unibo.vocalization.generation.modules.intentiondriven.Univariance
 import it.unibo.vocalization.generation.modules.querydriven.Peculiarity.round
 import it.unibo.vocalization.generation.modules.querydriven.Peculiarity.tuple2string
 import krangl.gt
@@ -16,7 +15,7 @@ import krangl.sum
  */
 object TopK : VocalizationModule {
     override val moduleName: String
-        get() = "top-K"
+        get() = "Top-K"
 
     override fun compute(cube1: IGPSJ?, cube2: IGPSJ, operator: Operator?): List<IVocalizationPattern> {
         val cube: IGPSJ = if (cube1 != null) {
@@ -26,14 +25,13 @@ object TopK : VocalizationModule {
         return topKpatterns(moduleName, cube, mea)
     }
 
-    fun topKpatterns(moduleName: String, cube: IGPSJ, mea: String, isTopK: Boolean = true, kpi: String? = null): List<VocalizationPattern> {
+    fun topKpatterns(moduleName: String, cube: IGPSJ, mea: String, isTopK: Boolean = true, kpi: String? = null, normalizeValue: Boolean = true): List<VocalizationPattern> {
         if (cube.df.nrow == 0) {
             return listOf()
         }
 
         val kpi = if (kpi == null) mea else kpi
         val sum: Double = cube.df[mea].sum()!!.toDouble() // get the sum of the measure
-        val count: Int = cube.df[mea].length // get the count of elements
         val df = if (isTopK) { cube.df.sortedByDescending(mea) } else { cube.df.sortedBy(mea) }.filter { it[mea] gt 0.1 } // sort by descending value
         val superlative = if (isTopK) { "highest" } else { "lowest" }
         val patterns =
@@ -53,14 +51,15 @@ object TopK : VocalizationModule {
                     }.reduce { a, b -> "$a, $b" }
                     text += "The $it facts with $superlative $mea are $tuples"
                 }
+                val v = if (normalizeValue) csum / sum else csum
                 val int = if (isTopK) {
                     // 1 - average of "not top-k value" / average of "top-k values"
                     // 1 - ((sum - csum) / (count - it)) / (csum / it)
-                    csum / sum
+                    v
                 } else {
                     // 1 - average of "bottom-k values" / average of "not bottom-k value"
                     // 1 - (csum / it) / ((sum - csum) / (count - it))
-                    1 - csum / sum
+                    1 - v
                 }
                 VocalizationPattern(text, int, 1.0 * it / df.nrow, moduleName)
             }.toList()

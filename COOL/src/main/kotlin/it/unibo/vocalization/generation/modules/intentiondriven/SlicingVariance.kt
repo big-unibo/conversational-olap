@@ -6,7 +6,6 @@ import it.unibo.vocalization.generation.modules.IGPSJ
 import it.unibo.vocalization.generation.modules.IVocalizationPattern
 import it.unibo.vocalization.generation.modules.VocalizationModule
 import it.unibo.vocalization.generation.modules.VocalizationPattern
-import it.unibo.vocalization.generation.modules.querydriven.Peculiarity
 import it.unibo.vocalization.generation.modules.querydriven.Peculiarity.round
 import it.unibo.vocalization.generation.modules.querydriven.Peculiarity.tuple2string
 import krangl.*
@@ -16,9 +15,9 @@ import java.util.*
 /**
  * Describe intention in action.
  */
-object SADIncrease : VocalizationModule {
+object SlicingVariance : VocalizationModule {
     override val moduleName: String
-        get() = "sadincrease"
+        get() = "SlicingVariance"
 
 
     fun percent(d: Double): String {
@@ -36,7 +35,6 @@ object SADIncrease : VocalizationModule {
         val avg = df[mea].mean()!!
         df = df.filter { it[mea] gt 0.1 }.sortedByDescending("${mea}_kpi")
         val superlative = if (c2.selection.size > c1.selection.size) "decrease" else "increase"
-        val sum = df["${mea}_kpi"].sum()!!.toDouble()
         return (1..df.nrow.coerceAtMost(7)).map { // get the topk
             var text = "The average $superlative in ${c2.measureNames().map { "$it is ${percent(avg)}" }.reduce { a, b -> "$a,$b" }}" // starting sentence
             var csum = 0.0
@@ -52,7 +50,7 @@ object SADIncrease : VocalizationModule {
                 }.reduce { a, b -> "$a, $b" }
                 text += ", the facts with highest $superlative are $tuples"
             }
-            VocalizationPattern(text, csum / sum, 1.0 * it / df.nrow, moduleName)
+            VocalizationPattern(text, csum, 1.0 * it / df.nrow, moduleName)
         }.toList()
     }
 

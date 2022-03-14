@@ -7,6 +7,7 @@ import it.unibo.vocalization.generation.modules.IVocalizationPattern
 import it.unibo.vocalization.generation.modules.VocalizationModule
 import it.unibo.vocalization.generation.modules.VocalizationPattern
 import it.unibo.vocalization.generation.modules.querydriven.TopK.topKpatterns
+import jetbrains.datalore.base.spatial.normalizeLon
 import krangl.DataFrame
 import krangl.readCSV
 import krangl.writeCSV
@@ -18,7 +19,7 @@ import java.util.*
  */
 object OutlierDetection : VocalizationModule {
     override val moduleName: String
-        get() = "outlierdetection"
+        get() = "OutlierDetection"
 
     override fun compute(cube1: IGPSJ?, cube2: IGPSJ, operator: Operator?): List<IVocalizationPattern> {
         val cube: IGPSJ = cube2
@@ -27,12 +28,12 @@ object OutlierDetection : VocalizationModule {
         cube.df.writeCSV(File("$path$fileName"))
         computePython(Config.getPython(), path, "modules.py", fileName, cube.attributes, cube.measureNames())
         cube.df = DataFrame.readCSV(File("$path$fileName"))
-        return topKpatterns(moduleName, cube, "anomaly", kpi = cube.measureNames().first()).map {
+        return topKpatterns(moduleName, cube, "anomaly", kpi = cube.measureNames().first(), normalizeValue = false).map {
             VocalizationPattern(
                 it.text.replace("highest anomaly", "anomalous ${cube.measureNames().first()}"),
                 it.int,
                 it.cov,
-                moduleName
+                moduleName,
             )
         }
     }

@@ -17,7 +17,7 @@ import java.util.*
  */
 object Correlation : VocalizationModule {
     override val moduleName: String
-        get() = "correlation"
+        get() = "Correlation"
 
     fun correlation(x: Double): String {
         return if (x > 0.6) {
@@ -43,7 +43,7 @@ object Correlation : VocalizationModule {
         computePython(Config.getPython(), path, "modules.py", fileName, setOf(), cube.measureNames())
         val df = DataFrame.readCSV(File("$path$fileName")).sortedByDescending(moduleName)
 
-        return (1..df.nrow).map { // get the topk
+        return (1..df.nrow).map { // can have multiple correlations between pairs of measures
             var text = "" // starting sentence
             var csum = 0.0
             if (it == 1) {
@@ -58,7 +58,7 @@ object Correlation : VocalizationModule {
                 }.reduce { a, b -> "$a, $b" }
                 text += tuples
             }
-            VocalizationPattern(text, csum / it, 1.0, moduleName)
+            VocalizationPattern(text, csum, 1.0, moduleName)
         }.toList()
     }
 
