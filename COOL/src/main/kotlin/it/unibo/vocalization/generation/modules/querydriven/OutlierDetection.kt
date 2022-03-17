@@ -35,19 +35,19 @@ object OutlierDetection : VocalizationModule {
             var csum = 0.0
             if (it == 1) {
                 val r = df.row(0)
-                csum += r[mea] as Double * (if (!r.contains("peculiarity")) 1.0 else r["peculiarity"] as Double)
+                csum += r["anomaly"] as Double * (if (!r.contains("peculiarity")) 1.0 else r["peculiarity"] as Double)
                 text += "${Peculiarity.tuple2string(cube, r)} with $mea is the most anomalous fact"
             } else {
                 val tuples: String = (0 until it)
                     .map { df.row(it) }
                     .map { r ->
-                        csum += r[mea] as Double * (if (!r.contains("peculiarity")) 1.0 else r["peculiarity"] as Double)
+                        csum += r["anomaly"] as Double * (if (!r.contains("peculiarity")) 1.0 else r["peculiarity"] as Double)
                         Peculiarity.tuple2string(cube, r) + " with " + (r[mea] as Double).round()
                     }.reduce { a, b -> "$a, $b" }
                 text += "$tuples are the most anomalous facts"
             }
             VocalizationPattern(text, csum, 1.0 * it / df.nrow, moduleName)
-        }.toList()
+        }.toList().filter { it.int > 0 }
     }
 
     override fun applyCondition(cube1: IGPSJ?, cube2: IGPSJ, operator: Operator?): Boolean {
