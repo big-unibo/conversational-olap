@@ -26,6 +26,11 @@ jobs:
           cd COOL
           chmod +x *.sh
           ./init.sh
+      - name: Install and test python
+        run: |
+          cd COOL/src/main/python
+          pip install -r requirements.txt
+          python -m unittest discover
       - name: Test Kotlin
         run: |
           cd COOL
@@ -34,12 +39,10 @@ jobs:
           ./start.sh
           ./gradlew --stacktrace
           ./stop.sh
-      - name: Test python
+      - name: Generate the charts
         run: |
           cd COOL/src/main/python
-          pip install -r requirements.txt
           pip install jupyter
-          python -m unittest discover
           jupyter nbconvert --execute --to notebook --inplace charts.ipynb
 
   release:
