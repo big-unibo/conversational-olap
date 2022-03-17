@@ -6,7 +6,6 @@ import it.unibo.vocalization.generation.modules.IVocalizationPattern
 import it.unibo.vocalization.generation.modules.VocalizationModule
 import it.unibo.vocalization.generation.modules.intentiondriven.*
 import it.unibo.vocalization.generation.modules.querydriven.*
-import kotlin.streams.toList
 
 fun generatePatterns(prevQuery: GPSJ?, curQuery: GPSJ, operator: Operator?, options: MutableMap<String, Any> = mutableMapOf()): List<List<IVocalizationPattern>> {
     return generatePatterns(
@@ -42,7 +41,7 @@ fun generatePatterns(
     options["cube"] = curQuery.cube!!.factTable
     options["card"] = curQuery.df.nrow
     return l // list of modules
-//        .parallelStream()
+        // .parallelStream()
         .filter {
             // check conditions for applying the modules
             it.applyCondition(prevQuery, curQuery, operator)
@@ -54,6 +53,7 @@ fun generatePatterns(
             val r = it.compute(prevQuery, curQuery, operator)
             m["time"] = System.currentTimeMillis() - startTime
             m["npatterns"] = r.size
+            m["length"] = r.map { it.cost }.average()
             options.compute(
                 "acc",
                 { k, v -> if (v == null) mutableListOf(m) else (v as MutableList<MutableMap<String, Any>>) + mutableListOf(m) }

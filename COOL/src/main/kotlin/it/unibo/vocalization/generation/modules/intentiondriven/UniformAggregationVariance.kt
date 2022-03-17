@@ -3,6 +3,8 @@ package it.unibo.vocalization.generation.modules.intentiondriven
 import it.unibo.conversational.algorithms.Parser
 import it.unibo.conversational.database.Config
 import it.unibo.conversational.olap.Operator
+import it.unibo.vocalization.K
+import it.unibo.vocalization.PATH
 import it.unibo.vocalization.generation.modules.IGPSJ
 import it.unibo.vocalization.generation.modules.IVocalizationPattern
 import it.unibo.vocalization.generation.modules.VocalizationModule
@@ -25,11 +27,10 @@ object UniformAggregationVariance : VocalizationModule {
         val cube: IGPSJ = Peculiarity.extendCubeWithProxy(cube2, cube1, returnAllColumns = true)
         val attributes = if (cube1.attributes.size == cube2.attributes.size) cube1.attributes - cube2.attributes else cube2.attributes.intersect(cube1.attributes)
         val attribute = if (cube1.attributes.size == cube2.attributes.size) (cube1.attributes - cube2.attributes).first() else (cube2.attributes - cube1.attributes).first()
-        val path = "generated/"
         val fileName = "${UUID.randomUUID()}.csv"
-        cube.df.writeCSV(File("$path$fileName"))
-        computePython(Config.getPython(), path, "modules.py", fileName, attributes, cube.measureNames())
-        var df = DataFrame.readCSV(File("$path$fileName"))
+        cube.df.writeCSV(File("$PATH$fileName"))
+        computePython(Config.getPython(), PATH, "modules.py", fileName, attributes, cube.measureNames())
+        var df = DataFrame.readCSV(File("$PATH$fileName"))
         df = df.filter { it[moduleName] gt 0.2 }.sortedByDescending(moduleName)
 
         if (df.nrow == 0) {
@@ -48,7 +49,7 @@ object UniformAggregationVariance : VocalizationModule {
             )
         }
 
-        return (1..df.nrow.coerceAtMost(7)).map { // get the topk
+        return (1..df.nrow.coerceAtMost(K)).map { // get the topk
             var text = "" // starting sentence
             var csum = 0.0
             var cov = 0.0

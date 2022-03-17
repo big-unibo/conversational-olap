@@ -32,7 +32,7 @@ class TestModule {
         val cube2 = GPSJ(c, setOf("product_subcategory", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf())
         check(Assess.compute(cube1, cube2))
         check(Clustering.compute(cube1, cube2))
-        check(TopK.compute(cube1, cube1))
+        check(TopK.compute(cube1, cube2))
     }
 
     @Test
@@ -211,7 +211,9 @@ class TestModule {
 
     fun check(t: Collection<IVocalizationPattern>) {
         t.forEach { println("${it.text}.") }
-        // assertTrue(t.isNotEmpty(), "Empty patterns")
+        if (t.isNotEmpty()) {
+            assertTrue(t.first().int.toDouble() in 0.0..1.001)
+        }
         assertTrue(t.all { p -> p.int.toDouble() >= 0 }, t.filter { p -> p.int.toDouble() < 0 }.toString())
         assertTrue(t.all { p -> p.cov in 0.0..1.001 }, t.filter { p -> p.cov < 0 || p.cov > 1 }.toString())
         if (t.isNotEmpty()) {
@@ -254,7 +256,7 @@ class TestModule {
         val ci = GPSJ(c, setOf("store_type", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf())
         val cj = GPSJ(c, setOf("store_type", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf(Triple.of("product_subcategory", "=", "'Beer'")))
         check(SlicingVariance.compute(ci, cj, null))
-        // check(SADIncrease.compute(cj, ci, null))
+        check(SlicingVariance.compute(cj, ci, null))
     }
 
     @Test
@@ -305,7 +307,7 @@ class TestModule {
                     )
 
                 l.forEachIndexed { j, l ->
-                    l.forEachIndexed { i , r ->
+                    l.forEachIndexed { i , _ ->
                         val options = mutableMapOf<String, Any>()
                         options["limit"] = limit
                         options["seed"] = seed

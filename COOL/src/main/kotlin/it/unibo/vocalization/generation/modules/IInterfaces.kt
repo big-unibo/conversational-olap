@@ -176,6 +176,7 @@ interface IGPSJ {
     val attributes: Set<String>
     val measures: Set<Pair<String, String>>
     fun measureNames(): Set<String> = measures.map { it.right }.toSet()
+    fun firstMeasure(): String = measures.map { it.right }.first()
     val selection: Set<Triple<String, String, String>>
 }
 

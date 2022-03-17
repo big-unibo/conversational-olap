@@ -23,7 +23,7 @@ object Assess : VocalizationModule {
         return if (c <= 0.9) {
             "worse than"
         } else if (c > 0.9 && c <= 1.11) {
-            "as good as"
+            "tantamount to"
         } else {
             "better than"
         }
@@ -38,7 +38,6 @@ object Assess : VocalizationModule {
 
         val normCube = df.sortedBy(*gencoord.toTypedArray()).groupBy(*gencoord.toTypedArray()).summarize("count" to { nrow })
         prevCube = prevCube.innerJoin(normCube, by = gencoord)
-        // prevCube = prevCube.addColumn("count") { normCube["count"] }
         prevCube = prevCube.addColumns(*cube2.measureNames().map { m -> "norm_$m" to { prevCube[m].div(prevCube["count"]) } }.toTypedArray())
 
         var enhcube = df.leftJoin(right = prevCube, by = gencoord, suffices = "" to "_bc") // and join them base on the proxy

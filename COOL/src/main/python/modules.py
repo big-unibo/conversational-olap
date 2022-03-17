@@ -39,12 +39,17 @@ def clustering(X, measures, filename):
 
 
 def slicing_variance(X, attributes, measures):
-    X = X.fillna(0)
-    for m in measures:
-        X[m] = (X[m + ".x"] - X[m + ".y"]).abs() / (X[m + ".x"] + 1)
-        X[m + "_kpi"] = (X[m] - X[m].mean()).abs()
-    return X
+    # X = X.fillna(0)
+    # for m in measures:
+    #     X[m] = (X[m + ".x"] - X[m + ".y"]).abs() / (X[m + ".x"] + 1)
+    #     X[m + "_kpi"] = (X[m] - X[m].mean()).abs()
+    # return X
+    def get_corrs(df):
+        col_correlations = df[measures].corr()
+        cor_pairs = col_correlations.stack()
+        return [[k[0], k[1], v] for k, v in cor_pairs.to_dict().items() if k[0] < k[1]]
 
+    return pd.DataFrame(get_corrs(X), columns=["m1", "m2", "Correlation"])
 
 def correlation(X, attributes, measures):
     def get_corrs(df):
@@ -57,7 +62,7 @@ def correlation(X, attributes, measures):
 
 def aggregation_variance(X, attributes, measures):
     X = uniform_aggregation_variance(X, attributes, measures)
-    X["AggregationVariance"] = 1 - X["UniformAggregationVariance"]
+    X["AggregationVariance"] = 1.0 - X["UniformAggregationVariance"]
     X = X.drop(["UniformAggregationVariance"], axis=1)
     return X
 
@@ -68,7 +73,7 @@ def uniform_aggregation_variance(X, attributes, measures):
     m = measures[0]
     X = X.groupby(attributes)[m].agg(['mean', 'std', 'count'])
     X["UniformAggregationVariance"] = 1 - X["std"] / (X["mean"] + 1)
-    X["UniformAggregationVariance"] = X["UniformAggregationVariance"].fillna(0).apply(lambda x: 1 if x > 1 else x)
+    X["UniformAggregationVariance"] = X["UniformAggregationVariance"].fillna(0).apply(lambda x: 0 if x < 0 else x)
     X["cov"] = 1.0 * X["count"] / X["count"].sum()
     X = X.drop(["count", "mean", "std"], axis=1)
     X = X.reset_index(drop=False)
@@ -124,7 +129,8 @@ def skyline(X, measures):
     X["score"] = 0
     for m in measures:
         max = X[m].max()
-        X[m + "_norm"] = X[m] / max
+        min = X[m].min()
+        X[m + "_norm"] = (X[m] - min) / ((max - min) if max != min else max)
         X["score"] = X.apply(lambda x: x["score"] + x[m + "_norm"] if x["dominance"] else 0, axis=1)
     X["dominance"] = X["score"] * 1.0 / len(measures)
     X.drop(["score"] + [m + "_norm" for m in measures], axis=1, inplace=True)

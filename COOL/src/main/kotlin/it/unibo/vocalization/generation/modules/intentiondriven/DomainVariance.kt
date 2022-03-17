@@ -3,6 +3,7 @@ package it.unibo.vocalization.generation.modules.intentiondriven
 import it.unibo.conversational.algorithms.Parser
 import it.unibo.conversational.database.Config
 import it.unibo.conversational.olap.Operator
+import it.unibo.vocalization.PATH
 import it.unibo.vocalization.generation.modules.IGPSJ
 import it.unibo.vocalization.generation.modules.IVocalizationPattern
 import it.unibo.vocalization.generation.modules.VocalizationModule
@@ -29,12 +30,13 @@ object DomainVariance : VocalizationModule {
         val attributes = if (cube1.attributes.size == cube2.attributes.size) cube1.attributes - cube2.attributes else cube2.attributes.intersect(cube1.attributes)
         val attribute: String = (c2.attributes - c1!!.attributes).first()
         val prevAttributes = if (cube1.attributes.size == cube2.attributes.size) cube2.attributes - cube1.attributes else cube2.attributes - cube2.attributes.intersect(cube1.attributes)
-        val path = "generated/"
         val fileName = "${UUID.randomUUID()}.csv"
-        cube.df.writeCSV(File("$path$fileName"))
-        computePython(Config.getPython(), path, "modules.py", fileName, attributes, cube.measureNames())
-        val df = DataFrame.readCSV(File("$path$fileName"))
-        return listOf(VocalizationPattern("There is a large variability in the number of members of ${prevAttributes.reduce{a, b -> "$a, $b"}} for each $attribute", df[moduleName].max()!!, 1.0, moduleName))
+        cube.df.writeCSV(File("$PATH$fileName"))
+        computePython(Config.getPython(), PATH, "modules.py", fileName, attributes, cube.measureNames())
+        val df = DataFrame.readCSV(File("$PATH$fileName"))
+        val variation = df[moduleName].max()!!
+        val level = if (variation > 0.7) "high" else if (variation > 0.3) "low" else "no"
+        return listOf(VocalizationPattern("There is a $level degree of variation in the number of members of ${prevAttributes.reduce{a, b -> "$a, $b"}} for each $attribute", df[moduleName].max()!!, 1.0, moduleName))
     }
 
     override fun applyCondition(cube1: IGPSJ?, cube2: IGPSJ, operator: Operator?): Boolean {
