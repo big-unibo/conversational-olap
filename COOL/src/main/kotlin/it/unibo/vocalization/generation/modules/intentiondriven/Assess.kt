@@ -50,11 +50,17 @@ object Assess : VocalizationModule {
         val maxpec: Double = enhcube["score"].max()!!
         var text = "When compared to the previous query"
         val patterns =
-                (0..2).map {
-                    val r = enhcube.row(it)
-                    text += ", the ${r["score_mea"]} of ${tuple2string(cube2, r)} is ${label(r["score"] as Double)} ${tuple2string(cube1, r)}"
-                            // + "sold ${cube2.measureNames().map { r[it].toString() + " " + it }.reduce { a, b -> "$a, $b" }} " +
-                    VocalizationPattern(text, r["score"] as Double / maxpec, 1.0 / df.nrow, moduleName) // TODO must fix coverage
+            (0..2)
+                .map { enhcube.row(it) }
+                .map { r ->
+                    text += ", the ${r["score_mea"]} of ${tuple2string(cube2, r)} is ${r[r["score_mea"]]}, " +
+                            "${label(r["score"] as Double)} the average ${r["score_mea"]} of ${tuple2string(cube1, r)} that is ${r["norm_" + r["score_mea"]]}"
+                    VocalizationPattern(
+                        text,
+                        r["score"] as Double / maxpec,
+                        1.0 / df.nrow,
+                        moduleName
+                    ) // TODO must fix coverage
                 }.toList()
         return patterns
     }

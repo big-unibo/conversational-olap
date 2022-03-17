@@ -12,6 +12,7 @@ import krangl.readCSV
 import krangl.writeCSV
 import java.io.File
 import java.util.*
+import kotlin.math.abs
 
 /**
  * Describe intention in action.
@@ -48,7 +49,7 @@ object Correlation : VocalizationModule {
             var csum = 0.0
             if (it == 1) {
                 val r = df.row(0)
-                csum += Math.abs(r[moduleName] as Double)
+                csum += abs(r[moduleName] as Double)
                 text += "${r["m1"]} and ${r["m2"]} show ${correlation(r[moduleName] as Double)} correlation"
             } else {
                 val tuples: String = (0 until it)

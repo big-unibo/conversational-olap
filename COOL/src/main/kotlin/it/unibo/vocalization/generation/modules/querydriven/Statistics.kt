@@ -32,8 +32,8 @@ object Statistics : VocalizationModule {
         int = if (int < 0) 0.0 else int
 
         return listOf(
-            VocalizationPattern(mea.get(0).toUpperCase() + mea.substring(1), int, 1.001, moduleName),
-            VocalizationPattern(mea2.get(0).toUpperCase() + mea2.substring(1), int, 1.001, moduleName)
+            VocalizationPattern(mea[0].toUpperCase() + mea.substring(1), int, 1.001, moduleName),
+            VocalizationPattern(mea2[0].toUpperCase() + mea2.substring(1), int, 1.001, moduleName)
         )
     }
 }

@@ -76,7 +76,7 @@ class TestModule {
     }
 
     @Test
-    fun testSession05() {
+    fun testUserSession01() {
         println("\n---\n")
         val c = Config.getCube("sales")
         var ci: GPSJ? = null
@@ -100,7 +100,7 @@ class TestModule {
     }
 
     @Test
-    fun testSession07() {
+    fun testUserSession02() {
         println("\n---\n")
         val c = Config.getCube("sales")
         var ci: GPSJ? = null
