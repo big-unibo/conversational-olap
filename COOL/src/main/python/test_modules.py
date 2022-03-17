@@ -101,8 +101,8 @@ class TestAssess(unittest.TestCase):
         self.assertTrue(len(X) == 1)
 
     def test_all8(self):
-        X = slicing_variance(self.D, self.Dattr, self.Dmea)
-        self.assertTrue(len(X) == 5)
+        X = slicing_variance(self.A, self.Aattr, self.Amea)
+        self.assertTrue(len(X) == 1)
 
 
 if __name__ == '__main__':
