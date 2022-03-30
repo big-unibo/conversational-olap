@@ -38,7 +38,7 @@ fun generatePatterns(
     l: List<VocalizationModule>,
     options: MutableMap<String, Any> = mutableMapOf()
 ): List<List<IVocalizationPattern>> {
-    options["cube"] = curQuery.cube!!.factTable
+    options["cube"] = curQuery.cube?.factTable?: "foo"
     options["card"] = curQuery.df.nrow
     return l // list of modules
         // .parallelStream()

@@ -34,7 +34,8 @@ object TopK : VocalizationModule {
         var df = if (isTopK) { cube.df.sortedByDescending(mea) } else { cube.df.sortedBy(mea) }
         val superlative = if (isTopK) { "highest" } else { "lowest" }
         val maxLen = df.nrow.coerceAtMost(K + 1)
-        df = df.addColumn(mea) { df[mea].minus(df.row(maxLen - 1)[mea] as Double) }
+        val gamma = df.row(maxLen - 1)[mea] as Double
+        df = df.addColumn(mea) { df[mea].minus(gamma) }
         val sum: Double = df.slice(0 until maxLen)[mea].sum()!!.toDouble()
 
         return (1 until maxLen).map { // get the topk
@@ -42,14 +43,14 @@ object TopK : VocalizationModule {
                 var csum = 0.0
                 if (it == 1) {
                     val r = df.row(0)
-                    text += "The fact with $superlative $mea is ${tuple2string(cube, r)} with $mea ${(r[mea] as Double).round()} "
+                    text += "The fact with $superlative $mea is ${tuple2string(cube, r)} with ${ (r[mea] as Double + gamma).round()} "
                     csum += r[mea] as Double * (if (!r.contains("peculiarity")) 1.0 else r["peculiarity"] as Double)
                 } else {
                     val tuples: String = (0 until it)
                         .map { df.row(it) }
                         .map { r ->
                             csum += r[mea] as Double * (if (!r.contains("peculiarity")) 1.0 else r["peculiarity"] as Double)
-                            tuple2string(cube, r) + " with " + (r[mea] as Double).round()
+                            tuple2string(cube, r) + " with " +  (r[mea] as Double + gamma) .round()
                         }.reduce { a, b -> "$a, $b" }
                     text += "The $it facts with $superlative $mea are $tuples"
                 }

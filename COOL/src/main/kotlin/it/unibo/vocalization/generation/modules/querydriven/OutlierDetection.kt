@@ -36,7 +36,7 @@ object OutlierDetection : VocalizationModule {
             if (it == 1) {
                 val r = df.row(0)
                 csum += r["anomaly"] as Double * (if (!r.contains("peculiarity")) 1.0 else r["peculiarity"] as Double)
-                text += "${Peculiarity.tuple2string(cube, r)} with $mea is the most anomalous fact"
+                text += "${Peculiarity.tuple2string(cube, r)} with ${(r[mea] as Double).round()} is the most anomalous fact"
             } else {
                 val tuples: String = (0 until it)
                     .map { df.row(it) }

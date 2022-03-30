@@ -6,6 +6,7 @@ import it.unibo.conversational.database.Config
 import it.unibo.conversational.datatypes.Mapping
 import it.unibo.conversational.olap.Operator
 import it.unibo.vocalization.Optimizer
+import it.unibo.vocalization.generation.generatePatterns
 import it.unibo.vocalization.generation.modules.GPSJ
 import it.unibo.vocalization.generation.modules.IVocalizationPattern
 import it.unibo.vocalization.generation.modules.intentiondriven.*
@@ -178,12 +179,16 @@ class TestModule {
     @Test
     fun test03() {
         val df = dataFrameOf("PRODUCT", "QUANTITY")(
-            "Beer", 35.0, "Wine", 32.0, "Cola", 30.0, "Pizza", 6.0, "Bread", 5.0
+            "Beer", 80.0, "Wine", 70.0, "Cola", 30.0, "Bagel", 8.0, "Pizza", 6.0, "Bread", 5.0
         )
         val c = GPSJ(df, setOf("product"), setOf(Pair.of("sum", "quantity")), setOf())
-        check(Statistics.compute(null, c))
-        check(TopK.compute(null, c))
-        check(Clustering.compute(null, c))
+        // check(Statistics.compute(null, c))
+        // check(TopK.compute(null, c))
+        // check(Clustering.compute(null, c))
+        var p = generatePatterns(null, c, null).flatten()
+        check(p)
+        // p = vocalize(null, c, null, BUDGET)
+        // check(p)
     }
 
     @Test
@@ -210,7 +215,7 @@ class TestModule {
     }
 
     fun check(t: Collection<IVocalizationPattern>) {
-        t.forEach { println("${it.text}.") }
+        t.forEach { println("${it}.") }
         if (t.isNotEmpty()) {
             assertTrue(t.first().int.toDouble() in 0.0..1.001)
         }
