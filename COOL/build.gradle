@@ -3,7 +3,7 @@ plugins {
     id 'war'
     id 'antlr'
     id 'org.jetbrains.kotlin.jvm' version '1.4.32'
-    id 'org.gretty' version '3.0.7'
+    id 'org.gretty' version '3.0.8'
     id 'idea'
     // id 'checkstyle'
 }
