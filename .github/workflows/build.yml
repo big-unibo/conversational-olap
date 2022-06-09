@@ -25,7 +25,7 @@ jobs:
         run: |
           cd COOL
           chmod +x ./gradlew
-          ./gradlew
+          ./gradlew --stacktrace --scan
       - name: Stop docker
         run: |
           cd COOL
