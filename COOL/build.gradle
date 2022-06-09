@@ -12,9 +12,6 @@ gretty {   // Add these lines
     contextPath = '/'
     servletContainer = 'jetty9'
 }
-shadowJar {
-    zip64 true
-}
 
 java { toolchain {languageVersion = JavaLanguageVersion.of(14) } }
 
