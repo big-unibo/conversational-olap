@@ -4,6 +4,20 @@ import java.util.List;
 import java.util.Locale;
 
 public class Cube {
+    public Cube() {
+    }
+
+    public Cube(String datamart, String facttable, String dbms, String ip, int port, boolean create, boolean importmembers) {
+        this.datamart = datamart;
+        this.facttable = facttable;
+        this.metadata = datamart;
+        this.dbms = dbms;
+        this.ip = ip;
+        this.port = port;
+        this.create = create;
+        this.importmembers = importmembers;
+    }
+
     private String datamart;
     private String facttable;
     private String metadata;

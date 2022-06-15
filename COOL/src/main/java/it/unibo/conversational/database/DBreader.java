@@ -3,6 +3,7 @@ package it.unibo.conversational.database;
 import com.google.common.collect.Lists;
 import it.unibo.conversational.Utils;
 import it.unibo.conversational.Utils.DataType;
+import org.apache.commons.cli.*;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.slf4j.Logger;
@@ -10,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -192,18 +194,35 @@ public class DBreader {
         }
     }
 
+    private static void createOption(final Options options, final String... ss) {
+        Arrays.stream(ss).forEach(s -> {
+            Option db = new Option(s, s, true, s);
+            db.setRequired(true);
+            options.addOption(db);
+        });
+    }
+
     /**
      * Run the db reader.
      *
      * @param args arguments
      */
-    public static void main(final String[] args) {
-        for (Cube cube : Config.getCubes()) {
-            if (cube.getCreate()) {
-                L.debug("-------------------------");
-                L.debug(cube.getFactTable().toUpperCase());
-                L.debug("-------------------------");
-                new DBreader(cube).loadDataAndMetadata();
+    public static void main(final String[] args) throws ParseException {
+        if (args.length > 1) {
+            Options options = new Options();
+            createOption(options, "db", "ip", "port", "dbms", "user", "pwd", "ft");
+            CommandLineParser parser = new DefaultParser();
+            CommandLine cmd = parser.parse(options, args);
+            final Cube cube = new Cube(cmd.getOptionValue("db"), cmd.getOptionValue("ft"), cmd.getOptionValue("dbms"), cmd.getOptionValue("ip"), Integer.parseInt(cmd.getOptionValue("port")), true, true);
+            new DBreader(cube).loadDataAndMetadata();
+        } else {
+            for (Cube cube : Config.getCubes()) {
+                if (cube.getCreate()) {
+                    L.debug("-------------------------");
+                    L.debug(cube.getFactTable().toUpperCase());
+                    L.debug("-------------------------");
+                    new DBreader(cube).loadDataAndMetadata();
+                }
             }
         }
     }
