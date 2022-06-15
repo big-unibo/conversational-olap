@@ -1,6 +1,7 @@
 config.yml
 *.sql
 .idea/
+**/src/main/java/it/unibo/antlr/gen/*
 
 # Created by https://www.gitignore.io/api/java,scala,linux,macos,python,gradle,kotlin,windows,eclipse,intellij,virtualenv,jupyternotebooks
 # Edit at https://www.gitignore.io/?templates=java,scala,linux,macos,python,gradle,kotlin,windows,eclipse,intellij,virtualenv,jupyternotebooks
