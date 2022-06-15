@@ -15,9 +15,8 @@ jobs:
       - name: Run docker
         run: |
           cd COOL
-          cp .env.example .env
-          cp src/main/resources/config.example.yml src/main/resources/config.yml
           chmod +x *.sh
+          ./init.sh
           ./build.sh
           ./download.sh
           ./start.sh
