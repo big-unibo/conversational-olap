@@ -1,11 +1,8 @@
 plugins {
-    id 'java'
+    id 'java-library'
     id 'war'
     id 'antlr'
-    id 'org.jetbrains.kotlin.jvm' version '1.4.32'
-    id 'org.gretty' version '3.0.8'
-    id 'idea'
-    // id 'checkstyle'
+    id 'org.jetbrains.kotlin.jvm' version '1.7.0'
     id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
 
@@ -13,14 +10,28 @@ shadowJar {
     zip64 true
 }
 
-gretty {   // Add these lines
-    contextPath = '/'
-    servletContainer = 'jetty9'
-}
+java { toolchain {languageVersion = JavaLanguageVersion.of(14) } }
+
+kotlin { jvmToolchain { languageVersion.set(JavaLanguageVersion.of(14)) } }
 
 compileJava {
+    dependsOn generateGrammarSource
     sourceCompatibility = '14'
     targetCompatibility = '14'
+}
+
+compileKotlin {
+    dependsOn generateGrammarSource
+    kotlinOptions {
+        jvmTarget = "14"
+    }
+}
+
+compileTestKotlin {
+    dependsOn generateGrammarSource
+    kotlinOptions {
+        jvmTarget = "14"
+    }
 }
 
 repositories {
@@ -62,18 +73,6 @@ dependencies {
 generateGrammarSource {
     outputDirectory = file("src/main/java/it/unibo/antlr/gen")
     arguments += ["-visitor"]
-}
-
-compileKotlin {
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
-}
-
-compileTestKotlin {
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
 }
 
 test {
