@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/big-unibo/conversational-olap/compare/1.0.0...1.0.1) (2022-06-15)
+
+
+### Bug Fixes
+
+* **dbmanager:** allow to run dbmanager through command line  ([abc5faf](https://github.com/big-unibo/conversational-olap/commit/abc5faf31e822826d58fadc80c49f9a52db55087))
+
 ## 1.0.0 (2022-06-15)
 
 
