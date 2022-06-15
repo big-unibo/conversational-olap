@@ -6,6 +6,11 @@ plugins {
     id 'org.gretty' version '3.0.8'
     id 'idea'
     // id 'checkstyle'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
+}
+
+shadowJar {
+    zip64 true
 }
 
 gretty {   // Add these lines
