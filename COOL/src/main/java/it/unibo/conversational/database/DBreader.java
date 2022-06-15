@@ -213,7 +213,10 @@ public class DBreader {
             createOption(options, "db", "ip", "port", "dbms", "user", "pwd", "ft");
             CommandLineParser parser = new DefaultParser();
             CommandLine cmd = parser.parse(options, args);
-            final Cube cube = new Cube(cmd.getOptionValue("db"), cmd.getOptionValue("ft"), cmd.getOptionValue("dbms"), cmd.getOptionValue("ip"), Integer.parseInt(cmd.getOptionValue("port")), true, true);
+            final Cube cube = new Cube(
+                    cmd.getOptionValue("db"), cmd.getOptionValue("ft"), cmd.getOptionValue("dbms"),
+                    cmd.getOptionValue("ip"), Integer.parseInt(cmd.getOptionValue("port")), cmd.getOptionValue("user"),
+                    cmd.getOptionValue("pwd"), true, true);
             new DBreader(cube).loadDataAndMetadata();
         } else {
             for (Cube cube : Config.getCubes()) {
