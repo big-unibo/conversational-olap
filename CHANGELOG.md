@@ -1,3 +1,15 @@
+## [1.0.2](https://github.com/big-unibo/conversational-olap/compare/1.0.1...1.0.2) (2022-06-15)
+
+
+### Bug Fixes
+
+* **dbmanager:** add timezone to the connection ([101c8c3](https://github.com/big-unibo/conversational-olap/commit/101c8c344e9933a8cbf25336cc13d83ea2f0203c))
+
+
+### Dependency updates
+
+* **deps:** update dependency com.fasterxml.jackson.dataformat:jackson-dataformat-yaml to v2.13.3 ([293c83a](https://github.com/big-unibo/conversational-olap/commit/293c83a34329d0259d59d6af37de509b53d3cc5e))
+
 ## [1.0.1](https://github.com/big-unibo/conversational-olap/compare/1.0.0...1.0.1) (2022-06-15)
 
 
