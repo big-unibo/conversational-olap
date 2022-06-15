@@ -1,6 +1,7 @@
 package it.unibo.vocalization.modules
 
 import it.unibo.conversational.Utils
+import it.unibo.conversational.Utils.Type
 import it.unibo.conversational.olap.Operator
 import it.unibo.vocalization.modules.Peculiarity.argMax
 import it.unibo.vocalization.modules.Peculiarity.extendCubeWithProxy
@@ -70,6 +71,6 @@ object Assess : VocalizationModule {
     }
 
     override fun applyCondition(cube1: IGPSJ?, cube2: IGPSJ, operator: Operator?): Boolean {
-        return cube1 != null && setOf(Utils.Type.DRILL, Utils.Type.SAD).contains(operator!!.type)
+        return cube1 != null && setOf(Type.DRILL.toString(), Type.SAD.toString()).contains(operator!!.type.toString())
     }
 }

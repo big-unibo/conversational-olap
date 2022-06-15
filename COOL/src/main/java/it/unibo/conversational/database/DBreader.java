@@ -30,7 +30,6 @@ public class DBreader {
      * Initialize the database reader and loader.
      *
      * @param cube cube
-     * @throws Exception in case of error
      */
     public DBreader(final Cube cube) {
         this.c = cube;
@@ -197,9 +196,8 @@ public class DBreader {
      * Run the db reader.
      *
      * @param args arguments
-     * @throws Exception in case of error
      */
-    public static void main(final String[] args) throws Exception {
+    public static void main(final String[] args) {
         for (Cube cube : Config.getCubes()) {
             if (cube.getCreate()) {
                 L.debug("-------------------------");

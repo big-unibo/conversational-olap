@@ -84,7 +84,6 @@ test {
     jvmArgs "-Xmx4g"
 }
 
-
 task runDBreader(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     main = "it.unibo.conversational.database.DBreader"
