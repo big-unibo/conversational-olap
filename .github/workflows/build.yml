@@ -50,6 +50,7 @@ jobs:
       - name: Deploy
         run: |
           cd COOL
+          chmod +x ./gradlew
           ./gradlew shadowJar
       - name: Release
         run: |
