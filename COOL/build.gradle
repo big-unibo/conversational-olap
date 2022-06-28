@@ -46,7 +46,7 @@ dependencies {
     implementation 'io.ktor:ktor-server-servlet:2.0.3'
     implementation 'org.jetbrains.kotlinx:kotlinx-cli:0.3.4'
     implementation 'commons-cli:commons-cli:1.5.0'
-    implementation "com.github.holgerbrandl:krangl:0.18"
+    implementation "com.github.holgerbrandl:krangl:0.18.1"
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
     implementation 'org.nield:kotlin-statistics:1.2.1'
     implementation 'mysql:mysql-connector-java:8.0.29'
