@@ -49,7 +49,7 @@ dependencies {
     implementation "com.github.holgerbrandl:krangl:0.18.1"
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
     implementation 'org.nield:kotlin-statistics:1.2.1'
-    implementation 'mysql:mysql-connector-java:8.0.29'
+    implementation 'mysql:mysql-connector-java:8.0.30'
     implementation 'com.github.haifengl:smile-core:2.6.0'
     implementation 'org.jgrapht:jgrapht-core:1.5.1'
     implementation 'edu.stanford.nlp:stanford-corenlp:4.4.0'
