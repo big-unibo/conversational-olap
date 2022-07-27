@@ -1,3 +1,36 @@
+## [1.0.3](https://github.com/big-unibo/conversational-olap/compare/1.0.2...1.0.3) (2022-07-27)
+
+
+### Bug Fixes
+
+* **deps:** update junit5 monorepo to v5.9.0 ([f86c013](https://github.com/big-unibo/conversational-olap/commit/f86c013ee002512c40babc24abd757bccceedea3))
+
+
+### Build and continuous integration
+
+* **deps:** update actions/setup-java action to v3.3.0 ([91cdfab](https://github.com/big-unibo/conversational-olap/commit/91cdfab68207255bf8d0dfb660a151301cdbd371))
+* **deps:** update actions/setup-java action to v3.4.0 ([cae03f0](https://github.com/big-unibo/conversational-olap/commit/cae03f0b5e32cda91ca54847803ed22d52f2871c))
+* **deps:** update actions/setup-java action to v3.4.1 ([91d7f87](https://github.com/big-unibo/conversational-olap/commit/91d7f87110bed51e51cd5808662cc40f085b711c))
+
+
+### Dependency updates
+
+* **deps:** update dependency com.fasterxml.jackson.datatype:jackson-datatype-jsr310 to v2.13.3 ([3a5093e](https://github.com/big-unibo/conversational-olap/commit/3a5093ed90616432a5f59fe3aa9cd1fb341e2efe))
+* **deps:** update dependency com.github.holgerbrandl:krangl to v0.17.3 ([042b6ac](https://github.com/big-unibo/conversational-olap/commit/042b6acee6d1aec9deff6d1df29d0ab0fdf8de32))
+* **deps:** update dependency com.github.holgerbrandl:krangl to v0.18 ([0e58211](https://github.com/big-unibo/conversational-olap/commit/0e58211d632b2f33f82cf8b478dac15990efe571))
+* **deps:** update dependency com.github.holgerbrandl:krangl to v0.18.1 ([618f1b5](https://github.com/big-unibo/conversational-olap/commit/618f1b54b723cc77392d7f2c32e6147c0b2414fe))
+* **deps:** update dependency commons-cli:commons-cli to v1.5.0 ([bf4c3c4](https://github.com/big-unibo/conversational-olap/commit/bf4c3c4b02f70c86d2c70c9898b31a5d1d7bd40f))
+* **deps:** update dependency gradle to v7.5 ([016fc05](https://github.com/big-unibo/conversational-olap/commit/016fc057cd52652955a4d1ffe0206031a2f7daa0))
+* **deps:** update dependency io.ktor:ktor-server-servlet to v1.6.8 ([12749bf](https://github.com/big-unibo/conversational-olap/commit/12749bf50b0fefd54924e75136e954fee799161f))
+* **deps:** update dependency io.ktor:ktor-server-servlet to v2 ([f1e81f3](https://github.com/big-unibo/conversational-olap/commit/f1e81f3d15bdb3b7ba1b601de592116dd1ba1c57))
+* **deps:** update dependency io.ktor:ktor-server-servlet to v2.0.3 ([268242d](https://github.com/big-unibo/conversational-olap/commit/268242d3eacf60ed202375245e65093956dd7342))
+* **deps:** update dependency mysql:mysql-connector-java to v8.0.30 ([92ae2cc](https://github.com/big-unibo/conversational-olap/commit/92ae2cc6bacd62e6ad126b677595979657e8837b))
+* **deps:** update dependency org.jetbrains.kotlinx:kotlinx-cli to v0.3.4 ([06e03e6](https://github.com/big-unibo/conversational-olap/commit/06e03e6c7a641880dd8c4eefccb03ab645980fc1))
+* **deps:** update dependency org.jetbrains.kotlinx:kotlinx-cli to v0.3.5 ([0bd07d1](https://github.com/big-unibo/conversational-olap/commit/0bd07d190ea472e5aedb45ef2c2cb6ea6707eb52))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.9 ([1239ac8](https://github.com/big-unibo/conversational-olap/commit/1239ac8dc24b6095805a2a2d79bb78e991e0d548))
+* **deps:** update node.js to 16.16 ([85aa58c](https://github.com/big-unibo/conversational-olap/commit/85aa58c4a1591ec713ca39905f67a7e65eb6b6e8))
+* **deps:** update plugin org.jetbrains.kotlin.jvm to v1.7.10 ([4c76048](https://github.com/big-unibo/conversational-olap/commit/4c7604899e2d0c9f1cd6d96d9a345f0c7e3d7f43))
+
 ## [1.0.2](https://github.com/big-unibo/conversational-olap/compare/1.0.1...1.0.2) (2022-06-15)
 
 
