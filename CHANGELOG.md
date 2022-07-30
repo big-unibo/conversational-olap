@@ -1,3 +1,10 @@
+## [1.0.4](https://github.com/big-unibo/conversational-olap/compare/1.0.3...1.0.4) (2022-07-30)
+
+
+### Bug Fixes
+
+* **deps:** update dependency edu.stanford.nlp:stanford-corenlp to v4.5.0 ([b266411](https://github.com/big-unibo/conversational-olap/commit/b2664119d9580f260dcf6d9f7db5bafad1556c1a))
+
 ## [1.0.3](https://github.com/big-unibo/conversational-olap/compare/1.0.2...1.0.3) (2022-07-27)
 
 
