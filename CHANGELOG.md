@@ -1,3 +1,15 @@
+## [1.0.5](https://github.com/big-unibo/conversational-olap/compare/1.0.4...1.0.5) (2022-08-11)
+
+
+### Bug Fixes
+
+* **deps:** update dependency io.ktor:ktor-server-servlet to v2.1.0 ([0bf25e1](https://github.com/big-unibo/conversational-olap/commit/0bf25e1f959ffbc74955938c6ad4693cb380ab01))
+
+
+### Dependency updates
+
+* **deps:** update dependency gradle to v7.5.1 ([6635938](https://github.com/big-unibo/conversational-olap/commit/6635938ee8d80110ba830bdb53427d6e6d5bd3d5))
+
 ## [1.0.4](https://github.com/big-unibo/conversational-olap/compare/1.0.3...1.0.4) (2022-07-30)
 
 
