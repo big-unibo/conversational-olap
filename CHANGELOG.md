@@ -1,3 +1,10 @@
+## [1.0.8](https://github.com/big-unibo/conversational-olap/compare/1.0.7...1.0.8) (2022-08-26)
+
+
+### Bug Fixes
+
+* **deps:** update dependency com.github.holgerbrandl:krangl to v0.18.2 ([c890199](https://github.com/big-unibo/conversational-olap/commit/c89019907facc3b499b5835fee7b05743c9ecf69))
+
 ## [1.0.7](https://github.com/big-unibo/conversational-olap/compare/1.0.6...1.0.7) (2022-08-21)
 
 
