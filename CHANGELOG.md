@@ -1,3 +1,15 @@
+## [1.0.9](https://github.com/big-unibo/conversational-olap/compare/1.0.8...1.0.9) (2022-08-28)
+
+
+### Bug Fixes
+
+* **deps:** update dependency com.github.holgerbrandl:krangl to v0.18.4 ([521747b](https://github.com/big-unibo/conversational-olap/commit/521747bb662234fc15af8ed3a7f66d070895a9c3))
+
+
+### Dependency updates
+
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.11 ([dfd9067](https://github.com/big-unibo/conversational-olap/commit/dfd906717bdab2fb3accbb0a81a475aaf70492cf))
+
 ## [1.0.8](https://github.com/big-unibo/conversational-olap/compare/1.0.7...1.0.8) (2022-08-26)
 
 
