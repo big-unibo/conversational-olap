@@ -1,3 +1,10 @@
+## [1.0.13](https://github.com/big-unibo/conversational-olap/compare/1.0.12...1.0.13) (2022-09-05)
+
+
+### Bug Fixes
+
+* **deps:** update dependency org.antlr:antlr4 to v4.11.1 ([85bcef1](https://github.com/big-unibo/conversational-olap/commit/85bcef135bcb34c0f8986e80936325869d90c9fc))
+
 ## [1.0.12](https://github.com/big-unibo/conversational-olap/compare/1.0.11...1.0.12) (2022-09-04)
 
 
