@@ -1,3 +1,15 @@
+## [1.0.15](https://github.com/big-unibo/conversational-olap/compare/1.0.14...1.0.15) (2022-09-14)
+
+
+### Bug Fixes
+
+* **deps:** update dependency org.slf4j:slf4j-api to v2.0.1 ([0702ba7](https://github.com/big-unibo/conversational-olap/commit/0702ba71dc87aa00f6bcf92112dac3c18aa220ee))
+
+
+### Build and continuous integration
+
+* **deps:** update actions/setup-java action to v3.5.0 ([f610156](https://github.com/big-unibo/conversational-olap/commit/f6101565d50ec73372efd8f619d05c2920cda057))
+
 ## [1.0.14](https://github.com/big-unibo/conversational-olap/compare/1.0.13...1.0.14) (2022-09-06)
 
 
