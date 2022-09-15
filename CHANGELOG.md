@@ -1,3 +1,10 @@
+## [1.0.16](https://github.com/big-unibo/conversational-olap/compare/1.0.15...1.0.16) (2022-09-15)
+
+
+### Bug Fixes
+
+* **deps:** update dependency org.slf4j:slf4j-log4j12 to v2.0.1 ([4042eb2](https://github.com/big-unibo/conversational-olap/commit/4042eb2edb855bda95280b0bf78ec843df21a935))
+
 ## [1.0.15](https://github.com/big-unibo/conversational-olap/compare/1.0.14...1.0.15) (2022-09-14)
 
 
