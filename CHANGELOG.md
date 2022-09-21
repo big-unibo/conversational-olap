@@ -1,3 +1,11 @@
+## [1.0.18](https://github.com/big-unibo/conversational-olap/compare/1.0.17...1.0.18) (2022-09-21)
+
+
+### Bug Fixes
+
+* **deps:** update dependency org.slf4j:slf4j-log4j12 to v2.0.2 ([7d9f059](https://github.com/big-unibo/conversational-olap/commit/7d9f0597fb10149270f375bce2c66e4f2cb99248))
+* **deps:** update junit5 monorepo to v5.9.1 ([71f0fb9](https://github.com/big-unibo/conversational-olap/commit/71f0fb9f29a4dc8be2012be6ec3afa50bc2cdf15))
+
 ## [1.0.17](https://github.com/big-unibo/conversational-olap/compare/1.0.16...1.0.17) (2022-09-21)
 
 
