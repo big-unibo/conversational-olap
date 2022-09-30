@@ -1,3 +1,15 @@
+## [1.0.22](https://github.com/big-unibo/conversational-olap/compare/1.0.21...1.0.22) (2022-09-30)
+
+
+### Bug Fixes
+
+* **deps:** update dependency io.ktor:ktor-server-servlet to v2.1.2 ([25e0473](https://github.com/big-unibo/conversational-olap/commit/25e0473aa139ff3265d58fb28156f6856c2ed07b))
+
+
+### Dependency updates
+
+* **deps:** update plugin org.jetbrains.kotlin.jvm to v1.7.20 ([519721e](https://github.com/big-unibo/conversational-olap/commit/519721ee91dcf622e113818316f4139b4a0df50c))
+
 ## [1.0.21](https://github.com/big-unibo/conversational-olap/compare/1.0.20...1.0.21) (2022-09-28)
 
 
