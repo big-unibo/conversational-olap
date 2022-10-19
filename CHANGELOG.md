@@ -1,3 +1,23 @@
+## [1.0.23](https://github.com/big-unibo/conversational-olap/compare/1.0.22...1.0.23) (2022-10-19)
+
+
+### Bug Fixes
+
+* **deps:** update dependency mysql:mysql-connector-java to v8.0.31 ([f10af61](https://github.com/big-unibo/conversational-olap/commit/f10af615f65a3394a64003867cd3d829f901a988))
+
+
+### Dependency updates
+
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.12 ([bed2968](https://github.com/big-unibo/conversational-olap/commit/bed29687a58b38bd8e4a9c4b7070815f2252d305))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.13 ([ed4eb5a](https://github.com/big-unibo/conversational-olap/commit/ed4eb5ae33df62af1cce30312ad19a56386f360a))
+* **deps:** update node.js to 16.18 ([b18010f](https://github.com/big-unibo/conversational-olap/commit/b18010fd9d9da63a5998cd4de197d53eddec114f))
+
+
+### Build and continuous integration
+
+* **deps:** update actions/checkout action to v3.1.0 ([74ae203](https://github.com/big-unibo/conversational-olap/commit/74ae20332d0f7d14173626a51e754e61a8e178c4))
+* **deps:** update actions/setup-java action to v3.6.0 ([a2dd560](https://github.com/big-unibo/conversational-olap/commit/a2dd560ecb6b787bb5bb52495aecf5671d09efb8))
+
 ## [1.0.22](https://github.com/big-unibo/conversational-olap/compare/1.0.21...1.0.22) (2022-09-30)
 
 
