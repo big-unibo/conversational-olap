@@ -1,3 +1,15 @@
+## [1.0.25](https://github.com/big-unibo/conversational-olap/compare/1.0.24...1.0.25) (2022-11-06)
+
+
+### Bug Fixes
+
+* **deps:** update dependency com.fasterxml.jackson.dataformat:jackson-dataformat-yaml to v2.14.0 ([6527cc2](https://github.com/big-unibo/conversational-olap/commit/6527cc22a5a817819ce1a4d2517ceda3506863c1))
+
+
+### Dependency updates
+
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.15 ([f118397](https://github.com/big-unibo/conversational-olap/commit/f118397af48cb1ccbc8efe85558ad5abab751ede))
+
 ## [1.0.24](https://github.com/big-unibo/conversational-olap/compare/1.0.23...1.0.24) (2022-10-28)
 
 
