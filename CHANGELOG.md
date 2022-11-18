@@ -1,3 +1,15 @@
+## [1.0.27](https://github.com/big-unibo/conversational-olap/compare/1.0.26...1.0.27) (2022-11-18)
+
+
+### Bug Fixes
+
+* **deps:** update dependency org.slf4j:slf4j-api to v2.0.4 ([a39e8dd](https://github.com/big-unibo/conversational-olap/commit/a39e8dd3fc5431d7afc9cfc33303f286ae32ad7d))
+
+
+### Dependency updates
+
+* **deps:** update plugin org.jetbrains.kotlin.jvm to v1.7.21 ([63fe8bd](https://github.com/big-unibo/conversational-olap/commit/63fe8bdd30a58ffe18da3f2aca5b820312c86a39))
+
 ## [1.0.26](https://github.com/big-unibo/conversational-olap/compare/1.0.25...1.0.26) (2022-11-06)
 
 
