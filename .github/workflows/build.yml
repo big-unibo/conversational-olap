@@ -62,7 +62,6 @@ jobs:
         run: |
           chmod +x ./gradlew  
           ./gradlew shadowJar
-          cd ..
           mkdir -p dist/
           cp build/libs/* dist/
       - name: Release
