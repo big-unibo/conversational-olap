@@ -60,6 +60,7 @@ jobs:
           java-version: '14'
       - name: Deploy
         run: |
+          chmod +x ./gradlew  
           ./gradlew shadowJar
           cd ..
           mkdir -p dist/
