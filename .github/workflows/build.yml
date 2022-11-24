@@ -8,44 +8,45 @@ on:
 jobs:
   build:
     runs-on: ubuntu-20.04
-    # strategy:
-    #   matrix:
-    #     java: [ '14' ]
+    defaults:
+      run:
+        working-directory: ./COOL
     steps:
       - uses: actions/checkout@v2.4.0
       - uses: actions/setup-java@v2.5.0
         with:
           distribution: 'adopt'
-          java-version: '14' # ${{ matrix.java }}
+          java-version: '14'
       - uses: actions/setup-python@v2
         with:
           python-version: '3.10.2'
           architecture: 'x64'
       - name: Init
         run: |
-          cd COOL
           chmod +x *.sh
           ./init.sh
       - name: Install and test python
         run: |
-          cd COOL/src/main/python
+          cd src/main/python
           pip install -r requirements.txt
           python -m unittest discover
       - name: Test Kotlin
         run: |
-          cd COOL
           ./build.sh
           ./download.sh
           ./start.sh
-          ./gradlew --stacktrace
+          ./gradlew --stacktrace --scan
           ./stop.sh
       - name: Generate the charts
         run: |
-          cd COOL/src/main/python
+          cd src/main/python
           pip install jupyter
           jupyter nbconvert --execute --to notebook --inplace charts.ipynb
 
   release:
+    defaults:
+      run:
+        working-directory: ./COOL
     needs:
       - build
     if: github.event_name == 'push'
@@ -59,12 +60,10 @@ jobs:
           java-version: '14'
       - name: Deploy
         run: |
-          cd COOL
-          chmod +x ./gradlew
           ./gradlew shadowJar
           cd ..
           mkdir -p dist/
-          cp COOL/build/libs/* dist/
+          cp build/libs/* dist/
       - name: Release
         run: |
           npm install
