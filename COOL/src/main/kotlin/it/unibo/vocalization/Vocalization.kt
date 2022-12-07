@@ -14,12 +14,18 @@ fun vocalize(prevQuery: GPSJ?, curQuery: GPSJ, operator: Operator?, budget: Int,
 fun vocalize(allPatterns: List<List<IVocalizationPattern>>, budget: Int, options: MutableMap<String, Any> = mutableMapOf()): List<IVocalizationPattern> {
     val preamble: List<IVocalizationPattern> = allPatterns.first { it.any { it.moduleName == Preamble.moduleName } }
     val startTime = System.currentTimeMillis()
-    val r = Optimizer.getPatterns(allPatterns - listOf(preamble), budget)
+    val r = Optimizer.getPatterns(allPatterns - listOf(preamble).toSet(), budget)
     val m: MutableMap<String, Any> = mutableMapOf()
     m["npatterns"] = r.size
     m["module"] = "Mckp"
     m["length"] = -1
     m["time"] = System.currentTimeMillis() - startTime
-    options.compute("acc", { k, v -> if (v == null) mutableListOf(m) else (v as MutableList<MutableMap<String, Any>>) + mutableListOf(m) })
+    options.compute("acc") { _, v ->
+        if (v == null) {
+            mutableListOf(m)
+        } else {
+            (v as MutableList<*>) + mutableListOf(m)
+        }
+    }
     return listOf(preamble).first() + r.sortedWith(compareBy({ -it.cov }, { -it.int.toDouble() }))
 }

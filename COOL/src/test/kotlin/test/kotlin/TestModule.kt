@@ -78,50 +78,54 @@ class TestModule {
 
     @Test
     fun testUserSession01() {
-        println("\n---\n")
-        val c = Config.getCube("sales")
-        var ci: GPSJ? = null
-        var cj = GPSJ(c, setOf("product_department"), setOf(Pair.of("sum", "unit_sales")), setOf())
-        var p = vocalize(ci, cj, null, BUDGET)
-        check(p)
+        listOf(50, 100, BUDGET, 150, 200).forEach {
+            println("\n---\n")
+            val c = Config.getCube("sales")
+            var ci: GPSJ? = null
+            var cj = GPSJ(c, setOf("product_department"), setOf(Pair.of("sum", "unit_sales")), setOf())
+            var p = vocalize(ci, cj, null, it)
+            check(p)
 
-        println("\n---\n")
-        ci = cj
-        cj = GPSJ(c, setOf("product_department", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf())
-        // generatePatterns(ci, cj, Operator(Parser.Type.DRILL), listOf(Intravariance, Univariance, Cardvariance)).flatten().forEach { println(it) }
-        p = vocalize(ci, cj, Operator(Parser.Type.DRILL), BUDGET)
-        check(p)
+            println("\n---\n")
+            ci = cj
+            cj = GPSJ(c, setOf("product_department", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf())
+            // generatePatterns(ci, cj, Operator(Parser.Type.DRILL), listOf(Intravariance, Univariance, Cardvariance)).flatten().forEach { println(it) }
+            p = vocalize(ci, cj, Operator(Parser.Type.DRILL), it)
+            check(p)
 
-        println("\n---\n")
-        ci = cj
-        cj = GPSJ(c, setOf("product_department", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf(Triple.of("occupation", "=", "'Professional'")))
-        p = vocalize(ci, cj, Operator(Parser.Type.SAD), BUDGET)
-        check(p)
-        // generatePatterns(ci, cj, Operator(Parser.Type.SAD)).forEach { println(it) }
+            println("\n---\n")
+            ci = cj
+            cj = GPSJ(c, setOf("product_department", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf(Triple.of("occupation", "=", "'Professional'")))
+            p = vocalize(ci, cj, Operator(Parser.Type.SAD), it)
+            check(p)
+            // generatePatterns(ci, cj, Operator(Parser.Type.SAD)).forEach { println(it) }
+        }
     }
 
     @Test
     fun testUserSession02() {
-        println("\n---\n")
-        val c = Config.getCube("sales")
-        var ci: GPSJ? = null
-        var cj = GPSJ(c, setOf("product_subcategory"), setOf(Pair.of("sum", "store_sales")), setOf())
-        var p = vocalize(ci, cj, null, BUDGET)
-        check(p)
+        listOf(50, 100, BUDGET, 150, 200).forEach {
+            println("\n---\n")
+            val c = Config.getCube("sales")
+            var ci: GPSJ? = null
+            var cj = GPSJ(c, setOf("product_subcategory"), setOf(Pair.of("sum", "store_sales")), setOf())
+            var p = vocalize(ci, cj, null, it)
+            check(p)
 
-        println("\n---\n")
-        ci = cj
-        cj = GPSJ(c, setOf("product_category"), setOf(Pair.of("sum", "store_sales")), setOf())
-        // generatePatterns(ci, cj, Operator(Parser.Type.DRILL), listOf(Intravariance, Univariance, Cardvariance)).flatten().forEach { println(it) }
-        p = vocalize(ci, cj, Operator(Parser.Type.ROLLUP), BUDGET)
-        check(p)
+            println("\n---\n")
+            ci = cj
+            cj = GPSJ(c, setOf("product_category"), setOf(Pair.of("sum", "store_sales")), setOf())
+            // generatePatterns(ci, cj, Operator(Parser.Type.DRILL), listOf(Intravariance, Univariance, Cardvariance)).flatten().forEach { println(it) }
+            p = vocalize(ci, cj, Operator(Parser.Type.ROLLUP), it)
+            check(p)
 
-        println("\n---\n")
-        ci = cj
-        cj = GPSJ(c, setOf("product_category"), setOf(Pair.of("sum", "store_sales"), Pair.of("sum", "store_cost")), setOf())
-        p = vocalize(ci, cj, Operator(Parser.Type.ADD), BUDGET)
-        check(p)
-        // generatePatterns(ci, cj, Operator(Parser.Type.SAD)).forEach { println(it) }
+            println("\n---\n")
+            ci = cj
+            cj = GPSJ(c, setOf("product_category"), setOf(Pair.of("sum", "store_sales"), Pair.of("sum", "store_cost")), setOf())
+            p = vocalize(ci, cj, Operator(Parser.Type.ADD), it)
+            check(p)
+            // generatePatterns(ci, cj, Operator(Parser.Type.SAD)).forEach { println(it) }
+        }
     }
 
     @Test
