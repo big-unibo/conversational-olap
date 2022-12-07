@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.sql.*;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 
 /**
  * Handling connection to database.
@@ -178,6 +179,7 @@ public final class DBmanager {
             schemaDBstringConnection = "jdbc:" + cube.getDbms() + "://" + ip + ":" + port + "/" + (isData ? cube.getDataMart() : cube.getMetaData()) + "?serverTimezone=UTC&autoReconnect=true&characterEncoding=utf8";
             Class.forName("com.mysql.cj.jdbc.Driver");
         } else if (cube.getDbms().equals("oracle")) {
+            TimeZone.setDefault(TimeZone.getTimeZone("Europe/Rome"));
             schemaDBstringConnection = "jdbc:oracle:thin:@" + ip + ":" + port + "/" + cube.getDataMart();
             Class.forName("oracle.jdbc.driver.OracleDriver");
         } else {

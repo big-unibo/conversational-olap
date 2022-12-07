@@ -9,7 +9,7 @@ config.plugins.push(
     }],
     ["@semantic-release/github", {
         "assets": [
-          {"path": "dist/"}
+          {"path": "COOL/build/libs/*.jar"}
         ]
     }],
     "@semantic-release/git",
