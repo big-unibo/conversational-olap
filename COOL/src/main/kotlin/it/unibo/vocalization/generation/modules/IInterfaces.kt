@@ -132,14 +132,12 @@ interface VocalizationModule {
      */
     @Throws(IOException::class, InterruptedException::class)
     fun computePython(pythonPath: String, outputPath: String, pythonModule: String, fileName: String, attributes: Collection<String>, measures: Collection<String>): Long {
-        val commandPath: String
-        commandPath = if (File(pythonPath + "venv/Scripts").exists()) {
-            pythonPath + "venv/Scripts/python.exe " + pythonPath + pythonModule + " " //.replace("/", File.separator);
-        } else if (File(pythonPath + "venv/bin").exists()) {
-            pythonPath + "venv/bin/python " + pythonPath + pythonModule + " "
-        } else {
-            "python3 $pythonPath$pythonModule "
-        }
+        val commandPath: String =
+            (if (File(pythonPath + "venv/Scripts").exists()) {
+                pythonPath + "venv/Scripts/python.exe "
+            } else if (File(pythonPath + "venv/bin").exists()) {
+                pythonPath + "venv/bin/python "
+            } else { "python3 " }) + pythonPath + pythonModule + " "
         var startTime = System.currentTimeMillis()
         val proc = Runtime.getRuntime().exec(toPythonCommand(commandPath, outputPath, fileName, attributes, measures))
         val ret = proc.waitFor()

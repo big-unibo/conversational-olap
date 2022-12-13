@@ -53,11 +53,13 @@ fun generatePatterns(
             val r = it.compute(prevQuery, curQuery, operator)
             m["time"] = System.currentTimeMillis() - startTime
             m["npatterns"] = r.size
+            m["selected"] = false
+            m["selected_cost"] = -1
+            m["selected_int"] = -1
             m["length"] = r.map { it.cost }.average()
-            options.compute(
-                "acc",
-                { k, v -> if (v == null) mutableListOf(m) else (v as MutableList<MutableMap<String, Any>>) + mutableListOf(m) }
-            )
+            options.compute("acc") { _, v ->
+                if (v == null) mutableListOf(m) else (v as MutableList<*>) + mutableListOf(m)
+            }
             println(m)
             r
         }.toList()

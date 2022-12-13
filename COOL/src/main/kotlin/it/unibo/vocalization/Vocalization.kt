@@ -16,8 +16,12 @@ fun vocalize(allPatterns: List<List<IVocalizationPattern>>, budget: Int, options
     val startTime = System.currentTimeMillis()
     val r = Optimizer.getPatterns(allPatterns - listOf(preamble).toSet(), budget)
     val m: MutableMap<String, Any> = mutableMapOf()
+    options["budget"] = budget
     m["npatterns"] = r.size
     m["module"] = "Mckp"
+    m["selected"] = false
+    m["selected_cost"] = -1
+    m["selected_int"] = -1
     m["length"] = -1
     m["time"] = System.currentTimeMillis() - startTime
     options.compute("acc") { _, v ->
@@ -26,6 +30,17 @@ fun vocalize(allPatterns: List<List<IVocalizationPattern>>, budget: Int, options
         } else {
             (v as MutableList<*>) + mutableListOf(m)
         }
+    }
+    r.forEach { s ->
+        (options["acc"] as List<*>)
+            .map { it as MutableMap<String, Any> }
+            .filter { it["module"] == s.moduleName }
+            .forEach {
+                s.int
+                it["selected"] = true
+                it["selected_cost"] = s.cost
+                it["selected_int"] = s.int
+            }
     }
     return listOf(preamble).first() + r.sortedWith(compareBy({ -it.cov }, { -it.int.toDouble() }))
 }

@@ -24,16 +24,17 @@ class TestModule {
 
     val c1 = GPSJ(Config.getCube("SSBORA_TEST"), setOf("category"), setOf(Pair.of("sum", "quantity")), setOf())
     val c2 = GPSJ(Config.getCube("SSBORA_TEST"), setOf("product"), setOf(Pair.of("sum", "quantity")), setOf())
-    val BUDGET = 120
+    val BUDGET = 125
+    val BUDGETS = listOf(25, 50, 75, 100, BUDGET, 150, 175, 200)
 
     @Test
     fun test01() {
         val c = Config.getCube("sales")
         val cube1 = GPSJ(c, setOf("product_category", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf())
         val cube2 = GPSJ(c, setOf("product_subcategory", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf())
-        check(Assess.compute(cube1, cube2))
-        check(Clustering.compute(cube1, cube2))
-        check(TopK.compute(cube1, cube2))
+        check(Assess.compute(cube1, cube2), BUDGET)
+        check(Clustering.compute(cube1, cube2), BUDGET)
+        check(TopK.compute(cube1, cube2), BUDGET)
     }
 
     @Test
@@ -43,13 +44,13 @@ class TestModule {
         var ci: GPSJ? = null
         var cj = GPSJ(c, setOf("store_city"), setOf(Pair.of("sum", "unit_sales")), setOf())
         var p = vocalize(ci, cj, null, BUDGET)
-        check(p)
+        check(p, BUDGET)
 
         println("\n---\n")
         ci = cj
         cj = GPSJ(c, setOf("store_city", "product_category"), setOf(Pair.of("sum", "unit_sales")), setOf())
         p = vocalize(ci, cj, Operator(Parser.Type.DRILL), BUDGET)
-        check(p)
+        check(p, BUDGET)
     }
 
     @Test
@@ -59,99 +60,98 @@ class TestModule {
         var ci: GPSJ? = null
         var cj = GPSJ(c, setOf("store_type"), setOf(Pair.of("sum", "unit_sales")), setOf())
         var p = vocalize(ci, cj, null, BUDGET)
-        check(p)
+        check(p, BUDGET)
 
         println("\n---\n")
         ci = cj
         cj = GPSJ(c, setOf("store_type", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf())
         // generatePatterns(ci, cj, Operator(Parser.Type.DRILL), listOf(Intravariance, Univariance, Cardvariance)).flatten().forEach { println(it) }
         p = vocalize(ci, cj, Operator(Parser.Type.DRILL), BUDGET)
-        check(p)
+        check(p, BUDGET)
 
         println("\n---\n")
         ci = cj
         cj = GPSJ(c, setOf("store_type", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf(Triple.of("product_subcategory", "=", "'Beer'")))
         p = vocalize(ci, cj, Operator(Parser.Type.SAD), BUDGET)
-        check(p)
+        check(p, BUDGET)
         // generatePatterns(ci, cj, Operator(Parser.Type.SAD)).forEach { println(it) }
     }
 
     @Test
     fun testUserSession01() {
-        listOf(50, 100, BUDGET, 150, 200).forEach {
-            println("\n---\n")
-            val c = Config.getCube("sales")
-            var ci: GPSJ? = null
-            var cj = GPSJ(c, setOf("product_department"), setOf(Pair.of("sum", "unit_sales")), setOf())
-            var p = vocalize(ci, cj, null, it)
-            check(p)
+        // BUDGETS.forEach {
+        println("\n---\n")
+        val c = Config.getCube("sales")
+        var ci: GPSJ? = null
+        var cj = GPSJ(c, setOf("product_department"), setOf(Pair.of("sum", "unit_sales")), setOf())
+        var p = vocalize(ci, cj, null, BUDGET)
+        check(p, BUDGET)
 
-            println("\n---\n")
-            ci = cj
-            cj = GPSJ(c, setOf("product_department", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf())
-            // generatePatterns(ci, cj, Operator(Parser.Type.DRILL), listOf(Intravariance, Univariance, Cardvariance)).flatten().forEach { println(it) }
-            p = vocalize(ci, cj, Operator(Parser.Type.DRILL), it)
-            check(p)
+        println("\n---\n")
+        ci = cj
+        cj = GPSJ(c, setOf("product_department", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf())
+        // generatePatterns(ci, cj, Operator(Parser.Type.DRILL), listOf(Intravariance, Univariance, Cardvariance)).flatten().forEach { println(it) }
+        p = vocalize(ci, cj, Operator(Parser.Type.DRILL), BUDGET)
+        check(p, BUDGET)
 
-            println("\n---\n")
-            ci = cj
-            cj = GPSJ(c, setOf("product_department", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf(Triple.of("occupation", "=", "'Professional'")))
-            p = vocalize(ci, cj, Operator(Parser.Type.SAD), it)
-            check(p)
-            // generatePatterns(ci, cj, Operator(Parser.Type.SAD)).forEach { println(it) }
-        }
+        println("\n---\n")
+        ci = cj
+        cj = GPSJ(c, setOf("product_department", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf(Triple.of("occupation", "=", "'Professional'")))
+        p = vocalize(ci, cj, Operator(Parser.Type.SAD), BUDGET)
+        check(p, BUDGET)
+        // generatePatterns(ci, cj, Operator(Parser.Type.SAD)).forEach { println(it) }
+        // }
     }
 
     @Test
     fun testUserSession02() {
-        listOf(50, 100, BUDGET, 150, 200).forEach {
-            println("\n---\n")
-            val c = Config.getCube("sales")
-            var ci: GPSJ? = null
-            var cj = GPSJ(c, setOf("product_subcategory"), setOf(Pair.of("sum", "store_sales")), setOf())
-            var p = vocalize(ci, cj, null, it)
-            check(p)
+        // BUDGETS.forEach {
+        println("\n---\n")
+        val c = Config.getCube("sales")
+        var ci: GPSJ? = null
+        var cj = GPSJ(c, setOf("product_subcategory"), setOf(Pair.of("sum", "store_sales")), setOf())
+        var p = vocalize(ci, cj, null, BUDGET)
+        check(p, BUDGET)
 
-            println("\n---\n")
-            ci = cj
-            cj = GPSJ(c, setOf("product_category"), setOf(Pair.of("sum", "store_sales")), setOf())
-            // generatePatterns(ci, cj, Operator(Parser.Type.DRILL), listOf(Intravariance, Univariance, Cardvariance)).flatten().forEach { println(it) }
-            p = vocalize(ci, cj, Operator(Parser.Type.ROLLUP), it)
-            check(p)
+        println("\n---\n")
+        ci = cj
+        cj = GPSJ(c, setOf("product_category"), setOf(Pair.of("sum", "store_sales")), setOf())
+        // generatePatterns(ci, cj, Operator(Parser.Type.DRILL), listOf(Intravariance, Univariance, Cardvariance)).flatten().forEach { println(it) }
+        p = vocalize(ci, cj, Operator(Parser.Type.ROLLUP), BUDGET)
+        check(p, BUDGET)
 
-            println("\n---\n")
-            ci = cj
-            cj = GPSJ(c, setOf("product_category"), setOf(Pair.of("sum", "store_sales"), Pair.of("sum", "store_cost")), setOf())
-            p = vocalize(ci, cj, Operator(Parser.Type.ADD), it)
-            check(p)
-            // generatePatterns(ci, cj, Operator(Parser.Type.SAD)).forEach { println(it) }
-        }
+        println("\n---\n")
+        ci = cj
+        cj = GPSJ(c, setOf("product_category"), setOf(Pair.of("sum", "store_sales"), Pair.of("sum", "store_cost")), setOf())
+        p = vocalize(ci, cj, Operator(Parser.Type.ADD), BUDGET)
+        check(p, BUDGET)
+        // generatePatterns(ci, cj, Operator(Parser.Type.SAD)).forEach { println(it) }
+        // }
     }
 
     @Test
-    fun testSession03() {
-        System.setProperty("file.encoding", "UTF-8")
+    fun testUserSession03() {
+        // BUDGETS.forEach {
         println("\n---\n")
         val c = Config.getCube("covid")
         var ci: GPSJ? = null
         var cj = GPSJ(c, setOf("country"), setOf(Pair.of("sum", "cases")), setOf())
         var p = vocalize(ci, cj, null, BUDGET)
-        check(p)
+        check(p, BUDGET)
 
         println("\n---\n")
         ci = cj
         cj = GPSJ(c, setOf("continent"), setOf(Pair.of("sum", "cases")), setOf())
         p = vocalize(ci, cj, Operator(Parser.Type.ROLLUP), BUDGET)
-        check(p)
+        check(p, BUDGET)
 
         println("\n---\n")
         ci = cj
         cj = GPSJ(c, setOf("continent"), setOf(Pair.of("sum", "cases"), Pair.of("sum", "deaths")), setOf())
         p = vocalize(ci, cj, Operator(Parser.Type.ADD), BUDGET)
-        check(p)
+        check(p, BUDGET)
+        // }
     }
-
-
 
     @Test
     fun testSession04() {
@@ -161,13 +161,13 @@ class TestModule {
         var ci: GPSJ? = null
         var cj = GPSJ(c, setOf("continent"), setOf(Pair.of("sum", "cases")), setOf())
         var p = vocalize(ci, cj, null, BUDGET)
-        check(p)
+        check(p, BUDGET)
 
         println("\n---\n")
         ci = cj
         cj = GPSJ(c, setOf("country"), setOf(Pair.of("sum", "cases")), setOf())
         p = vocalize(ci, cj, Operator(Parser.Type.DRILL), BUDGET)
-        check(p)
+        check(p, BUDGET)
     }
 
     @Test
@@ -189,36 +189,36 @@ class TestModule {
         // check(Statistics.compute(null, c))
         // check(TopK.compute(null, c))
         // check(Clustering.compute(null, c))
-        var p = generatePatterns(null, c, null).flatten()
-        check(p)
+        val p = generatePatterns(null, c, null).flatten()
+        check(p, BUDGET)
         // p = vocalize(null, c, null, BUDGET)
-        // check(p)
+        // check(p, BUDGET)
     }
 
     @Test
     fun testClustering() {
-        check(Clustering.compute(null, c2))
-        check(Clustering.compute(c1, c2))
+        check(Clustering.compute(null, c2), BUDGET)
+        check(Clustering.compute(c1, c2), BUDGET)
     }
 
     @Test
     fun testAssess() {
-        check(Assess.compute(c1, c2))
+        check(Assess.compute(c1, c2), BUDGET)
     }
 
     @Test
     fun testSkyline() {
-        check(Skyline.compute(null, c2))
-        check(Skyline.compute(c1, c2))
+        check(Skyline.compute(null, c2), BUDGET)
+        check(Skyline.compute(c1, c2), BUDGET)
     }
 
     @Test
     fun testOutlierDetection() {
-        check(OutlierDetection.compute(null, c2))
-        check(OutlierDetection.compute(c1, c2))
+        check(OutlierDetection.compute(null, c2), BUDGET)
+        check(OutlierDetection.compute(c1, c2), BUDGET)
     }
 
-    fun check(t: Collection<IVocalizationPattern>) {
+    fun check(t: Collection<IVocalizationPattern>, budget: Int) {
         t.forEach { println("${it}.") }
         if (t.isNotEmpty()) {
             assertTrue(t.first().int.toDouble() in 0.0..1.001)
@@ -226,37 +226,37 @@ class TestModule {
         assertTrue(t.all { p -> p.int.toDouble() >= 0 }, t.filter { p -> p.int.toDouble() < 0 }.toString())
         assertTrue(t.all { p -> p.cov in 0.0..1.001 }, t.filter { p -> p.cov < 0 || p.cov > 1 }.toString())
         if (t.isNotEmpty()) {
-            Optimizer.getPatterns(listOf(t.toList()), BUDGET)
+            Optimizer.getPatterns(listOf(t.toList()), budget)
         }
     }
 
     @Test
     fun testTopK() {
-        check(TopK.compute(null, c2))
-        check(TopK.compute(c1, c2))
+        check(TopK.compute(null, c2), BUDGET)
+        check(TopK.compute(c1, c2), BUDGET)
     }
 
     @Test
     fun testBottomK() {
-        check(BottomK.compute(null, c2))
-        check(BottomK.compute(c1, c2))
+        check(BottomK.compute(null, c2), BUDGET)
+        check(BottomK.compute(c1, c2), BUDGET)
     }
 
     @Test
     fun testIntravariance() {
-        check(AggregationVariance.compute(c2, c1, Operator(Parser.Type.ROLLUP)))
-        check(AggregationVariance.compute(c1, c2, Operator(Parser.Type.DRILL)))
+        check(AggregationVariance.compute(c2, c1, Operator(Parser.Type.ROLLUP)), BUDGET)
+        check(AggregationVariance.compute(c1, c2, Operator(Parser.Type.DRILL)), BUDGET)
     }
 
     @Test
     fun testCardvariance() {
-        check(DomainVariance.compute(c2, c1, Operator(Parser.Type.ROLLUP)))
-        check(DomainVariance.compute(c1, c2, Operator(Parser.Type.DRILL)))
+        check(DomainVariance.compute(c2, c1, Operator(Parser.Type.ROLLUP)), BUDGET)
+        check(DomainVariance.compute(c1, c2, Operator(Parser.Type.DRILL)), BUDGET)
     }
 
     @Test
     fun testUnivariance() {
-        check(UniformAggregationVariance.compute(c1, c2, Operator(Parser.Type.DRILL)))
+        check(UniformAggregationVariance.compute(c1, c2, Operator(Parser.Type.DRILL)), BUDGET)
     }
 
     @Test
@@ -264,78 +264,80 @@ class TestModule {
         val c = Config.getCube("sales")
         val ci = GPSJ(c, setOf("store_type", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf())
         val cj = GPSJ(c, setOf("store_type", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf(Triple.of("product_subcategory", "=", "'Beer'")))
-        check(SlicingVariance.compute(ci, cj, null))
-        check(SlicingVariance.compute(cj, ci, null))
+        check(SlicingVariance.compute(ci, cj, null), BUDGET)
+        check(SlicingVariance.compute(cj, ci, null), BUDGET)
     }
 
     @Test
     fun testScalability() {
         val c = Config.getCube("sales")
-
+        var x = 0
         val fileName = "resources/vool_stats.csv"
         val myFile = File(fileName)
         if (myFile.exists()) myFile.delete()
         var first = true
-        var x = 0
-
         (0..2).forEach { seed: Int ->
             listOf(100, 1000, 10000).forEach { limit ->
-                val l =
-                    listOf(
+                BUDGETS.forEach { budget ->
+                    val l =
                         listOf(
-                            Pair(null, GPSJ(c, setOf("product_subcategory"), setOf(Pair.of("sum", "store_sales")), setOf(), limit)),
-                            Pair(Operator(Parser.Type.ROLLUP), GPSJ(c, setOf("product_category"), setOf(Pair.of("sum", "store_sales")), setOf(), limit)),
-                            Pair(Operator(Parser.Type.ADD), GPSJ(c, setOf("product_category"), setOf(Pair.of("sum", "store_sales"), Pair.of("sum", "store_cost")), setOf(), limit))
-                        ),
-                        listOf(
-                            Pair(null, GPSJ(c, setOf("product_id"), setOf(Pair.of("sum", "store_sales")), setOf(), limit)),
-                            Pair(Operator(Parser.Type.ROLLUP), GPSJ(c, setOf("product_subcategory"), setOf(Pair.of("sum", "store_sales")), setOf(), limit)),
-                            Pair(Operator(Parser.Type.ADD), GPSJ(c, setOf("product_subcategory"), setOf(Pair.of("sum", "store_sales"), Pair.of("sum", "store_cost")), setOf(), limit))
-                        ),
-                        listOf(
-                            Pair(null, GPSJ(c, setOf("product_name", "the_month"), setOf(Pair.of("sum", "unit_sales")), setOf(), limit)),
-                            Pair(Operator(Parser.Type.DRILL), GPSJ(c, setOf("product_name", "the_month", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf(), limit)),
-                            Pair(Operator(Parser.Type.SAD), GPSJ(c, setOf("product_name", "the_month", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf(Triple.of("occupation", "=", "'Professional'")), limit)),
-                            Pair(Operator(Parser.Type.ADD), GPSJ(c, setOf("product_name", "the_month", "gender"), setOf(Pair.of("sum", "store_sales"), Pair.of("sum", "store_cost")), setOf(Triple.of("occupation", "=", "'Professional'")), limit))
-                        ),
-                        listOf(
-                            Pair(null, GPSJ(c, setOf("product_name"), setOf(Pair.of("sum", "unit_sales")), setOf(), limit)),
-                            Pair(Operator(Parser.Type.DRILL), GPSJ(c, setOf("product_name", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf(), limit)),
-                            Pair(Operator(Parser.Type.SAD), GPSJ(c, setOf("product_name", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf(Triple.of("occupation", "=", "'Professional'")), limit)),
-                        ),
-                        listOf(
-                            Pair(null, GPSJ(c, setOf("product_subcategory"), setOf(Pair.of("sum", "unit_sales")), setOf(), limit)),
-                            Pair(Operator(Parser.Type.DRILL), GPSJ(c, setOf("product_subcategory", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf(), limit)),
-                            Pair(Operator(Parser.Type.SAD), GPSJ(c, setOf("product_subcategory", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf(Triple.of("occupation", "=", "'Professional'")), limit))
-                        ),
-                        listOf(
-                            Pair(null, GPSJ(c, setOf("product_category"), setOf(Pair.of("sum", "unit_sales")), setOf(), limit)),
-                            Pair(Operator(Parser.Type.DRILL), GPSJ(c, setOf("product_category", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf(), limit)),
-                            Pair(Operator(Parser.Type.SAD), GPSJ(c, setOf("product_category", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf(Triple.of("occupation", "=", "'Professional'")), limit))
-                        ),
-                    )
+                            listOf(
+                                Pair(null, GPSJ(c, setOf("product_subcategory"), setOf(Pair.of("sum", "store_sales")), setOf(), limit)),
+                                Pair(Operator(Parser.Type.ROLLUP), GPSJ(c, setOf("product_category"), setOf(Pair.of("sum", "store_sales")), setOf(), limit)),
+                                Pair(Operator(Parser.Type.ADD), GPSJ(c, setOf("product_category"), setOf(Pair.of("sum", "store_sales"), Pair.of("sum", "store_cost")), setOf(), limit))
+                            ),
+                            listOf(
+                                Pair(null, GPSJ(c, setOf("product_id"), setOf(Pair.of("sum", "store_sales")), setOf(), limit)),
+                                Pair(Operator(Parser.Type.ROLLUP), GPSJ(c, setOf("product_subcategory"), setOf(Pair.of("sum", "store_sales")), setOf(), limit)),
+                                Pair(Operator(Parser.Type.ADD), GPSJ(c, setOf("product_subcategory"), setOf(Pair.of("sum", "store_sales"), Pair.of("sum", "store_cost")), setOf(), limit))
+                            ),
+                            listOf(
+                                Pair(null, GPSJ(c, setOf("product_name", "the_month"), setOf(Pair.of("sum", "unit_sales")), setOf(), limit)),
+                                Pair(Operator(Parser.Type.DRILL), GPSJ(c, setOf("product_name", "the_month", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf(), limit)),
+                                Pair(Operator(Parser.Type.SAD), GPSJ(c, setOf("product_name", "the_month", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf(Triple.of("occupation", "=", "'Professional'")), limit)),
+                                Pair(Operator(Parser.Type.ADD), GPSJ(c, setOf("product_name", "the_month", "gender"), setOf(Pair.of("sum", "store_sales"), Pair.of("sum", "store_cost")), setOf(Triple.of("occupation", "=", "'Professional'")), limit))
+                            ),
+                            listOf(
+                                Pair(null, GPSJ(c, setOf("product_name"), setOf(Pair.of("sum", "unit_sales")), setOf(), limit)),
+                                Pair(Operator(Parser.Type.DRILL), GPSJ(c, setOf("product_name", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf(), limit)),
+                                Pair(Operator(Parser.Type.SAD), GPSJ(c, setOf("product_name", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf(Triple.of("occupation", "=", "'Professional'")), limit)),
+                            ),
+                            listOf(
+                                Pair(null, GPSJ(c, setOf("product_subcategory"), setOf(Pair.of("sum", "unit_sales")), setOf(), limit)),
+                                Pair(Operator(Parser.Type.DRILL), GPSJ(c, setOf("product_subcategory", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf(), limit)),
+                                Pair(Operator(Parser.Type.SAD), GPSJ(c, setOf("product_subcategory", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf(Triple.of("occupation", "=", "'Professional'")), limit))
+                            ),
+                            listOf(
+                                Pair(null, GPSJ(c, setOf("product_category"), setOf(Pair.of("sum", "unit_sales")), setOf(), limit)),
+                                Pair(Operator(Parser.Type.DRILL), GPSJ(c, setOf("product_category", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf(), limit)),
+                                Pair(Operator(Parser.Type.SAD), GPSJ(c, setOf("product_category", "gender"), setOf(Pair.of("sum", "unit_sales")), setOf(Triple.of("occupation", "=", "'Professional'")), limit))
+                            ),
+                        )
 
-                l.forEachIndexed { j, l ->
-                    l.forEachIndexed { i , _ ->
-                        val options = mutableMapOf<String, Any>()
-                        options["limit"] = limit
-                        options["seed"] = seed
-                        options["uid"] = x++
-                        options["sessionid"] = j
-                        val ci = if (i == 0) { null } else { l[i - 1].second }
-                        val cj = l[i].second
-                        cj.df // compute the cube out of the patterns, so that query time is not counted
-                        vocalize(ci, cj, l[i].first, 120, options)
-                        val m: List<MutableMap<String, Any>> = options.remove("acc")!! as List<MutableMap<String, Any>>
-                        options.forEach { k, v -> m.forEach { it[k] = v } }
-                        if (first) {
-                            val header: String = m[0].entries.sortedBy { it.key }.map { it.key }.reduce { a, b -> "$a,$b" }
-                            File(fileName).appendText(header + "\n")
-                            first = false
-                        }
-                        m.forEach { options ->
-                            val data: String = options.entries.sortedBy { it.key }.map { it.value.toString() }.reduce { a, b -> "$a,$b" }
-                            File(fileName).appendText(data + "\n")
+                    var y = 0
+                    l.forEachIndexed { j, l ->
+                        l.forEachIndexed { i , _ ->
+                            val options = mutableMapOf<String, Any>()
+                            options["limit"] = limit
+                            options["seed"] = seed
+                            options["uid"] = x++
+                            options["queryid"] = y++
+                            options["sessionid"] = j
+                            val ci = if (i == 0) { null } else { l[i - 1].second }
+                            val cj = l[i].second
+                            cj.df // compute the cube out of the patterns, so that query time is not counted
+                            vocalize(ci, cj, l[i].first, budget, options)
+                            val m: List<MutableMap<String, Any>> = options.remove("acc")!! as List<MutableMap<String, Any>>
+                            options.forEach { (k, v) -> m.forEach { it[k] = v } }
+                            if (first) {
+                                val header: String = m[0].entries.sortedBy { it.key }.map { it.key }.reduce { a, b -> "$a,$b" }
+                                File(fileName).appendText(header + "\n")
+                                first = false
+                            }
+                            m.forEach { options ->
+                                val data: String = options.entries.sortedBy { it.key }.map { it.value.toString() }.reduce { a, b -> "$a,$b" }
+                                File(fileName).appendText(data + "\n")
+                            }
                         }
                     }
                 }
