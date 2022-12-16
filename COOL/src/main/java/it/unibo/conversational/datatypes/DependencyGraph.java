@@ -8,6 +8,26 @@ import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 
 public class DependencyGraph {
+    private static Graph<String, DefaultEdge> getCovidWeeklyDependencies() {
+        final DefaultDirectedGraph<String, DefaultEdge> g = new DefaultDirectedGraph<>(DefaultEdge.class);
+        // DATE
+        g.addVertex("week");
+        g.addVertex("month");
+        g.addEdge("week", "month");
+        g.addVertex("year");
+        g.addEdge("month", "year");
+        g.addVertex("all_date");
+        g.addEdge("year", "all_date");
+
+        // COUNTRY
+        g.addVertex("country");
+        g.addVertex("continent");
+        g.addEdge("country", "continent");
+        g.addVertex("all_country");
+        g.addEdge("continent", "all_country");
+        return g;
+    }
+
     private static Graph<String, DefaultEdge> getCovidMartDependencies() {
         final DefaultDirectedGraph<String, DefaultEdge> g = new DefaultDirectedGraph<>(DefaultEdge.class);
         // DATE
@@ -32,6 +52,8 @@ public class DependencyGraph {
 
     public static Graph<String, DefaultEdge> getDependencies(final Cube cube) {
         switch (cube.getFactTable()) {
+            case "ft":
+                return getCovidWeeklyDependencies();
             case "covid":
                 return getCovidMartDependencies();
             case "sales_fact_1997":
@@ -102,13 +124,13 @@ public class DependencyGraph {
         g.addEdge("product_id", "product_subcategory");
         g.addVertex("product_category");
         g.addEdge("product_subcategory", "product_category");
-        // g.addVertex("product_department");
-        // g.addEdge("product_subcategory", "product_department");
+        g.addVertex("product_department");
+        g.addEdge("product_subcategory", "product_department");
         g.addVertex("product_family");
         g.addEdge("product_subcategory", "product_family");
         g.addVertex("all_product");
         g.addEdge("product_category", "all_product");
-        // g.addEdge("product_department", "all_products");
+        g.addEdge("product_department", "all_product");
         g.addEdge("product_family", "all_product");
         // STORE
         g.addVertex("store_id");
