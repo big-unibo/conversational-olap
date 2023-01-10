@@ -1,3 +1,21 @@
+## [1.0.37](https://github.com/big-unibo/conversational-olap/compare/1.0.36...1.0.37) (2023-01-10)
+
+
+### Bug Fixes
+
+* **deps:** update junit5 monorepo to v5.9.2 ([cff8d55](https://github.com/big-unibo/conversational-olap/commit/cff8d55f7f4a0cfe41484049df541dded6de1664))
+
+
+### Build and continuous integration
+
+* **deps:** update actions/checkout action to v3.3.0 ([a50c554](https://github.com/big-unibo/conversational-olap/commit/a50c5542ab489081fe97610342bf84520e14b91e))
+
+
+### Dependency updates
+
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.16 ([f934d32](https://github.com/big-unibo/conversational-olap/commit/f934d32e618b41cb039415373d0164f725987257))
+* **deps:** update node.js to 18.13 ([c411e5c](https://github.com/big-unibo/conversational-olap/commit/c411e5c31eca0223453f9ddb84c98802424a8e15))
+
 ## [1.0.36](https://github.com/big-unibo/conversational-olap/compare/1.0.35...1.0.36) (2023-01-03)
 
 
