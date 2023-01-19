@@ -1,3 +1,10 @@
+## [1.0.38](https://github.com/big-unibo/conversational-olap/compare/1.0.37...1.0.38) (2023-01-19)
+
+
+### Bug Fixes
+
+* **deps:** update dependency mysql:mysql-connector-java to v8.0.32 ([b8bb54d](https://github.com/big-unibo/conversational-olap/commit/b8bb54d40bc657faaebe8367997943a19985d71c))
+
 ## [1.0.37](https://github.com/big-unibo/conversational-olap/compare/1.0.36...1.0.37) (2023-01-10)
 
 
