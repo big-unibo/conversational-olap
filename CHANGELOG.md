@@ -1,3 +1,10 @@
+## [1.0.40](https://github.com/big-unibo/conversational-olap/compare/1.0.39...1.0.40) (2023-01-29)
+
+
+### Bug Fixes
+
+* **deps:** update dependency com.fasterxml.jackson.dataformat:jackson-dataformat-yaml to v2.14.2 ([2ee3ea4](https://github.com/big-unibo/conversational-olap/commit/2ee3ea4e4130c80686f90a6b4710a49b9531d708))
+
 ## [1.0.39](https://github.com/big-unibo/conversational-olap/compare/1.0.38...1.0.39) (2023-01-21)
 
 
