@@ -1,3 +1,21 @@
+## [1.0.43](https://github.com/big-unibo/conversational-olap/compare/1.0.42...1.0.43) (2023-02-20)
+
+
+### Bug Fixes
+
+* **deps:** update dependency org.antlr:antlr4 to v4.12.0 ([651dd35](https://github.com/big-unibo/conversational-olap/commit/651dd3533674d33cc4c0b0bc16ed9819e78e194a))
+
+
+### Dependency updates
+
+* **deps:** update node.js to 18.14 ([6b986f5](https://github.com/big-unibo/conversational-olap/commit/6b986f553b2a84d9fca8e4551806a6c6381d421f))
+* **deps:** update plugin org.jetbrains.kotlin.jvm to v1.8.10 ([3790070](https://github.com/big-unibo/conversational-olap/commit/3790070d3a3213b4a6a8c822427ac4580c867b5a))
+
+
+### Build and continuous integration
+
+* **deps:** update actions/setup-java action to v3.10.0 ([5dbb770](https://github.com/big-unibo/conversational-olap/commit/5dbb770b9d71c6fd9b48acac1c1a2dd2120c85c1))
+
 ## [1.0.42](https://github.com/big-unibo/conversational-olap/compare/1.0.41...1.0.42) (2023-02-01)
 
 
