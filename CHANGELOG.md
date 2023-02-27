@@ -1,3 +1,15 @@
+## [1.0.44](https://github.com/big-unibo/conversational-olap/compare/1.0.43...1.0.44) (2023-02-27)
+
+
+### Bug Fixes
+
+* **deps:** update dependency org.json:json to v20230227 ([33258df](https://github.com/big-unibo/conversational-olap/commit/33258df517a9eb2ce731668dc94e3ca6e1634e33))
+
+
+### Dependency updates
+
+* **deps:** update dependency gradle to v7.6.1 ([95e0041](https://github.com/big-unibo/conversational-olap/commit/95e004153e2ce21ed5a38e95596bd6e5000900f7))
+
 ## [1.0.43](https://github.com/big-unibo/conversational-olap/compare/1.0.42...1.0.43) (2023-02-20)
 
 
