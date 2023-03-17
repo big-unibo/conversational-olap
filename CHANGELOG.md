@@ -1,3 +1,21 @@
+## [1.0.46](https://github.com/big-unibo/conversational-olap/compare/1.0.45...1.0.46) (2023-03-17)
+
+
+### Bug Fixes
+
+* **deps:** update dependency org.slf4j:slf4j-api to v2.0.7 ([43f23cf](https://github.com/big-unibo/conversational-olap/commit/43f23cf5958adcd9877e332d2e83f46869d977b6))
+
+
+### Build and continuous integration
+
+* **deps:** update actions/checkout action to v3.4.0 ([5576f68](https://github.com/big-unibo/conversational-olap/commit/5576f681cfb79e17f3844b76dfee88edba8f5680))
+
+
+### Dependency updates
+
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.17 ([a0e909d](https://github.com/big-unibo/conversational-olap/commit/a0e909d870000a6a2c1aff37b9053826b8648c89))
+* **deps:** update node.js to 18.15 ([82acd20](https://github.com/big-unibo/conversational-olap/commit/82acd209220b451e5360a742450bf4daf931bf08))
+
 ## [1.0.45](https://github.com/big-unibo/conversational-olap/compare/1.0.44...1.0.45) (2023-02-28)
 
 
