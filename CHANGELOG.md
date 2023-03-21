@@ -1,3 +1,15 @@
+## [1.0.48](https://github.com/big-unibo/conversational-olap/compare/1.0.47...1.0.48) (2023-03-21)
+
+
+### Bug Fixes
+
+* **deps:** update dependency edu.stanford.nlp:stanford-corenlp to v4.5.3 ([3d6ff8d](https://github.com/big-unibo/conversational-olap/commit/3d6ff8de65353ea437c12bd79083663a3145f050))
+
+
+### Dependency updates
+
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.19 ([faac896](https://github.com/big-unibo/conversational-olap/commit/faac8962682068444d29896c9ae64c03406e18dd))
+
 ## [1.0.47](https://github.com/big-unibo/conversational-olap/compare/1.0.46...1.0.47) (2023-03-18)
 
 
