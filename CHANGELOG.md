@@ -1,3 +1,30 @@
+## [1.0.49](https://github.com/big-unibo/conversational-olap/compare/1.0.48...1.0.49) (2023-04-19)
+
+
+### Bug Fixes
+
+* **deps:** update dependency mysql:mysql-connector-java to v8.0.33 ([66dc0a0](https://github.com/big-unibo/conversational-olap/commit/66dc0a0ce4530a7d18b4a35a01e081a73bbc1113))
+
+
+### Dependency updates
+
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.20 ([8df7a07](https://github.com/big-unibo/conversational-olap/commit/8df7a074473b12ab494110abf9d2dcfb0014bf89))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.21 ([1788523](https://github.com/big-unibo/conversational-olap/commit/17885233e01c1ecf90ffd2dc8da6018c0943f9c2))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.22 ([a31d03c](https://github.com/big-unibo/conversational-olap/commit/a31d03c638fa1fa91fa413a0862c4e5ade8de1fe))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.23 ([2f5653d](https://github.com/big-unibo/conversational-olap/commit/2f5653d141fe74ba061853b906209d1f3f476805))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.24 ([caf548e](https://github.com/big-unibo/conversational-olap/commit/caf548ec9bd5781cad4f60d424f479b18c805531))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.25 ([9aba6f0](https://github.com/big-unibo/conversational-olap/commit/9aba6f07c5031915a565a5efb22a4a24393bedd2))
+* **deps:** update node.js to 18.16 ([41a57cb](https://github.com/big-unibo/conversational-olap/commit/41a57cb8c9d9384bf5e7dc43b29b813fe610ae3d))
+* **deps:** update plugin org.jetbrains.kotlin.jvm to v1.8.20 ([cd630b1](https://github.com/big-unibo/conversational-olap/commit/cd630b137caef66c6b54533224ca8b141d2b86c4))
+
+
+### Build and continuous integration
+
+* **deps:** update actions/checkout action to v3.5.0 ([b02079a](https://github.com/big-unibo/conversational-olap/commit/b02079a5c4c62832e1a1a8d7b1e55404365c3dc0))
+* **deps:** update actions/checkout action to v3.5.1 ([259d3dd](https://github.com/big-unibo/conversational-olap/commit/259d3dd7e673148d4737316c5a55396b955cf733))
+* **deps:** update actions/checkout action to v3.5.2 ([77e4e47](https://github.com/big-unibo/conversational-olap/commit/77e4e4771f3192e002d8929066ad59d6dd6b924d))
+* **deps:** update actions/setup-java action to v3.11.0 ([8bb481b](https://github.com/big-unibo/conversational-olap/commit/8bb481b3d11bd14f705d142cdcb3ec723f780d3d))
+
 ## [1.0.48](https://github.com/big-unibo/conversational-olap/compare/1.0.47...1.0.48) (2023-03-21)
 
 
