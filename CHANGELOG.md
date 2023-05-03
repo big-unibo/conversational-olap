@@ -1,3 +1,15 @@
+## [1.0.55](https://github.com/big-unibo/conversational-olap/compare/1.0.54...1.0.55) (2023-05-03)
+
+
+### Bug Fixes
+
+* **deps:** update dependency org.jgrapht:jgrapht-core to v1.5.2 ([0ff1b7f](https://github.com/big-unibo/conversational-olap/commit/0ff1b7f2561785488739f8a278311e25e612632a))
+
+
+### Dependency updates
+
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.26 ([8ed78c6](https://github.com/big-unibo/conversational-olap/commit/8ed78c66fef1818de480c7eb34d317f179c8a417))
+
 ## [1.0.54](https://github.com/big-unibo/conversational-olap/compare/1.0.53...1.0.54) (2023-04-26)
 
 
