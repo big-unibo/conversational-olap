@@ -23,7 +23,6 @@ jobs:
           cd COOL
           chmod +x *.sh
           ./init.sh
-          ./build.sh
           ./download.sh
           ./start.sh
       - name: Build
