@@ -1,3 +1,10 @@
+## [1.0.62](https://github.com/big-unibo/conversational-olap/compare/1.0.61...1.0.62) (2023-05-31)
+
+
+### Bug Fixes
+
+* **deps:** update dependency io.ktor:ktor-server-servlet to v2.3.1 ([7e0b40e](https://github.com/big-unibo/conversational-olap/commit/7e0b40e8faf4736e4ce95ecf6d3cb6422d92ad8a))
+
 ## [1.0.61](https://github.com/big-unibo/conversational-olap/compare/1.0.60...1.0.61) (2023-05-31)
 
 
