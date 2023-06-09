@@ -1,3 +1,18 @@
+## [1.0.63](https://github.com/big-unibo/conversational-olap/compare/1.0.62...1.0.63) (2023-06-09)
+
+
+### Bug Fixes
+
+* **deps:** update dependency com.google.guava:guava to v32.0.1-jre ([84bdcce](https://github.com/big-unibo/conversational-olap/commit/84bdcce6577eab1c253647d433da8873000f34e0))
+
+
+### Dependency updates
+
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.29 ([ebf6f91](https://github.com/big-unibo/conversational-olap/commit/ebf6f91715836e96810cb026362f9d1fec1a1d0b))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.30 ([bb7f3e6](https://github.com/big-unibo/conversational-olap/commit/bb7f3e682771b596e76d5c2f7b2c5c97ef671a9e))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.32 ([ee06d65](https://github.com/big-unibo/conversational-olap/commit/ee06d658d9d2f08e0cc0f68eeb3bb7c5bcf9d453))
+* **deps:** update plugin org.jetbrains.kotlin.jvm to v1.8.22 ([e4d7869](https://github.com/big-unibo/conversational-olap/commit/e4d7869ea4b5ee2f0707df97a45ca70b068855be))
+
 ## [1.0.62](https://github.com/big-unibo/conversational-olap/compare/1.0.61...1.0.62) (2023-05-31)
 
 
