@@ -1,3 +1,23 @@
+## [1.0.64](https://github.com/big-unibo/conversational-olap/compare/1.0.63...1.0.64) (2023-06-19)
+
+
+### Bug Fixes
+
+* **deps:** update dependency org.json:json to v20230618 ([98877e3](https://github.com/big-unibo/conversational-olap/commit/98877e311c36c7d27fd9129a43cf75d2d617888e))
+
+
+### Build and continuous integration
+
+* **deps:** update actions/checkout action to v3.5.3 ([286f26b](https://github.com/big-unibo/conversational-olap/commit/286f26b46f4e7a328b3ea9779a36cb0ae31ee39b))
+
+
+### Dependency updates
+
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.33 ([05df2be](https://github.com/big-unibo/conversational-olap/commit/05df2be7cf7db7fdf845b13753d9f8ee2489a2eb))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.34 ([12a9219](https://github.com/big-unibo/conversational-olap/commit/12a9219ab4f89f1ed4dc976abe99b3eb0d3856a0))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.35 ([97111f6](https://github.com/big-unibo/conversational-olap/commit/97111f6eafd2a5bdda3556218c2b4a39aab1c286))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.37 ([ac16fa3](https://github.com/big-unibo/conversational-olap/commit/ac16fa3cd77ceafab066991b7231109195153eb0))
+
 ## [1.0.63](https://github.com/big-unibo/conversational-olap/compare/1.0.62...1.0.63) (2023-06-09)
 
 
