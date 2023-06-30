@@ -1,3 +1,10 @@
+## [1.0.66](https://github.com/big-unibo/conversational-olap/compare/1.0.65...1.0.66) (2023-06-30)
+
+
+### Bug Fixes
+
+* **deps:** update dependency com.google.guava:guava to v32.1.0-jre ([bde73ae](https://github.com/big-unibo/conversational-olap/commit/bde73ae9aa23727e8ad56daed419759670dc803c))
+
 ## [1.0.65](https://github.com/big-unibo/conversational-olap/compare/1.0.64...1.0.65) (2023-06-28)
 
 
