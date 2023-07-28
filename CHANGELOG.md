@@ -1,3 +1,15 @@
+## [1.0.69](https://github.com/big-unibo/conversational-olap/compare/1.0.68...1.0.69) (2023-07-28)
+
+
+### Bug Fixes
+
+* **deps:** update dependency org.apache.commons:commons-lang3 to v3.13.0 ([cebceff](https://github.com/big-unibo/conversational-olap/commit/cebceff956aa28a907795122aacb372b42e5a1da))
+
+
+### Build and continuous integration
+
+* **deps:** update actions/setup-java action to v3.12.0 ([d0af0b3](https://github.com/big-unibo/conversational-olap/commit/d0af0b342a10b2652aae52787101a8853cb671a9))
+
 ## [1.0.68](https://github.com/big-unibo/conversational-olap/compare/1.0.67...1.0.68) (2023-07-23)
 
 
