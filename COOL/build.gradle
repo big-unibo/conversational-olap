@@ -43,7 +43,7 @@ dependencies {
     antlr "org.antlr:antlr4:4.13.0"
     implementation 'org.antlr:antlr4:4.13.0'
     implementation 'javax:javaee-api:8.0.1'
-    implementation 'io.ktor:ktor-server-servlet:2.3.3'
+    implementation 'io.ktor:ktor-server-servlet:2.3.4'
     implementation 'org.jetbrains.kotlinx:kotlinx-cli:0.3.5'
     implementation 'commons-cli:commons-cli:1.5.0'
     implementation "com.github.holgerbrandl:krangl:0.18.4"
