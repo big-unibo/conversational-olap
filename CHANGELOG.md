@@ -1,3 +1,28 @@
+## [1.0.72](https://github.com/big-unibo/conversational-olap/compare/1.0.71...1.0.72) (2023-08-31)
+
+
+### Dependency updates
+
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.44 ([1fce3c8](https://github.com/big-unibo/conversational-olap/commit/1fce3c8010b253f9062066f62d6cb3d22cf60e51))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.46 ([d5db087](https://github.com/big-unibo/conversational-olap/commit/d5db087018bb03d4aaf2fb93b755971e3b64098e))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.47 ([7802b8e](https://github.com/big-unibo/conversational-olap/commit/7802b8e397a5c98d513ba6b39644de85e212c3f3))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.48 ([58ff997](https://github.com/big-unibo/conversational-olap/commit/58ff997577d7f2c9d32ca2a87f56e40d8db961ce))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.50 ([542baff](https://github.com/big-unibo/conversational-olap/commit/542baff5144c482fa5d27edd64de90c981dfa7e4))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.51 ([59cec9d](https://github.com/big-unibo/conversational-olap/commit/59cec9dcaa3c7b180544a5a6695d11a930dcef21))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.52 ([b259925](https://github.com/big-unibo/conversational-olap/commit/b25992594e46847c4783f365df84a099da623543))
+* **deps:** update plugin org.jetbrains.kotlin.jvm to v1.9.10 ([8736970](https://github.com/big-unibo/conversational-olap/commit/8736970da07bd8987b39b174b18886df7bf378d9))
+
+
+### Bug Fixes
+
+* **deps:** update dependency io.ktor:ktor-server-servlet to v2.3.4 ([6af2e6c](https://github.com/big-unibo/conversational-olap/commit/6af2e6c2aa963452e3855ec50df9a4edc0cf769d))
+
+
+### Build and continuous integration
+
+* **deps:** update actions/checkout action to v3.6.0 ([9211a21](https://github.com/big-unibo/conversational-olap/commit/9211a216b3b4b4f6c8370a66f29854c351586d09))
+* **deps:** update dependency ubuntu to v22 ([910476c](https://github.com/big-unibo/conversational-olap/commit/910476c76adab6695865e395d387758fceeda745))
+
 ## [1.0.71](https://github.com/big-unibo/conversational-olap/compare/1.0.70...1.0.71) (2023-08-01)
 
 
