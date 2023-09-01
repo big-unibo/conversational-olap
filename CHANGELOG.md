@@ -1,3 +1,15 @@
+## [1.0.73](https://github.com/big-unibo/conversational-olap/compare/1.0.72...1.0.73) (2023-09-01)
+
+
+### Dependency updates
+
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.53 ([2d37be0](https://github.com/big-unibo/conversational-olap/commit/2d37be0be3de56f9325f36a176ae89d11f5876d8))
+
+
+### Bug Fixes
+
+* **deps:** update dependency org.jetbrains.kotlinx:kotlinx-cli to v0.3.6 ([b14f5c2](https://github.com/big-unibo/conversational-olap/commit/b14f5c20cee526578b8a1bf82e93b764a5be6448))
+
 ## [1.0.72](https://github.com/big-unibo/conversational-olap/compare/1.0.71...1.0.72) (2023-08-31)
 
 
