@@ -1,3 +1,15 @@
+## [1.0.76](https://github.com/big-unibo/conversational-olap/compare/1.0.75...1.0.76) (2023-09-05)
+
+
+### Bug Fixes
+
+* **deps:** update dependency org.antlr:antlr4 to v4.13.1 ([0c41d33](https://github.com/big-unibo/conversational-olap/commit/0c41d33070a45b6453c0d62234fadc07e51e2f28))
+
+
+### Build and continuous integration
+
+* **deps:** update actions/checkout action to v4 ([30c7b22](https://github.com/big-unibo/conversational-olap/commit/30c7b2213f85eca61941bc221f43aee4b0e2587d))
+
 ## [1.0.75](https://github.com/big-unibo/conversational-olap/compare/1.0.74...1.0.75) (2023-09-04)
 
 
