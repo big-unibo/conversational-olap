@@ -1,3 +1,29 @@
+## [1.0.77](https://github.com/big-unibo/conversational-olap/compare/1.0.76...1.0.77) (2023-09-24)
+
+
+### Dependency updates
+
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.54 ([d59504c](https://github.com/big-unibo/conversational-olap/commit/d59504c188be8cdff70efbbd37ce99617b93dc44))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.55 ([abf338d](https://github.com/big-unibo/conversational-olap/commit/abf338dc1a858f20a3b3b0bc54e648f989b4aa12))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.56 ([c79d442](https://github.com/big-unibo/conversational-olap/commit/c79d442242eeea460333d4e3cdbf2edeb3be6898))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.58 ([170cee4](https://github.com/big-unibo/conversational-olap/commit/170cee4c1743abb49ec3089842ea3ce0cbfed5ed))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.59 ([68a9f32](https://github.com/big-unibo/conversational-olap/commit/68a9f3275c68a2890fd24568ef78046303ebb38d))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.60 ([3678e15](https://github.com/big-unibo/conversational-olap/commit/3678e15cab24cd678d0b026667287114b93da1b3))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.61 ([344eeee](https://github.com/big-unibo/conversational-olap/commit/344eeee71c4374dd1a34c10a70cf787409c3850f))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.62 ([2338d25](https://github.com/big-unibo/conversational-olap/commit/2338d250222ec4656829c33f9401f38808749d32))
+* **deps:** update node.js to 18.18 ([45ff54f](https://github.com/big-unibo/conversational-olap/commit/45ff54fd3e16082a1780cf7fb96dac1b0cb4d2ec))
+
+
+### Bug Fixes
+
+* **deps:** update dependency edu.stanford.nlp:stanford-corenlp to v4.5.5 ([cc81f80](https://github.com/big-unibo/conversational-olap/commit/cc81f800f7a7d1e1a1a527c6b469f03003d3c73c))
+
+
+### Build and continuous integration
+
+* **deps:** update actions/checkout action to v4.1.0 ([53ae74a](https://github.com/big-unibo/conversational-olap/commit/53ae74a1dc03dccb7982ef7e0a42adc2f88e5438))
+* **deps:** update actions/setup-java action to v3.13.0 ([35035b5](https://github.com/big-unibo/conversational-olap/commit/35035b5eb7544c9d72796ceb28e2124256dacc3b))
+
 ## [1.0.76](https://github.com/big-unibo/conversational-olap/compare/1.0.75...1.0.76) (2023-09-05)
 
 
