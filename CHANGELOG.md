@@ -1,3 +1,15 @@
+## [1.0.81](https://github.com/big-unibo/conversational-olap/compare/1.0.80...1.0.81) (2023-10-17)
+
+
+### Bug Fixes
+
+* **deps:** update dependency com.google.guava:guava to v32.1.3-jre ([6668261](https://github.com/big-unibo/conversational-olap/commit/6668261838ffb697419e98e2da15340ab2f368c7))
+
+
+### Build and continuous integration
+
+* **deps:** update actions/checkout action to v4.1.1 ([5a06201](https://github.com/big-unibo/conversational-olap/commit/5a062018efb2623283e0be302d5e6df9329bacfc))
+
 ## [1.0.80](https://github.com/big-unibo/conversational-olap/compare/1.0.79...1.0.80) (2023-10-13)
 
 
