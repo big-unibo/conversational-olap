@@ -1,3 +1,18 @@
+## [1.0.83](https://github.com/big-unibo/conversational-olap/compare/1.0.82...1.0.83) (2023-10-26)
+
+
+### Dependency updates
+
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.69 ([4a360df](https://github.com/big-unibo/conversational-olap/commit/4a360df2f1beb60b861a3b94841660c7f56d2a4a))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.70 ([783c9e6](https://github.com/big-unibo/conversational-olap/commit/783c9e6b7d044abea8624e96422e0f213c7032fa))
+* **deps:** update node.js to 20.9 ([6e4f3c7](https://github.com/big-unibo/conversational-olap/commit/6e4f3c7137e4a824a3a048f5aa5cbc7d463e753d))
+* **deps:** update node.js to v20 ([a49aef9](https://github.com/big-unibo/conversational-olap/commit/a49aef98048c2a86ead12d8e15e7e12d8169538c))
+
+
+### Bug Fixes
+
+* **deps:** update dependency commons-cli:commons-cli to v1.6.0 ([489b199](https://github.com/big-unibo/conversational-olap/commit/489b199604637ebb54818f7eb62570b3e094b632))
+
 ## [1.0.82](https://github.com/big-unibo/conversational-olap/compare/1.0.81...1.0.82) (2023-10-18)
 
 
