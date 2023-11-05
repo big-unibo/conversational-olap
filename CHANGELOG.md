@@ -1,3 +1,16 @@
+## [1.0.84](https://github.com/big-unibo/conversational-olap/compare/1.0.83...1.0.84) (2023-11-05)
+
+
+### Dependency updates
+
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.71 ([49e16ff](https://github.com/big-unibo/conversational-olap/commit/49e16fff1cb72e1993d89adbaa369b5a3c192411))
+* **deps:** update plugin org.jetbrains.kotlin.jvm to v1.9.20 ([5f09038](https://github.com/big-unibo/conversational-olap/commit/5f090388d4489cfea934af45a4af772731c14f00))
+
+
+### Bug Fixes
+
+* **deps:** update junit5 monorepo to v5.10.1 ([a06303e](https://github.com/big-unibo/conversational-olap/commit/a06303e31d2cc83f363aa01f42b7dc1e4a41d3df))
+
 ## [1.0.83](https://github.com/big-unibo/conversational-olap/compare/1.0.82...1.0.83) (2023-10-26)
 
 
