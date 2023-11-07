@@ -1,3 +1,16 @@
+## [1.0.85](https://github.com/big-unibo/conversational-olap/compare/1.0.84...1.0.85) (2023-11-07)
+
+
+### Dependency updates
+
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.72 ([47dec0c](https://github.com/big-unibo/conversational-olap/commit/47dec0cb8397f6e760051d735564857b0cd70fd8))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.74 ([ff34789](https://github.com/big-unibo/conversational-olap/commit/ff34789832ae109585708c4e90db39fe25c41e22))
+
+
+### Bug Fixes
+
+* **deps:** update dependency io.ktor:ktor-server-servlet to v2.3.6 ([879d704](https://github.com/big-unibo/conversational-olap/commit/879d7041bf03381601e3f1e3ba879692875612b2))
+
 ## [1.0.84](https://github.com/big-unibo/conversational-olap/compare/1.0.83...1.0.84) (2023-11-05)
 
 
