@@ -1,3 +1,15 @@
+## [1.0.88](https://github.com/big-unibo/conversational-olap/compare/1.0.87...1.0.88) (2023-11-22)
+
+
+### Dependency updates
+
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.77 ([30f4053](https://github.com/big-unibo/conversational-olap/commit/30f405319f10df55655743e0acd4736e004a9718))
+
+
+### Bug Fixes
+
+* **deps:** update dependency org.apache.commons:commons-lang3 to v3.14.0 ([69d000c](https://github.com/big-unibo/conversational-olap/commit/69d000cf64c312710c825682e3b9a105d0dafe2d))
+
 ## [1.0.87](https://github.com/big-unibo/conversational-olap/compare/1.0.86...1.0.87) (2023-11-16)
 
 
