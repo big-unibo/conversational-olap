@@ -1,3 +1,23 @@
+## [1.0.89](https://github.com/big-unibo/conversational-olap/compare/1.0.88...1.0.89) (2023-12-07)
+
+
+### Dependency updates
+
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.78 ([7e21f6d](https://github.com/big-unibo/conversational-olap/commit/7e21f6d74ae0681c5f76c6aa6f14ec93e748c660))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.79 ([edbf47f](https://github.com/big-unibo/conversational-olap/commit/edbf47fc709e61806cda06d587af6208f3bf3180))
+* **deps:** update node.js to 20.10 ([0665b6e](https://github.com/big-unibo/conversational-olap/commit/0665b6e1b488b52f9120c29f280901abd2a5ec5a))
+* **deps:** update plugin org.jetbrains.kotlin.jvm to v1.9.21 ([a0265c4](https://github.com/big-unibo/conversational-olap/commit/a0265c4ddc574fa1e183a3671b43a3d250323b3e))
+
+
+### Bug Fixes
+
+* **deps:** update dependency io.ktor:ktor-server-servlet to v2.3.7 ([08b195f](https://github.com/big-unibo/conversational-olap/commit/08b195fee62eec07f0878d38b2b59da9da282cd8))
+
+
+### Build and continuous integration
+
+* **deps:** update actions/setup-java action to v4 ([ab63545](https://github.com/big-unibo/conversational-olap/commit/ab63545154f0b9a850433c9df01b44468fbfcc19))
+
 ## [1.0.88](https://github.com/big-unibo/conversational-olap/compare/1.0.87...1.0.88) (2023-11-22)
 
 
