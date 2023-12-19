@@ -1,3 +1,19 @@
+## [1.0.90](https://github.com/big-unibo/conversational-olap/compare/1.0.89...1.0.90) (2023-12-19)
+
+
+### Dependency updates
+
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.80 ([bf43eac](https://github.com/big-unibo/conversational-olap/commit/bf43eacdb4195cf4c55a1d64fad804b8a0eee69a))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.81 ([0c6a57a](https://github.com/big-unibo/conversational-olap/commit/0c6a57a79429fa7a1bf8191b89460d370d6ed571))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.82 ([80920db](https://github.com/big-unibo/conversational-olap/commit/80920db94942c010071b7663c6b4b57f85531589))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.83 ([809b139](https://github.com/big-unibo/conversational-olap/commit/809b139af50cfaf7291c152496fe6e8c1b9b6f0f))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.84 ([c4dc229](https://github.com/big-unibo/conversational-olap/commit/c4dc229f49fb9621d20bcb35ee18e722e28b43bf))
+
+
+### Bug Fixes
+
+* **deps:** update dependency com.google.guava:guava to v33 ([27650c0](https://github.com/big-unibo/conversational-olap/commit/27650c046540ff58e914893de120cd730c3afb3c))
+
 ## [1.0.89](https://github.com/big-unibo/conversational-olap/compare/1.0.88...1.0.89) (2023-12-07)
 
 
