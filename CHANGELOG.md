@@ -1,3 +1,15 @@
+## [1.0.91](https://github.com/big-unibo/conversational-olap/compare/1.0.90...1.0.91) (2023-12-24)
+
+
+### Dependency updates
+
+* **deps:** update plugin org.jetbrains.kotlin.jvm to v1.9.22 ([d434ec9](https://github.com/big-unibo/conversational-olap/commit/d434ec9e9c9f14cdf64143e3b5cdd9e1d3772f8d))
+
+
+### Bug Fixes
+
+* **deps:** update dependency com.fasterxml.jackson.dataformat:jackson-dataformat-yaml to v2.16.1 ([23dbe96](https://github.com/big-unibo/conversational-olap/commit/23dbe96c07a7d75ec4d384388c607ab03a0454db))
+
 ## [1.0.90](https://github.com/big-unibo/conversational-olap/compare/1.0.89...1.0.90) (2023-12-19)
 
 
