@@ -1,3 +1,15 @@
+## [1.0.93](https://github.com/big-unibo/conversational-olap/compare/1.0.92...1.0.93) (2023-12-29)
+
+
+### Dependency updates
+
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.85 ([b021170](https://github.com/big-unibo/conversational-olap/commit/b02117022a969eca1ecb57da67fe601b4b614705))
+
+
+### Bug Fixes
+
+* **deps:** update dependency org.slf4j:slf4j-api to v2.0.10 ([3f928f1](https://github.com/big-unibo/conversational-olap/commit/3f928f1236f2c73c2dcf3978ff3553092252ce5c))
+
 ## [1.0.92](https://github.com/big-unibo/conversational-olap/compare/1.0.91...1.0.92) (2023-12-24)
 
 
