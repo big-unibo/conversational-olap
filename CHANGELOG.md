@@ -1,3 +1,15 @@
+## [1.0.97](https://github.com/big-unibo/conversational-olap/compare/1.0.96...1.0.97) (2024-01-31)
+
+
+### Dependency updates
+
+* **deps:** update node.js to 20.11 ([4d78100](https://github.com/big-unibo/conversational-olap/commit/4d781008bf583f640e7185f11533a116909b7d13))
+
+
+### Bug Fixes
+
+* **deps:** update dependency io.ktor:ktor-server-servlet to v2.3.8 ([9ede73f](https://github.com/big-unibo/conversational-olap/commit/9ede73f4368f714935caa46b7e21089413cf7327))
+
 ## [1.0.96](https://github.com/big-unibo/conversational-olap/compare/1.0.95...1.0.96) (2024-01-09)
 
 
