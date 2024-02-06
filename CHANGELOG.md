@@ -1,3 +1,15 @@
+## [1.0.100](https://github.com/big-unibo/conversational-olap/compare/1.0.99...1.0.100) (2024-02-06)
+
+
+### Dependency updates
+
+* **deps:** update dependency gradle to v7.6.4 ([7a1ee62](https://github.com/big-unibo/conversational-olap/commit/7a1ee627fe0ac182deae013a62732aab00b1f02d))
+
+
+### Bug Fixes
+
+* **deps:** update slf4j monorepo to v2.0.12 ([d90cfa3](https://github.com/big-unibo/conversational-olap/commit/d90cfa37a719aadbd758f012101fab04889a2998))
+
 ## [1.0.99](https://github.com/big-unibo/conversational-olap/compare/1.0.98...1.0.99) (2024-02-04)
 
 
