@@ -1,3 +1,10 @@
+## [1.0.101](https://github.com/big-unibo/conversational-olap/compare/1.0.100...1.0.101) (2024-02-06)
+
+
+### Bug Fixes
+
+* **deps:** update dependency org.json:json to v20240205 ([31624a4](https://github.com/big-unibo/conversational-olap/commit/31624a4a0c3c01a0fad943438829b2dd4a007ef7))
+
 ## [1.0.100](https://github.com/big-unibo/conversational-olap/compare/1.0.99...1.0.100) (2024-02-06)
 
 
