@@ -1,3 +1,15 @@
+## [1.0.102](https://github.com/big-unibo/conversational-olap/compare/1.0.101...1.0.102) (2024-03-03)
+
+
+### Bug Fixes
+
+* **deps:** update dependency org.json:json to v20240303 ([038f8fd](https://github.com/big-unibo/conversational-olap/commit/038f8fd2e7e5bafcd01dd49b318a050fb61117c0))
+
+
+### Build and continuous integration
+
+* **deps:** update actions/setup-java action to v4.1.0 ([c274088](https://github.com/big-unibo/conversational-olap/commit/c27408869375bbf290a8a21d362c199ddc9bbf26))
+
 ## [1.0.101](https://github.com/big-unibo/conversational-olap/compare/1.0.100...1.0.101) (2024-02-06)
 
 
