@@ -97,12 +97,13 @@ public class DBreader {
                                 });
                                 break;
                             case DATE:
-                                executeDataQuery(c, "SELECT min(" + colName + "), max(" + colName + ") FROM " + tabName + ";", resI -> {
-                                    resI.first();
-                                    final Date min = resI.getDate(1);
-                                    final Date max = resI.getDate(2);
-                                    dbloader.modifyDateLevel(colName, idLevel, max, min, card);
-                                });
+                                // TODO: must handle timestamp and more complex formats (also, need to share a semantics for temporal levels)
+                                // executeDataQuery(c, "SELECT min(" + colName + "), max(" + colName + ") FROM " + tabName + ";", resI -> {
+                                //     resI.first();
+                                //     final Date min = resI.getDate(1);
+                                //     final Date max = resI.getDate(2);
+                                //     dbloader.modifyDateLevel(colName, idLevel, max, min, card);
+                                // });
                                 break;
                             default:
                                 // Se è di un altro tipo salvo solo la cardinalita'
