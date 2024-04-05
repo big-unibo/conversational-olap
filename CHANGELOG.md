@@ -1,3 +1,20 @@
+## [1.0.109](https://github.com/big-unibo/conversational-olap/compare/1.0.108...1.0.109) (2024-04-05)
+
+
+### Dependency updates
+
+* **deps:** update node.js to 20.12 ([a9b2729](https://github.com/big-unibo/conversational-olap/commit/a9b27293e56deb62f657f8b0ec05e70044111682))
+
+
+### Bug Fixes
+
+* **DBReader:** remove incomplete extraction of date statistics ([6304ccb](https://github.com/big-unibo/conversational-olap/commit/6304ccbfd53ba68084ef6fe85182c0c968b7f54c))
+
+
+### Build and continuous integration
+
+* **deps:** update actions/setup-java action to v4.2.1 ([0aa3d5b](https://github.com/big-unibo/conversational-olap/commit/0aa3d5bc84dd841242bc9da625283ce10b5a3575))
+
 ## [1.0.108](https://github.com/big-unibo/conversational-olap/compare/1.0.107...1.0.108) (2024-03-14)
 
 
