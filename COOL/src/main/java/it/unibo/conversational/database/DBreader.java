@@ -59,7 +59,7 @@ public class DBreader {
 
         dbloader.insertLevel("all_" + tabName, JDBCType.NULL.getName(), hieID, tableID, tabName);
         // Leggo tutte le colonne della tabella
-        final ResultSet resC = dataDBMetaData.getColumns(c.getDataMart(), null, tabName, null);
+        final ResultSet resC = dataDBMetaData.getColumns(c.getDataMart(), c.getSchema(), tabName, null);
         while (resC.next()) {
             final String colType;
             final String colName = resC.getString("COLUMN_NAME");
@@ -157,7 +157,7 @@ public class DBreader {
                 throw new IllegalArgumentException("Fact has no foreign keys(i.e., is not connected to any dimension table)");
             }
             // Leggo tutte le colonne della FT
-            final ResultSet resC = dataDBMetaData.getColumns(c.getDataMart(), null, tabName, null);
+            final ResultSet resC = dataDBMetaData.getColumns(c.getDataMart(), c.getSchema(), tabName, null);
             while (resC.next()) {
                 final String colType;
                 final String colName = resC.getString("COLUMN_NAME");

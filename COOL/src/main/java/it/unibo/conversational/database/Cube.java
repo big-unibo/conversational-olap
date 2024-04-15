@@ -1,5 +1,7 @@
 package it.unibo.conversational.database;
 
+import org.apache.commons.lang3.NotImplementedException;
+
 import java.util.List;
 import java.util.Locale;
 
@@ -98,5 +100,14 @@ public class Cube {
 
     public List<String> getSynonyms() {
         return synonyms;
+    }
+
+    public String getSchema() {
+        // THIS IS NECESSARY TO FIND THE PROPER TABLES
+        if (getDbms().equalsIgnoreCase("oracle")) {
+            return getUser().toUpperCase();
+        } else {
+            throw new NotImplementedException();
+        }
     }
 }
