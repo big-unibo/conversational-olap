@@ -1,3 +1,10 @@
+## [1.0.112](https://github.com/big-unibo/conversational-olap/compare/1.0.111...1.0.112) (2024-04-15)
+
+
+### Bug Fixes
+
+* **DBReader:** filter table by schema ([e1800c3](https://github.com/big-unibo/conversational-olap/commit/e1800c3cc7876bbbb17f8f0532b4a302af79f04e))
+
 ## [1.0.111](https://github.com/big-unibo/conversational-olap/compare/1.0.110...1.0.111) (2024-04-12)
 
 
