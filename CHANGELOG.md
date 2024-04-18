@@ -1,3 +1,10 @@
+## [1.0.113](https://github.com/big-unibo/conversational-olap/compare/1.0.112...1.0.113) (2024-04-18)
+
+
+### Bug Fixes
+
+* **deps:** update dependency commons-cli:commons-cli to v1.7.0 ([e59c94a](https://github.com/big-unibo/conversational-olap/commit/e59c94a240611309905d9bbb7945c45c9b320277))
+
 ## [1.0.112](https://github.com/big-unibo/conversational-olap/compare/1.0.111...1.0.112) (2024-04-15)
 
 
