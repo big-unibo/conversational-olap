@@ -1,3 +1,16 @@
+## [1.0.118](https://github.com/big-unibo/conversational-olap/compare/1.0.117...1.0.118) (2024-05-08)
+
+
+### Dependency updates
+
+* **deps:** update node.js to 20.13 ([2e62930](https://github.com/big-unibo/conversational-olap/commit/2e62930449aa49f190b7f032375cbf5c551ed066))
+* **deps:** update plugin org.jetbrains.kotlin.jvm to v1.9.24 ([82286b3](https://github.com/big-unibo/conversational-olap/commit/82286b3752df66904bc0ded6484a5c169af3d406))
+
+
+### Bug Fixes
+
+* **deps:** update dependency io.ktor:ktor-server-servlet to v2.3.11 ([97a0678](https://github.com/big-unibo/conversational-olap/commit/97a06784d95b72457350aa72ee55eea2711fd837))
+
 ## [1.0.117](https://github.com/big-unibo/conversational-olap/compare/1.0.116...1.0.117) (2024-05-05)
 
 
