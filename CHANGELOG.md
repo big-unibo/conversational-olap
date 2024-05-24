@@ -1,3 +1,21 @@
+## [1.0.119](https://github.com/big-unibo/conversational-olap/compare/1.0.118...1.0.119) (2024-05-24)
+
+
+### Dependency updates
+
+* **deps:** update plugin org.jetbrains.kotlin.jvm to v2 ([ad1f31f](https://github.com/big-unibo/conversational-olap/commit/ad1f31f7606a758c620015fff8af350eac2197b0))
+
+
+### Bug Fixes
+
+* **deps:** update dependency commons-cli:commons-cli to v1.8.0 ([4d51939](https://github.com/big-unibo/conversational-olap/commit/4d519395856cbfaac721352b4db4f6d85ae7ae1a))
+
+
+### Build and continuous integration
+
+* **deps:** update actions/checkout action to v4.1.5 ([627e711](https://github.com/big-unibo/conversational-olap/commit/627e711ad66f9e430efe0d89e70ed4213165b1db))
+* **deps:** update actions/checkout action to v4.1.6 ([44846f0](https://github.com/big-unibo/conversational-olap/commit/44846f0b251936f4e50667bfe7d7969284d60df5))
+
 ## [1.0.118](https://github.com/big-unibo/conversational-olap/compare/1.0.117...1.0.118) (2024-05-08)
 
 
