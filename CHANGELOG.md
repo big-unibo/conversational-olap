@@ -1,3 +1,15 @@
+## [1.0.120](https://github.com/big-unibo/conversational-olap/compare/1.0.119...1.0.120) (2024-06-01)
+
+
+### Dependency updates
+
+* **deps:** update node.js to 20.14 ([6a9f35f](https://github.com/big-unibo/conversational-olap/commit/6a9f35f446a3226c970d223515dfc12cf9617cf1))
+
+
+### Bug Fixes
+
+* **deps:** update dependency com.google.guava:guava to v33.2.1-jre ([70cd97a](https://github.com/big-unibo/conversational-olap/commit/70cd97a3d39c08c240c521b7d38e366b3f0ae998))
+
 ## [1.0.119](https://github.com/big-unibo/conversational-olap/compare/1.0.118...1.0.119) (2024-05-24)
 
 
