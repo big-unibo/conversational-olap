@@ -1,3 +1,20 @@
+## [1.0.121](https://github.com/big-unibo/conversational-olap/compare/1.0.120...1.0.121) (2024-06-20)
+
+
+### Dependency updates
+
+* **deps:** update node.js to 20.15 ([b79950b](https://github.com/big-unibo/conversational-olap/commit/b79950be6f4b3d1af9301c9e635db98ac2c89f1c))
+
+
+### Bug Fixes
+
+* **deps:** update dependency io.ktor:ktor-server-servlet to v2.3.12 ([3a65442](https://github.com/big-unibo/conversational-olap/commit/3a65442656afbcf1fc4a080902a1a920034b2530))
+
+
+### Build and continuous integration
+
+* **deps:** update actions/checkout action to v4.1.7 ([af4a0f9](https://github.com/big-unibo/conversational-olap/commit/af4a0f9f51734466a39bcb41dee8c398e40e9e36))
+
 ## [1.0.120](https://github.com/big-unibo/conversational-olap/compare/1.0.119...1.0.120) (2024-06-01)
 
 
