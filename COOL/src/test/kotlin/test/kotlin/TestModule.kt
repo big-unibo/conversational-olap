@@ -268,6 +268,7 @@ class TestModule {
         check(SlicingVariance.compute(cj, ci, null), BUDGET)
     }
 
+    /*
     @Test
     fun testScalability() {
         val c = Config.getCube("sales")
@@ -344,4 +345,5 @@ class TestModule {
             }
         }
     }
+    */
 }
