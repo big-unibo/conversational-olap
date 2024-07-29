@@ -158,7 +158,7 @@ public final class DBLoader {
                 result.add(keyLevel);
             } else {
                 res.first();
-                L.debug("Level " + name + " already exists: " + res.getInt(id(tabLEVEL)));
+                L.debug("Level " + name + " already exists: " + res.getString(id(tabLEVEL)));
                 result.add(res.getString(id(tabLEVEL)));
             }
         });

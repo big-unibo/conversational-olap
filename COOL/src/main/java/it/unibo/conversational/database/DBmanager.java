@@ -263,7 +263,7 @@ public final class DBmanager {
     public static void executeQuery(final Cube cube, final String query, final boolean isMeta, final Procedure<ResultSet> continuation) {
         final String sql = fixQuotes(cube, query);
         L.debug(sql);
-        final Long startTime = System.currentTimeMillis();
+        final long startTime = System.currentTimeMillis();
         try (
                 Statement stmt = (isMeta ? getMetaConnection(cube) : getDataConnection(cube)).createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
                 ResultSet res = stmt.executeQuery(sql)
