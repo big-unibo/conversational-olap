@@ -25,10 +25,8 @@ jobs:
         run: |
           chmod +x *.sh
           ./init.sh
-      - name: Install and test python
-        run: |
           cd src/main/python
-          pip install -r requirements.txt
+          source venv/bin/acrivate
           python -m unittest discover
       - name: Test Kotlin
         run: |
