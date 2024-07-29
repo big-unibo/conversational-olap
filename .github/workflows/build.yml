@@ -37,6 +37,7 @@ jobs:
       - name: Generate the charts
         run: |
           cd src/main/python
+          pip install -r requirements.txt
           pip install jupyter
           jupyter nbconvert --execute --to notebook --inplace charts.ipynb
 
