@@ -26,5 +26,5 @@ else
     source venv/Scripts/activate
 fi
 
-pip install --user -r requirements.txt
+pip install -r requirements.txt
 cd -
