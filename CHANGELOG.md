@@ -1,3 +1,20 @@
+## [1.0.123](https://github.com/big-unibo/conversational-olap/compare/1.0.122...1.0.123) (2024-07-30)
+
+
+### Dependency updates
+
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.86 ([ffd315e](https://github.com/big-unibo/conversational-olap/commit/ffd315e2d43fe7782aeb159c46f29f6c1d42eb76))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.87 ([5671087](https://github.com/big-unibo/conversational-olap/commit/5671087818775e250c354ebca8da6b00981df4e8))
+* **deps:** update mysql docker tag to v9 ([49cc350](https://github.com/big-unibo/conversational-olap/commit/49cc3500fcc9579a0194329a3b31f853558b8d78))
+* **deps:** update node.js to 20.16 ([8d3d3e9](https://github.com/big-unibo/conversational-olap/commit/8d3d3e969260aea169274480a7308cc0736f8b92))
+
+
+### Bug Fixes
+
+* **deps:** update dependency com.fasterxml.jackson.dataformat:jackson-dataformat-yaml to v2.17.2 ([85d8683](https://github.com/big-unibo/conversational-olap/commit/85d868336eeb89078bfe16a8442987f9c8b9c450))
+* **deps:** update dependency com.fasterxml.jackson.datatype:jackson-datatype-jsr310 to v2.17.2 ([9198bd4](https://github.com/big-unibo/conversational-olap/commit/9198bd42fd973fbc63cfde817d8e6c16c5979e35))
+* **deps:** update dependency org.apache.commons:commons-lang3 to v3.15.0 ([7d6bc76](https://github.com/big-unibo/conversational-olap/commit/7d6bc761a2e181357129e47f3385d938df14aae3))
+
 ## [1.0.122](https://github.com/big-unibo/conversational-olap/compare/1.0.121...1.0.122) (2024-06-27)
 
 
