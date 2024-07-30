@@ -600,39 +600,60 @@ public final class Parser {
 
     /**
      * Create an SQL statement to be executed against the given a cube and sets of attributes, predicates, and measures
-     * @param cube cube
+     *
+     * @param cube       cube
      * @param attributes a set of attributes
-     * @param measures a set of measures
+     * @param measures   a set of measures
      * @param predicates a set of predicates
      * @return a string representing an SQL statement
      */
     public static String createQuery(final Cube cube, final Set<String> attributes, final Set<Pair<String, String>> measures, final Set<Triple<String, String, String>> predicates) {
+        return createQuery(cube, attributes, measures, predicates, Integer.MAX_VALUE);
+    }
+
+    /**
+     * Create an SQL statement to be executed against the given a cube and sets of attributes, predicates, and measures
+     *
+     * @param cube       cube
+     * @param attributes a set of attributes
+     * @param measures   a set of measures
+     * @param predicates a set of predicates
+     * @param limit      the number of tuples to return
+     * @return a string representing an SQL statement
+     */
+    public static String createQuery(final Cube cube, final Set<String> attributes, final Set<Pair<String, String>> measures, final Set<Triple<String, String, String>> predicates, final int limit) {
         final Set<String> curAttributes = Sets.newLinkedHashSet();
         String select = "";
         String where = "";
         String groupby = "";
 
-        for (final String attr: attributes) {
+        for (final String attr : attributes) {
             final String attToString = QueryGenerator.getLevel(cube, attr).fullQualifier();
             select += (select.isEmpty() ? "" : ",") + attToString;
             groupby += (groupby.isEmpty() ? "" : ",") + attToString;
             curAttributes.add(attr);
         }
 
-        for (final Pair<String, String> measure: measures) {
+        for (final Pair<String, String> measure : measures) {
             select += (select.isEmpty() ? "" : ",") + measure.getLeft() + "(" + measure.getRight() + ") as " + measure.getRight();
         }
 
-        for (final Triple<String, String, String> predicate: predicates) {
+        for (final Triple<String, String, String> predicate : predicates) {
             final String attToString = QueryGenerator.getLevel(cube, predicate.getLeft()).fullQualifier();
             where += (where.isEmpty() ? "" : " AND ") + attToString + predicate.getMiddle() + predicate.getRight();
+            curAttributes.add(QueryGenerator.getLevel(cube, predicate.getLeft()).nameInTable());
         }
 
-        return getSQLString(cube, attributes, select, where, groupby);
+        return getSQLString(cube, Sets.union(attributes, curAttributes), select, where, groupby, limit);
     }
 
     @NotNull
-    private static String getSQLString(Cube cube, Set<String> attributes, String select, String where, String groupby) {
+    private static String getSQLString(final Cube cube, final Set<String> attributes, final String select, final String where, final String groupby) {
+        return getSQLString(cube, attributes, select, where, groupby, Integer.MAX_VALUE);
+    }
+
+    @NotNull
+    private static String getSQLString(final Cube cube, final Set<String> attributes, String select, final String where, final String groupby, final int limit) {
         String from;
         if (select.equals("")) {
             select = "count(*)";
@@ -649,8 +670,12 @@ public final class Parser {
                 tabIns.add(idT);
             }
         }
-
-        return "select " + fixDeviation(cube, select) + " " + from + (where.isEmpty() ? "" : " where " + where) + (groupby.isEmpty() ? "" : " group by " + groupby);
+        final String sql = "select " + fixDeviation(cube, select) + " " + from + (where.isEmpty() ? "" : " where " + where) + (groupby.isEmpty() ? "" : " group by " + groupby);
+        if (limit != Integer.MAX_VALUE) {
+            return sql + " limit " + limit;
+        } else {
+            return sql;
+        }
     }
 
     /**

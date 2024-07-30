@@ -99,4 +99,4 @@ task runValidator(type: JavaExec) {
     jvmArgs = ['-Xmx12g']
 }
 
-defaultTasks 'clean', 'build', 'check', 'war'
+defaultTasks 'clean', 'build', 'check', 'war', 'shadowJar'

@@ -1,6 +1,10 @@
 config.yml
 *.sql
 .idea/
+*/generated/*
+*.twbr
+*/output/*/*.pdf
+*/output/*/*.svg
 **/src/main/java/it/unibo/antlr/gen/*
 
 # Created by https://www.gitignore.io/api/java,scala,linux,macos,python,gradle,kotlin,windows,eclipse,intellij,virtualenv,jupyternotebooks

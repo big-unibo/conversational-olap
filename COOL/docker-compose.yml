@@ -3,7 +3,7 @@ services:
 
   # Image of the MySQL database
   mysql:
-    image: mysql:9.0
+    image: mysql:5.7
     hostname: mysql
     container_name: mysql
     environment:
@@ -23,12 +23,12 @@ services:
   mysql-seed:
     hostname: mysql-seed
     container_name: mysql-seed
-    image: mysql:9.0
+    image: mysql:5.7
     depends_on:
       mysql:
         condition: service_healthy
     volumes:
       - ./resources/:/data
-    command: /bin/bash -c "mysql --max_allowed_packet=1000M -hmysql -u${MYSQL_USER} -p${MYSQL_PWD} < /data/foodmart-mysql.sql; mysql --max_allowed_packet=1000M -hmysql -u${MYSQL_USER} -p${MYSQL_PWD} < /data/covid_weekly-mysql.sql; mysql --max_allowed_packet=1000M -hmysql -u${MYSQL_USER} -p${MYSQL_PWD} < /data/ssb_test-mysql.sql"
+    command: /bin/bash -c "cd /data; ls -las; for f in `find . -maxdepth 1 -name '*.sql' -type f`; do echo $${f}; mysql -hmysql -u${MYSQL_USER} -p${MYSQL_PWD} < $${f}; done"
     networks:
       - default
