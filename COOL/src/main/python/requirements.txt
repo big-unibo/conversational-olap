@@ -2,6 +2,6 @@ numpy==1.26.4
 pandas==1.4.0
 scikit-learn==1.5.0
 notebook==6.4.12
-matplotlib==3.5.1
+matplotlib==3.5.3
 seaborn==0.11.2
 yellowbrick==1.5
