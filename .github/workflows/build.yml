@@ -42,9 +42,6 @@ jobs:
           jupyter nbconvert --execute --to notebook --inplace charts.ipynb
 
   release:
-    defaults:
-      run:
-        working-directory: ./COOL
     needs:
       - build
     if: github.event_name == 'push'
@@ -55,13 +52,14 @@ jobs:
       - name: Install Node
         uses: actions/setup-node@v4.0.3
         with:
-          node-version-file: ../package.json
+          node-version-file: package.json
       - uses: actions/setup-java@v4.2.1
         with:
           distribution: 'adopt'
           java-version: '14'
       - name: Deploy
         run: |
+          cd COOL
           chmod +x ./gradlew  
           ./gradlew shadowJar
       - name: Release
