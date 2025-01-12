@@ -1,3 +1,40 @@
+## [1.0.124](https://github.com/big-unibo/conversational-olap/compare/1.0.123...1.0.124) (2025-01-12)
+
+### Dependency updates
+
+* **deps:** update dependency matplotlib to v3.5.3 ([ba10de7](https://github.com/big-unibo/conversational-olap/commit/ba10de799cf07415d926fe5cd042a80502437462))
+* **deps:** update dependency notebook to v6.4.12 [security] ([9ee4260](https://github.com/big-unibo/conversational-olap/commit/9ee4260a0d3b94cc47e82cd492be47cd8d93491e))
+* **deps:** update dependency notebook to v6.4.13 ([301903b](https://github.com/big-unibo/conversational-olap/commit/301903b52ed7df516a8d1592e1e3e9c79d581eb4))
+* **deps:** update dependency notebook to v7 ([d93bc2c](https://github.com/big-unibo/conversational-olap/commit/d93bc2cd5628c4af466183e2fac760de2d08266c))
+* **deps:** update dependency notebook to v7.2.2 [security] ([#390](https://github.com/big-unibo/conversational-olap/issues/390)) ([24a364c](https://github.com/big-unibo/conversational-olap/commit/24a364cdb632db77ea25ae1e948e1da66e53fa25))
+* **deps:** update dependency notebook to v7.2.3 ([#399](https://github.com/big-unibo/conversational-olap/issues/399)) ([6a21bf5](https://github.com/big-unibo/conversational-olap/commit/6a21bf5ac147d16971e1337597b281fb8ac1ef77))
+* **deps:** update dependency numpy to v1.26.4 ([aea0919](https://github.com/big-unibo/conversational-olap/commit/aea09196eaae79078c603bb07d12ed67acac0873))
+* **deps:** update dependency pandas to v1.4.4 ([461fcf3](https://github.com/big-unibo/conversational-olap/commit/461fcf33f2213bfd8aae0f9a909afec00e44a7f4))
+* **deps:** update dependency pandas to v1.5.3 ([93ec4f1](https://github.com/big-unibo/conversational-olap/commit/93ec4f1376e2ce8072dc9672dcb2bd51f4470a39))
+* **deps:** update dependency scikit-learn to v1.5.0 [security] ([336a829](https://github.com/big-unibo/conversational-olap/commit/336a82901e2046681da04fc291adb6be7b8d0e81))
+* **deps:** update dependency scikit-learn to v1.5.1 ([bc590f0](https://github.com/big-unibo/conversational-olap/commit/bc590f07de0e14dedc61f3ebcc22b5888394acc3))
+* **deps:** update dependency scikit-learn to v1.5.2 ([#392](https://github.com/big-unibo/conversational-olap/issues/392)) ([65b4633](https://github.com/big-unibo/conversational-olap/commit/65b46333a1de5ba3c98f459342d0cb9a22550cc9))
+* **deps:** update dependency seaborn to v0.13.2 ([00b87de](https://github.com/big-unibo/conversational-olap/commit/00b87de9f6f4d5345015fd913b9ee0b5eae8b6d5))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.119 ([#385](https://github.com/big-unibo/conversational-olap/issues/385)) ([5804c2d](https://github.com/big-unibo/conversational-olap/commit/5804c2da8ad5eb3a6874bcaeeaae05c61fdc4d45))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.95 ([46ddb5f](https://github.com/big-unibo/conversational-olap/commit/46ddb5fa2bd00a130c51e9ff6d5a7831c8bd1f04))
+* **deps:** update plugin org.jetbrains.kotlin.jvm to v2.0.21 ([#382](https://github.com/big-unibo/conversational-olap/issues/382)) ([58387e5](https://github.com/big-unibo/conversational-olap/commit/58387e57d2d89621a2d47ca75659b030ee34226e))
+
+### Bug Fixes
+
+* **deps:** update dependency com.fasterxml.jackson.dataformat:jackson-dataformat-yaml to v2.17.3 ([#398](https://github.com/big-unibo/conversational-olap/issues/398)) ([a73f766](https://github.com/big-unibo/conversational-olap/commit/a73f766e85816177c0a394b02034ea39e07d7dcc))
+
+### Build and continuous integration
+
+* **deps:** update actions/checkout digest to 9a9194f ([861864f](https://github.com/big-unibo/conversational-olap/commit/861864f702ca714492785e7ca9f12313358a6eed))
+* **deps:** update actions/setup-java action to v4.2.2 ([#381](https://github.com/big-unibo/conversational-olap/issues/381)) ([c14051e](https://github.com/big-unibo/conversational-olap/commit/c14051e8ab0634434897e43e78d15d785e7ad8a8))
+* **deps:** update actions/setup-node action to v4.0.4 ([#393](https://github.com/big-unibo/conversational-olap/issues/393)) ([614fba6](https://github.com/big-unibo/conversational-olap/commit/614fba677e901df0504079ccd6ea30a7fe9321ea))
+* **deps:** update actions/setup-python action to v3 ([5fb1e2c](https://github.com/big-unibo/conversational-olap/commit/5fb1e2c8ed5938b7f223adba589f1532ec928768))
+* **deps:** update actions/setup-python action to v4 ([39c9268](https://github.com/big-unibo/conversational-olap/commit/39c92682378cb8c54e7753bf975c6b4318734a7f))
+* **deps:** update actions/setup-python action to v5 ([b34837b](https://github.com/big-unibo/conversational-olap/commit/b34837bed042ccd8b77df730eaed02103eb2771c))
+* **deps:** update dependency ubuntu to v24 ([#396](https://github.com/big-unibo/conversational-olap/issues/396)) ([b765f5e](https://github.com/big-unibo/conversational-olap/commit/b765f5e5bc4af390a7bbf4dccff91d2f9f6502e1))
+* replace docker-compose with docker compose ([212e490](https://github.com/big-unibo/conversational-olap/commit/212e4908e0c3cca697d5342ba50fc3bbc6ddb53c))
+* update build.yml ([e9012e3](https://github.com/big-unibo/conversational-olap/commit/e9012e3f66cb42e1fcf099744e2e0955189f25aa))
+
 ## [1.0.123](https://github.com/big-unibo/conversational-olap/compare/1.0.122...1.0.123) (2024-07-30)
 
 
