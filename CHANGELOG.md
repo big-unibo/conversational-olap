@@ -1,3 +1,9 @@
+## [1.0.129](https://github.com/big-unibo/conversational-olap/compare/1.0.128...1.0.129) (2025-01-15)
+
+### Bug Fixes
+
+* **deps:** update dependency org.antlr:antlr4 to v4.13.2 ([#380](https://github.com/big-unibo/conversational-olap/issues/380)) ([fb76693](https://github.com/big-unibo/conversational-olap/commit/fb766934cde26229735e59158be4ebc51c2f5377))
+
 ## [1.0.128](https://github.com/big-unibo/conversational-olap/compare/1.0.127...1.0.128) (2025-01-15)
 
 ### Bug Fixes
