@@ -1,3 +1,9 @@
+## [1.0.130](https://github.com/big-unibo/conversational-olap/compare/1.0.129...1.0.130) (2025-01-16)
+
+### Bug Fixes
+
+* **deps:** update junit5 monorepo to v5.10.5 ([#394](https://github.com/big-unibo/conversational-olap/issues/394)) ([90d1dc8](https://github.com/big-unibo/conversational-olap/commit/90d1dc844b7f7cf5e1607824ab32e6a395a6f198))
+
 ## [1.0.129](https://github.com/big-unibo/conversational-olap/compare/1.0.128...1.0.129) (2025-01-15)
 
 ### Bug Fixes
