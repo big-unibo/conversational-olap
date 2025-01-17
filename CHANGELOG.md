@@ -1,3 +1,9 @@
+## [1.0.131](https://github.com/big-unibo/conversational-olap/compare/1.0.130...1.0.131) (2025-01-17)
+
+### Bug Fixes
+
+* **deps:** update slf4j monorepo to v2.0.16 ([#383](https://github.com/big-unibo/conversational-olap/issues/383)) ([ab2b103](https://github.com/big-unibo/conversational-olap/commit/ab2b103b06597e5e9512c0d628540f04c8bcc1f1))
+
 ## [1.0.130](https://github.com/big-unibo/conversational-olap/compare/1.0.129...1.0.130) (2025-01-16)
 
 ### Bug Fixes
