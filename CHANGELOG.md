@@ -1,3 +1,21 @@
+## [1.0.132](https://github.com/big-unibo/conversational-olap/compare/1.0.131...1.0.132) (2025-01-19)
+
+### Dependency updates
+
+* **deps:** update dependency notebook to v7.3.2 ([#403](https://github.com/big-unibo/conversational-olap/issues/403)) ([3ba0cdf](https://github.com/big-unibo/conversational-olap/commit/3ba0cdf003b89c245d8b44c41aa98299bc267e7b))
+* **deps:** update dependency scikit-learn to v1.6.1 ([#404](https://github.com/big-unibo/conversational-olap/issues/404)) ([375fc80](https://github.com/big-unibo/conversational-olap/commit/375fc8028dbf664da9883d2707394af82b2d6067))
+* **deps:** update node.js to 20.18 ([#367](https://github.com/big-unibo/conversational-olap/issues/367)) ([ccbcede](https://github.com/big-unibo/conversational-olap/commit/ccbcede10f88e27c4074a3fbab056f32d3595ad0))
+
+### Bug Fixes
+
+* **deps:** update dependency com.fasterxml.jackson.dataformat:jackson-dataformat-yaml to v2.18.2 ([#407](https://github.com/big-unibo/conversational-olap/issues/407)) ([82c6c5c](https://github.com/big-unibo/conversational-olap/commit/82c6c5ceb4a69c214dbc3e11f5031797f79d9337))
+
+### Build and continuous integration
+
+* **deps:** update actions/checkout action to v4.2.2 ([#395](https://github.com/big-unibo/conversational-olap/issues/395)) ([d71a4be](https://github.com/big-unibo/conversational-olap/commit/d71a4bed040fc2b0a2a3f175842dc0da61a8989a))
+* **deps:** update actions/setup-java action to v4.6.0 ([#391](https://github.com/big-unibo/conversational-olap/issues/391)) ([c4d1989](https://github.com/big-unibo/conversational-olap/commit/c4d19894a36d056913282e5a1022ef087ae95859))
+* **deps:** update actions/setup-node action to v4.1.0 ([#406](https://github.com/big-unibo/conversational-olap/issues/406)) ([bde4c4d](https://github.com/big-unibo/conversational-olap/commit/bde4c4ddc814eb36376c2f0242219b504d894407))
+
 ## [1.0.131](https://github.com/big-unibo/conversational-olap/compare/1.0.130...1.0.131) (2025-01-17)
 
 ### Bug Fixes
