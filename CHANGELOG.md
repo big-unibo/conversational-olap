@@ -1,3 +1,9 @@
+## [1.0.135](https://github.com/big-unibo/conversational-olap/compare/1.0.134...1.0.135) (2025-01-20)
+
+### Bug Fixes
+
+* **deps:** update dependency org.apache.commons:commons-lang3 to v3.17.0 ([#384](https://github.com/big-unibo/conversational-olap/issues/384)) ([6051a35](https://github.com/big-unibo/conversational-olap/commit/6051a35e5fb832df316efc77efc4e12ab382661a))
+
 ## [1.0.134](https://github.com/big-unibo/conversational-olap/compare/1.0.133...1.0.134) (2025-01-20)
 
 ### Bug Fixes
