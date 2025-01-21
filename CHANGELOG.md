@@ -1,3 +1,13 @@
+## [1.0.137](https://github.com/big-unibo/conversational-olap/compare/1.0.136...1.0.137) (2025-01-21)
+
+### Dependency updates
+
+* **deps:** update node.js to v22 ([#410](https://github.com/big-unibo/conversational-olap/issues/410)) ([96210e3](https://github.com/big-unibo/conversational-olap/commit/96210e332a39478059d1e063ed56d3918dc2e95b))
+
+### Bug Fixes
+
+* **deps:** update dependency io.ktor:ktor-server-servlet to v3 ([#412](https://github.com/big-unibo/conversational-olap/issues/412)) ([7323995](https://github.com/big-unibo/conversational-olap/commit/7323995fb994de7ff1c245591fdccf78ad227bf7))
+
 ## [1.0.136](https://github.com/big-unibo/conversational-olap/compare/1.0.135...1.0.136) (2025-01-21)
 
 ### Bug Fixes
