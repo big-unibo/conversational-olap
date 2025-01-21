@@ -4,7 +4,7 @@
 
 ## Research papers
 
-- Matteo Francia, Enrico Gallinucci, Matteo Golfarelli, Stefano Rizzi: VOOL: A modular insight-based framework for vocalizing OLAP sessions.**Information Systems** 129: 102496 (2025). DOI: https://doi.org/10.1016/j.is.2024.102496
+- Matteo Francia, Enrico Gallinucci, Matteo Golfarelli, Stefano Rizzi: VOOL: A modular insight-based framework for vocalizing OLAP sessions. **Information Systems** 129: 102496 (2025). DOI: https://doi.org/10.1016/j.is.2024.102496
 - Matteo Francia, Enrico Gallinucci, Matteo Golfarelli: COOL: A framework for conversational OLAP. **Information Systems** 104: 101752 (2022). DOI: https://doi.org/10.1016/j.is.2021.101752
 - Matteo Francia, Enrico Gallinucci, Matteo Golfarelli: Conversational OLAP in Action. **Proc. of EDBT** 2021: 646-649. DOI: https://doi.org/10.5441/002/edbt.2021.74
 
