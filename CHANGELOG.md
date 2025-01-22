@@ -1,3 +1,9 @@
+## [1.0.138](https://github.com/big-unibo/conversational-olap/compare/1.0.137...1.0.138) (2025-01-22)
+
+### Bug Fixes
+
+* **deps:** update dependency org.json:json to v20241224 ([#413](https://github.com/big-unibo/conversational-olap/issues/413)) ([5346284](https://github.com/big-unibo/conversational-olap/commit/534628454ce0d827d19c26175f84f4cc8fc05693))
+
 ## [1.0.137](https://github.com/big-unibo/conversational-olap/compare/1.0.136...1.0.137) (2025-01-21)
 
 ### Dependency updates
