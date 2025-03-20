@@ -1,3 +1,17 @@
+## [1.0.145](https://github.com/big-unibo/conversational-olap/compare/1.0.144...1.0.145) (2025-03-20)
+
+### Dependency updates
+
+* **deps:** update dependency notebook to v7.3.3 ([#431](https://github.com/big-unibo/conversational-olap/issues/431)) ([669ffa0](https://github.com/big-unibo/conversational-olap/commit/669ffa054db224222cd00e19aaf0147c226dceaa))
+
+### Bug Fixes
+
+* **deps:** update dependency com.google.guava:guava to v33.4.5-jre ([#433](https://github.com/big-unibo/conversational-olap/issues/433)) ([0d9c45b](https://github.com/big-unibo/conversational-olap/commit/0d9c45b63706090014ad5950352923fa1c4ad0d8))
+
+### Build and continuous integration
+
+* **deps:** update actions/setup-node action to v4.3.0 ([#432](https://github.com/big-unibo/conversational-olap/issues/432)) ([fa64ecd](https://github.com/big-unibo/conversational-olap/commit/fa64ecd479925c6f1e7a98cf216c5ea3112a15fb))
+
 ## [1.0.144](https://github.com/big-unibo/conversational-olap/compare/1.0.143...1.0.144) (2025-03-01)
 
 ### Bug Fixes
