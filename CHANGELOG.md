@@ -1,3 +1,15 @@
+## [1.0.152](https://github.com/big-unibo/conversational-olap/compare/1.0.151...1.0.152) (2025-04-25)
+
+### Dependency updates
+
+* **deps:** update dependency notebook to v7.4.1 ([#444](https://github.com/big-unibo/conversational-olap/issues/444)) ([3f753db](https://github.com/big-unibo/conversational-olap/commit/3f753db062d649ca21f16b99b2c250ec4e297f7c))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.126 ([#446](https://github.com/big-unibo/conversational-olap/issues/446)) ([d6b34d3](https://github.com/big-unibo/conversational-olap/commit/d6b34d3d6b29521e849d112e7008367180c7b669))
+* **deps:** update node.js to 22.15 ([#445](https://github.com/big-unibo/conversational-olap/issues/445)) ([8bf63a4](https://github.com/big-unibo/conversational-olap/commit/8bf63a46cf8aa0e18d7cc0b1a791c5960e057bcf))
+
+### Bug Fixes
+
+* **deps:** update dependency com.fasterxml.jackson.dataformat:jackson-dataformat-yaml to v2.19.0 ([#447](https://github.com/big-unibo/conversational-olap/issues/447)) ([d557cda](https://github.com/big-unibo/conversational-olap/commit/d557cdae2184fb0877a06741ff18a8ea8c6518ca))
+
 ## [1.0.151](https://github.com/big-unibo/conversational-olap/compare/1.0.150...1.0.151) (2025-04-15)
 
 ### Dependency updates
