@@ -1,3 +1,9 @@
+## [1.0.153](https://github.com/big-unibo/conversational-olap/compare/1.0.152...1.0.153) (2025-04-26)
+
+### Bug Fixes
+
+* **deps:** update dependency com.fasterxml.jackson.datatype:jackson-datatype-jsr310 to v2.19.0 ([#448](https://github.com/big-unibo/conversational-olap/issues/448)) ([809d007](https://github.com/big-unibo/conversational-olap/commit/809d0070ae8d02811e2107ebd805e3865cbedca0))
+
 ## [1.0.152](https://github.com/big-unibo/conversational-olap/compare/1.0.151...1.0.152) (2025-04-25)
 
 ### Dependency updates
