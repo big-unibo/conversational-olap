@@ -1,3 +1,13 @@
+## [1.0.154](https://github.com/big-unibo/conversational-olap/compare/1.0.153...1.0.154) (2025-05-05)
+
+### Dependency updates
+
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.127 ([#449](https://github.com/big-unibo/conversational-olap/issues/449)) ([4ea58d2](https://github.com/big-unibo/conversational-olap/commit/4ea58d2fd1c65556ad2ca26f883cdf7f37d53f7c))
+
+### Bug Fixes
+
+* **deps:** update dependency io.ktor:ktor-server-servlet to v3.1.3 ([#450](https://github.com/big-unibo/conversational-olap/issues/450)) ([92862ad](https://github.com/big-unibo/conversational-olap/commit/92862ad4f26ea8dbbf8985ad6685351d9ac63ee0))
+
 ## [1.0.153](https://github.com/big-unibo/conversational-olap/compare/1.0.152...1.0.153) (2025-04-26)
 
 ### Bug Fixes
