@@ -1,3 +1,13 @@
+## [1.0.155](https://github.com/big-unibo/conversational-olap/compare/1.0.154...1.0.155) (2025-05-17)
+
+### Dependency updates
+
+* **deps:** update dependency notebook to v7.4.2 ([#451](https://github.com/big-unibo/conversational-olap/issues/451)) ([082d2a3](https://github.com/big-unibo/conversational-olap/commit/082d2a350e105fcb9ef6ab6b7a7ddb0f18cadb59))
+
+### Bug Fixes
+
+* **deps:** update dependency org.json:json to v20250517 ([#453](https://github.com/big-unibo/conversational-olap/issues/453)) ([5e52844](https://github.com/big-unibo/conversational-olap/commit/5e52844a904390b6e98aac6ea0a9fafc75ffd2dc))
+
 ## [1.0.154](https://github.com/big-unibo/conversational-olap/compare/1.0.153...1.0.154) (2025-05-05)
 
 ### Dependency updates
