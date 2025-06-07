@@ -1,3 +1,21 @@
+## [1.0.156](https://github.com/big-unibo/conversational-olap/compare/1.0.155...1.0.156) (2025-06-07)
+
+### Dependency updates
+
+* **deps:** update dependency gradle to v7.6.5 ([#460](https://github.com/big-unibo/conversational-olap/issues/460)) ([81c03c8](https://github.com/big-unibo/conversational-olap/commit/81c03c86ff91b6f42a6551ae0919b1b618767bc8))
+* **deps:** update dependency notebook to v7.4.3 ([#457](https://github.com/big-unibo/conversational-olap/issues/457)) ([c6e13ee](https://github.com/big-unibo/conversational-olap/commit/c6e13ee424d68da3d15fc82f634f6e9fe8a39a31))
+* **deps:** update dependency scikit-learn to v1.7.0 ([#461](https://github.com/big-unibo/conversational-olap/issues/461)) ([ed35e72](https://github.com/big-unibo/conversational-olap/commit/ed35e724307927d17bad9041911e288922db1156))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.128 ([#452](https://github.com/big-unibo/conversational-olap/issues/452)) ([85128d5](https://github.com/big-unibo/conversational-olap/commit/85128d5bfad3b3e54ca8e2a54355535ecab80adc))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.129 ([#454](https://github.com/big-unibo/conversational-olap/issues/454)) ([631f1ac](https://github.com/big-unibo/conversational-olap/commit/631f1ac91ffafa7700819ea82e86592596480d6a))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.131 ([#456](https://github.com/big-unibo/conversational-olap/issues/456)) ([3cdc37d](https://github.com/big-unibo/conversational-olap/commit/3cdc37dbe87192a0330d9ba25be5be5d0bd2fd6d))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.132 ([#458](https://github.com/big-unibo/conversational-olap/issues/458)) ([93fe154](https://github.com/big-unibo/conversational-olap/commit/93fe1549fcc3d3599a30fe248eb242472df52361))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.133 ([#459](https://github.com/big-unibo/conversational-olap/issues/459)) ([9f9c641](https://github.com/big-unibo/conversational-olap/commit/9f9c64195283c58b7fcbb5ec9c086583e2d5a774))
+* **deps:** update node.js to 22.16 ([#455](https://github.com/big-unibo/conversational-olap/issues/455)) ([4b872fe](https://github.com/big-unibo/conversational-olap/commit/4b872fee7ebd4e3684b2c9efd64018bf38ae269a))
+
+### Bug Fixes
+
+* **deps:** update dependency edu.stanford.nlp:stanford-corenlp to v4.5.10 ([#462](https://github.com/big-unibo/conversational-olap/issues/462)) ([6c63969](https://github.com/big-unibo/conversational-olap/commit/6c63969adb05c929a8cce1310dcce8361726eb0a))
+
 ## [1.0.155](https://github.com/big-unibo/conversational-olap/compare/1.0.154...1.0.155) (2025-05-17)
 
 ### Dependency updates
