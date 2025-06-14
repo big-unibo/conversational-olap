@@ -59,7 +59,7 @@ dependencies {
     implementation 'org.json:json:20250517'
     implementation "org.apache.commons:commons-math3:3.6.1"
     implementation 'com.google.guava:guava:33.4.8-jre'
-    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.19.0'
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.19.1'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.0'
     implementation 'com.oracle.ojdbc:ojdbc8:19.3.0.0'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.4'
