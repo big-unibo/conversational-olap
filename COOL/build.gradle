@@ -63,7 +63,7 @@ dependencies {
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.1'
     implementation 'com.oracle.ojdbc:ojdbc8:19.3.0.0'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.4'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.11.4'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.13.2'
 }
 
 generateGrammarSource {
