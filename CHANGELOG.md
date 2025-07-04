@@ -1,3 +1,17 @@
+## [1.0.160](https://github.com/big-unibo/conversational-olap/compare/1.0.159...1.0.160) (2025-07-04)
+
+### Dependency updates
+
+* **deps:** update dependency notebook to v7.4.4 ([#471](https://github.com/big-unibo/conversational-olap/issues/471)) ([d21d3ee](https://github.com/big-unibo/conversational-olap/commit/d21d3ee21a27459c81c4d7ca76f2250366544e2a))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.134 ([#469](https://github.com/big-unibo/conversational-olap/issues/469)) ([2ccce11](https://github.com/big-unibo/conversational-olap/commit/2ccce1107d6955d98233ed1535c761827bc6a83f))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.135 ([#470](https://github.com/big-unibo/conversational-olap/issues/470)) ([c1ae01a](https://github.com/big-unibo/conversational-olap/commit/c1ae01afaa1561fe81aca14febdf270a14b7bb4d))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.136 ([#472](https://github.com/big-unibo/conversational-olap/issues/472)) ([9884ca1](https://github.com/big-unibo/conversational-olap/commit/9884ca1644e673ce52b86c737e9faebcdfae507a))
+* **deps:** update node.js to 22.17 ([#468](https://github.com/big-unibo/conversational-olap/issues/468)) ([0daae37](https://github.com/big-unibo/conversational-olap/commit/0daae37c37b7cbbc5f573658e0f8cb284ab86cc6))
+
+### Bug Fixes
+
+* **deps:** update dependency io.ktor:ktor-server-servlet to v3.2.1 ([#474](https://github.com/big-unibo/conversational-olap/issues/474)) ([8947c47](https://github.com/big-unibo/conversational-olap/commit/8947c477bf9955aabd24fa7e91bee468b8887a9f))
+
 ## [1.0.159](https://github.com/big-unibo/conversational-olap/compare/1.0.158...1.0.159) (2025-06-14)
 
 ### Bug Fixes
