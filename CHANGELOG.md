@@ -1,3 +1,13 @@
+## [1.0.161](https://github.com/big-unibo/conversational-olap/compare/1.0.160...1.0.161) (2025-07-10)
+
+### Dependency updates
+
+* **deps:** update dependency gradle to v7.6.6 ([#475](https://github.com/big-unibo/conversational-olap/issues/475)) ([b333a56](https://github.com/big-unibo/conversational-olap/commit/b333a5607eb8d125d1147b1f6f2ca4680a7a3cd2))
+
+### Bug Fixes
+
+* **deps:** update dependency org.apache.commons:commons-lang3 to v3.18.0 ([#476](https://github.com/big-unibo/conversational-olap/issues/476)) ([225e34b](https://github.com/big-unibo/conversational-olap/commit/225e34b120bcaa3def46091719ea35ff377f928d))
+
 ## [1.0.160](https://github.com/big-unibo/conversational-olap/compare/1.0.159...1.0.160) (2025-07-04)
 
 ### Dependency updates
