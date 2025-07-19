@@ -1,3 +1,14 @@
+## [1.0.163](https://github.com/big-unibo/conversational-olap/compare/1.0.162...1.0.163) (2025-07-19)
+
+### Dependency updates
+
+* **deps:** update dependency scikit-learn to v1.7.1 ([#480](https://github.com/big-unibo/conversational-olap/issues/480)) ([dda7446](https://github.com/big-unibo/conversational-olap/commit/dda7446d1bfa05b27d87a70e4bb905206a317417))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.138 ([#479](https://github.com/big-unibo/conversational-olap/issues/479)) ([a0e7726](https://github.com/big-unibo/conversational-olap/commit/a0e7726043e957b2ab23562e8449455c788cefea))
+
+### Bug Fixes
+
+* **deps:** update dependency com.fasterxml.jackson.dataformat:jackson-dataformat-yaml to v2.19.2 ([#481](https://github.com/big-unibo/conversational-olap/issues/481)) ([7efdbbc](https://github.com/big-unibo/conversational-olap/commit/7efdbbc63cf26dc19a1e827e048c8e6088c971e9))
+
 ## [1.0.162](https://github.com/big-unibo/conversational-olap/compare/1.0.161...1.0.162) (2025-07-14)
 
 ### Dependency updates
