@@ -1,3 +1,21 @@
+## [1.0.167](https://github.com/big-unibo/conversational-olap/compare/1.0.166...1.0.167) (2025-09-01)
+
+### Dependency updates
+
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.140 ([#491](https://github.com/big-unibo/conversational-olap/issues/491)) ([a24886f](https://github.com/big-unibo/conversational-olap/commit/a24886f2ceeedc4494fd5d4e097b3022a8590c70))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.141 ([#496](https://github.com/big-unibo/conversational-olap/issues/496)) ([fc5c99f](https://github.com/big-unibo/conversational-olap/commit/fc5c99f7cf8ea6fe1f9df6a577674f36036b94c5))
+* **deps:** update node.js to 22.19 ([#493](https://github.com/big-unibo/conversational-olap/issues/493)) ([5614e13](https://github.com/big-unibo/conversational-olap/commit/5614e133abb5d93a1af3971644910ad49ecd779f))
+
+### Bug Fixes
+
+* **deps:** update dependency com.fasterxml.jackson.dataformat:jackson-dataformat-yaml to v2.20.0 ([#494](https://github.com/big-unibo/conversational-olap/issues/494)) ([7c3a28e](https://github.com/big-unibo/conversational-olap/commit/7c3a28e40702c9da3c90d3d974b31665539c0a81))
+
+### Build and continuous integration
+
+* **deps:** update actions/checkout action to v4.3.0 ([#489](https://github.com/big-unibo/conversational-olap/issues/489)) ([98c6f75](https://github.com/big-unibo/conversational-olap/commit/98c6f75c6a909cb05adae4d86a61172e1e9feb71))
+* **deps:** update actions/checkout action to v5 ([#490](https://github.com/big-unibo/conversational-olap/issues/490)) ([33a47f3](https://github.com/big-unibo/conversational-olap/commit/33a47f3c0e22858e1b0b8d8f173eaa6e9f0805c8))
+* **deps:** update actions/setup-java action to v5 ([#492](https://github.com/big-unibo/conversational-olap/issues/492)) ([400670c](https://github.com/big-unibo/conversational-olap/commit/400670c803e489e3afcf01fb90147a07e52dd380))
+
 ## [1.0.166](https://github.com/big-unibo/conversational-olap/compare/1.0.165...1.0.166) (2025-08-07)
 
 ### Dependency updates
