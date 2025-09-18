@@ -1,3 +1,21 @@
+## [1.0.169](https://github.com/big-unibo/conversational-olap/compare/1.0.168...1.0.169) (2025-09-18)
+
+### Dependency updates
+
+* **deps:** update dependency scikit-learn to v1.7.2 ([#501](https://github.com/big-unibo/conversational-olap/issues/501)) ([50d486c](https://github.com/big-unibo/conversational-olap/commit/50d486c8079a0d433289f2a10404239b478d772a))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.142 ([#499](https://github.com/big-unibo/conversational-olap/issues/499)) ([bb8f41f](https://github.com/big-unibo/conversational-olap/commit/bb8f41fedc318b00c39bfd9ca7cc7e04a09aefdd))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.143 ([#500](https://github.com/big-unibo/conversational-olap/issues/500)) ([756096a](https://github.com/big-unibo/conversational-olap/commit/756096a167e6dfa0a8e058693336492eb88d4f70))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.145 ([#503](https://github.com/big-unibo/conversational-olap/issues/503)) ([97b1e32](https://github.com/big-unibo/conversational-olap/commit/97b1e322795542cfd438e754400048104550d0ef))
+
+### Bug Fixes
+
+* **deps:** update dependency com.google.guava:guava to v33.5.0-jre ([#504](https://github.com/big-unibo/conversational-olap/issues/504)) ([e1e5b0c](https://github.com/big-unibo/conversational-olap/commit/e1e5b0cf00f3c42c64091777168bcd4a81887e7c))
+
+### Build and continuous integration
+
+* **deps:** update actions/setup-node action to v5 ([#497](https://github.com/big-unibo/conversational-olap/issues/497)) ([3543ee4](https://github.com/big-unibo/conversational-olap/commit/3543ee4bbc0a60e72ecbd21237946c931ada39fa))
+* **deps:** update actions/setup-python action to v6 ([#498](https://github.com/big-unibo/conversational-olap/issues/498)) ([c41bfe7](https://github.com/big-unibo/conversational-olap/commit/c41bfe77b1cc0ec5c7e5d116385e56e19e6f8301))
+
 ## [1.0.168](https://github.com/big-unibo/conversational-olap/compare/1.0.167...1.0.168) (2025-09-06)
 
 ### Bug Fixes
